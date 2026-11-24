@@ -1,0 +1,158 @@
+# Laboratorio: descarga la historia, reparte la búsqueda entre varias máquinas y publica los resultados.
+name: Laboratorio
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 4 * * *'   # cada día a las 4:17 UTC
+
+permissions:
+  contents: write
+
+concurrency:
+  group: laboratorio
+  cancel-in-progress: false
+
+env:
+  LAB_DATOS: ${{ github.workspace }}/laboratorio/datos
+  MAQUINAS: 4
+
+jobs:
+  pruebas:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: laboratorio
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: laboratorio/requirements.txt
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: pip install -r requirements.txt
+      - name: Pruebas del laboratorio (sin red)
+        run: |
+          python pruebas/prueba_lab.py
+          python pruebas/prueba_datos.py
+      - name: Pruebas del servidor (sin red)
+        working-directory: servidor
+        run: |
+          node pruebas/prueba_v21.mjs > /tmp/v21.txt 2>&1 || (tail -40 /tmp/v21.txt; exit 1)
+          grep -c '^OK' /tmp/v21.txt
+
+  datos:
+    needs: pruebas
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    defaults:
+      run:
+        working-directory: laboratorio
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: laboratorio/requirements.txt
+      - run: pip install -r requirements.txt
+      - name: Recuperar lo ya descargado
+        uses: actions/cache/restore@v4
+        with:
+          path: laboratorio/datos/binance
+          key: binance-${{ github.run_id }}
+          restore-keys: binance-
+      - name: Descargar lo nuevo y montar el panel
+        run: python -m lab.preparar --salida datos/panel.npz --universo 60 | tee datos/preparar.json
+      - name: Guardar lo descargado
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: laboratorio/datos/binance
+          key: binance-${{ github.run_id }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: panel
+          path: |
+            laboratorio/datos/panel.npz
+            laboratorio/datos/preparar.json
+          retention-days: 3
+
+  buscar:
+    needs: datos
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      matrix:
+        fragmento: [0, 1, 2, 3]
+    defaults:
+      run:
+        working-directory: laboratorio
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: laboratorio/requirements.txt
+      - run: pip install -r requirements.txt
+      - uses: actions/download-artifact@v4
+        with:
+          name: panel
+          path: laboratorio/datos
+      - name: Probar mi parte de las estrategias
+        run: python -m lab.buscar --panel datos/panel.npz --fragmento ${{ matrix.fragmento }} --de ${{ env.MAQUINAS }} --salida trozos/trozo_${{ matrix.fragmento }}.npz
+      - uses: actions/upload-artifact@v4
+        with:
+          name: trozo-${{ matrix.fragmento }}
+          path: laboratorio/trozos/
+          retention-days: 3
+
+  juntar:
+    needs: buscar
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    defaults:
+      run:
+        working-directory: laboratorio
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: laboratorio/requirements.txt
+      - run: pip install -r requirements.txt
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: trozo-*
+          path: laboratorio/trozos
+          merge-multiple: true
+      - uses: actions/download-artifact@v4
+        with:
+          name: panel
+          path: laboratorio/datos
+      - name: Pruebas contra la suerte y resultados
+        run: |
+          python -m lab.juntar --trozos trozos --salida ../resultados
+          cp datos/preparar.json ../resultados/datos.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: resultados
+          path: resultados/
+          retention-days: 30
+      - name: Publicar en el repositorio
+        working-directory: .
+        run: |
+          git config user.name "laboratorio"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add resultados
+          git diff --cached --quiet && exit 0
+          git commit -m "Resultados del laboratorio $(date -u +%Y-%m-%dT%H:%MZ)"
+          for i in 1 2 3; do git pull --rebase && git push && exit 0; sleep 5; done
+          exit 1
