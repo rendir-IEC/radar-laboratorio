@@ -126,11 +126,9 @@ def main():
         json.dump(salida, f, ensure_ascii=False, indent=1)
     with open(os.path.join(a.salida, 'informe.md'), 'w') as f:
         f.write(informe(salida))
-    hist = os.path.join(a.salida, 'historial.csv')
-    nueva = not os.path.exists(hist)
-    with open(hist, 'a') as f:
-        if nueva:
-            f.write('generado,desde,hasta,estrategias,aprobadas,pbo,sharpe_suerte,oos_top5_sharpe,oos_top5_rent,oos_btc_rent,mejor_id,mejor_dsr\n')
+    # una línea para el historial; la añade el paso de publicar sobre el historial más reciente del repositorio
+    with open(os.path.join(a.salida, 'historial_linea.csv'), 'w') as f:
+        f.write('generado,desde,hasta,estrategias,aprobadas,pbo,sharpe_suerte,oos_top5_sharpe,oos_top5_rent,oos_btc_rent,mejor_id,mejor_dsr\n')
         m = salida['estrategias'][0] if salida['estrategias'] else {'id': '', 'sharpe_deflactado': 0}
         f.write('%s,%s,%s,%d,%d,%.3f,%.3f,%.3f,%.2f,%.2f,%s,%.4f\n' % (
             salida['generado'], salida['periodo']['desde'], salida['periodo']['hasta'], M, int(aprobada.sum()), pbo,
