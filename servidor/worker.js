@@ -361,9 +361,10 @@ function apListaExpertos(E) {
 }
 function apLabValida(sp) {
   if (!sp || typeof sp !== 'object') return false;
-  const senales = ['cruce', 'impulso', 'rebote', 'funding_contra', 'funding_sigue'];
+  const senales = ['cruce', 'impulso', 'rebote', 'funding_contra', 'funding_sigue', 'tendencia_mixta'];
   if (!senales.includes(sp.senal)) return false;
-  if (sp.senal.startsWith('funding')) { if (![24, 168].includes(sp.a)) return false; }
+  if (sp.senal === 'tendencia_mixta') { if (sp.a !== 12 || sp.b !== 720) return false; }
+  else if (sp.senal.startsWith('funding')) { if (![24, 168].includes(sp.a)) return false; }
   else if (!AP.SPANS.includes(sp.a)) return false;
   if (sp.senal === 'cruce' && !(AP.SPANS.includes(sp.b) && sp.b > sp.a)) return false;
   if (!['signo', 'continua'].includes(sp.forma)) return false;
@@ -379,6 +380,7 @@ function apLabBruto(sp, c) {
     return sp.senal === 'funding_contra' ? -x : x;
   }
   if (!(sig > 0)) return NaN;
+  if (sp.senal === 'tendencia_mixta') return [[12, 72], [24, 168], [72, 336], [168, 720]].reduce((a, [x, y]) => a + Math.sign(c.ema[x] - c.ema[y]), 0) / 4;
   if (sp.senal === 'cruce') return (c.ema[sp.a] - c.ema[sp.b]) / (sig * Math.sqrt(sp.b));
   const d = (c.lp - c.ema[sp.a]) / (sig * Math.sqrt(sp.a));
   return sp.senal === 'impulso' ? d : -d;

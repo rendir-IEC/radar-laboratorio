@@ -57,7 +57,7 @@ def test_posiciones_iguales_que_el_servidor():
     P = np.exp(np.cumsum(rng.normal(0, 0.01, (T, len(monedas))), axis=0)) * 50
     F = rng.normal(1e-5, 2e-5, (T, len(monedas)))
     todas = rejilla()
-    muestra = [todas[i] for i in rng.choice(len(todas), 60, replace=False)]
+    muestra = [todas[i] for i in rng.choice(len(todas), 60, replace=False)] + [e for e in todas if e['senal'] == 'tendencia_mixta'][:12]
     specs = [{k: e[k] for k in ('senal', 'a', 'b', 'forma', 'k', 'modo', 'lado', 'filtro', 'cada') if k in e} for e in muestra]
     ent = {'t': t.tolist(), 'P': {m: P[:, j].tolist() for j, m in enumerate(monedas)}, 'F': {m: F[:, j].tolist() for j, m in enumerate(monedas)}, 'specs': specs}
     r = subprocess.run(['node', os.path.join(AQUI, 'memoria_servidor.mjs')], input=json.dumps(ent), capture_output=True, text=True, check=True)
