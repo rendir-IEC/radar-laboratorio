@@ -61,6 +61,8 @@ BTC en fechas conocidas: 2021-11-10 67010.0, 2022-06-18 20457.3, 2022-11-21 1627
 
 **El sistema del servidor desde 2021-01-31 (igual pero con pesos fijos e iguales)**: -5.7 % al año, Sharpe -0.47, caída máxima 45.4 %, semanas en positivo 37 %. Por año: 2021 +13.2 %, 2022 -15.9 %, 2023 -6.3 %, 2024 +4.3 %, 2025 -12.8 %, 2026 -12.2 %.
 
+**El sistema del servidor desde 2021-01-31 (igual pero comparando a los expertos por unidad de riesgo (cada uno escalado a un 20 % de volatilidad, sin apalancar))**: 6.0 % al año, Sharpe 0.58, caída máxima 16.7 %, semanas en positivo 43 %. Por año: 2021 +15.7 %, 2022 +2.2 %, 2023 +6.0 %, 2024 +12.8 %, 2025 -1.0 %, 2026 +0.4 %.
+
 **El sistema del servidor desde 2021-01-31 (ETA 10 y con las candidatas del laboratorio)**: 2.3 % al año, Sharpe 0.21, caída máxima 36.5 %, semanas en positivo 35 %. Por año: 2021 +0.9 %, 2022 -8.0 %, 2023 +15.2 %, 2024 +28.6 %, 2025 -17.3 %, 2026 +0.5 %.
 
 Monedas con algún movimiento horario de más del 40 % (revisar empalmes): DOGE (+52 % el 2021-01-29 04:00 UTC), ZEC (+46 % el 2021-05-19 13:00 UTC), UNI (+44 % el 2024-02-23 15:00 UTC), TRUMP (+42 % el 2025-01-19 22:00 UTC), CRV (+42 % el 2021-05-19 13:00 UTC), DOT (+41 % el 2021-05-19 13:00 UTC), XLM (+67 % el 2021-05-19 13:00 UTC), 2Z (+57 % el 2025-10-02 14:00 UTC).

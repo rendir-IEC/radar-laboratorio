@@ -1,5 +1,5 @@
 {
- "generado": "2026-11-24T23:40:44Z",
+ "generado": "2026-11-24T23:54:53Z",
  "version": 1,
  "aviso": "Investigación en papel. Resultados pasados, con costes estimados; no garantizan nada en el futuro.",
  "periodo": {
@@ -38,8 +38,8 @@
    "ZRO": "binance + funding binance + hyperliquid (23 h) + funding hyperliquid",
    "TRUMP": "binance + funding binance + hyperliquid (23 h) + funding hyperliquid",
    "JUP": "binance + funding binance + hyperliquid (23 h) + funding hyperliquid",
-   "SKY": "binance + funding binance + hyperliquid (23 h) + funding hyperliquid",
    "FARTCOIN": "binance + funding binance + hyperliquid (23 h) + funding hyperliquid",
+   "SKY": "binance + funding binance + hyperliquid (23 h) + funding hyperliquid",
    "XPL": "binance + funding binance + hyperliquid (23 h) + funding hyperliquid",
    "CRV": "binance + funding binance + hyperliquid (23 h) + funding hyperliquid",
    "INJ": "binance + funding binance + hyperliquid (23 h) + funding hyperliquid",
@@ -48,35 +48,34 @@
    "ACE": "binance + funding binance + hyperliquid (23 h) + funding hyperliquid",
    "ETHFI": "binance + funding binance + hyperliquid (23 h) + funding hyperliquid",
    "TAO": "binance + funding binance + hyperliquid (23 h) + funding hyperliquid",
-   "LTC": "binance + funding binance + hyperliquid (23 h) + funding hyperliquid",
    "ONDO": "binance + funding binance + hyperliquid (23 h) + funding hyperliquid",
    "AERO": "binance + funding binance + hyperliquid (23 h) + funding hyperliquid",
+   "LTC": "binance + funding binance + hyperliquid (23 h) + funding hyperliquid",
    "TRX": "binance + funding binance + hyperliquid (23 h) + funding hyperliquid",
    "FET": "binance + funding binance + hyperliquid (23 h) + funding hyperliquid",
    "PONS": "binance + funding binance + hyperliquid (23 h) + funding hyperliquid",
    "GRAM": "binance + funding binance + hyperliquid (23 h) + funding hyperliquid",
-   "BABY": "binance + funding binance + hyperliquid (23 h) + funding hyperliquid",
    "kLUNC": "binance + funding binance + hyperliquid (23 h) + funding hyperliquid",
+   "BABY": "binance + funding binance + hyperliquid (23 h) + funding hyperliquid",
    "WLFI": "binance + funding binance + hyperliquid (23 h) + funding hyperliquid",
    "ASTER": "binance + funding binance + hyperliquid (23 h) + funding hyperliquid",
    "ICP": "binance + funding binance + hyperliquid (23 h) + funding hyperliquid",
-   "XLM": "binance + funding binance + hyperliquid (23 h) + funding hyperliquid",
    "ATOM": "binance + funding binance + hyperliquid (23 h) + funding hyperliquid",
+   "XLM": "binance + funding binance + hyperliquid (23 h) + funding hyperliquid",
    "CASHCAT": "hyperliquid (3283 h) + funding hyperliquid",
    "BCH": "binance + funding binance + hyperliquid (23 h) + funding hyperliquid",
    "2Z": "binance + funding binance + hyperliquid (23 h) + funding hyperliquid",
    "kSHIB": "binance + funding binance + hyperliquid (23 h) + funding hyperliquid",
    "STRK": "binance + funding binance + hyperliquid (23 h) + funding hyperliquid",
    "INIT": "binance + funding binance + hyperliquid (23 h) + funding hyperliquid",
-   "USELESS": "binance + funding binance + hyperliquid (23 h) + funding hyperliquid",
    "PENDLE": "binance + funding binance + hyperliquid (23 h) + funding hyperliquid",
+   "USELESS": "binance + funding binance + hyperliquid (23 h) + funding hyperliquid",
    "HBAR": "binance + funding binance + hyperliquid (23 h) + funding hyperliquid"
   },
   "registro": {
    "binance_estado_prueba": 404,
    "binance_descargas": {
-    "404": 61,
-    "200": 103
+    "404": 1
    }
   }
  },
