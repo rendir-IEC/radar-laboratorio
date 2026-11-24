@@ -115,9 +115,17 @@ def resumen_serie(r):
         'vol_anual_pct': float(r.std(ddof=1) * math.sqrt(DIAS_ANO) * 100),
         'sharpe_anual': float(sharpe(r) * math.sqrt(DIAS_ANO)),
         'caida_max_pct': caida * 100,
-        'dias_positivos_pct': float((r > 0).mean() * 100),
-        'semanas_positivas_pct': float((np.add.reduceat(r, np.arange(0, r.size, 7)) > 0).mean() * 100),
+        'dias_positivos_pct': float((r[r != 0] > 0).mean() * 100) if (r != 0).any() else 0.0,
+        'semanas_positivas_pct': _semanas_positivas(r),
+        'dias_con_posicion_pct': float((r != 0).mean() * 100),
     }
+
+
+def _semanas_positivas(r):
+    """Porcentaje de semanas en positivo, contando solo las semanas en que hubo posición."""
+    sem = np.add.reduceat(r, np.arange(0, r.size, 7))
+    activas = np.add.reduceat(np.abs(r), np.arange(0, r.size, 7)) > 0
+    return float((sem[activas] > 0).mean() * 100) if activas.any() else 0.0
 
 
 def paso_a_paso(D, k=5, inicio=365, paso=91, min_dias=180, activa=None):
