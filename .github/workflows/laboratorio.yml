@@ -42,7 +42,7 @@ jobs:
       - name: Pruebas del servidor (sin red)
         working-directory: servidor
         run: |
-          node pruebas/prueba_v21.mjs > /tmp/v21.txt 2>&1 || (tail -40 /tmp/v21.txt; exit 1)
+          node pruebas/prueba_v22.mjs > /tmp/v21.txt 2>&1 || (tail -40 /tmp/v21.txt; exit 1)
           grep -c '^OK' /tmp/v21.txt
 
   datos:

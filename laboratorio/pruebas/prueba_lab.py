@@ -23,8 +23,7 @@ def test_memoria_igual_que_el_servidor():
     T = 900
     t = (1_700_000_000_000 // H) * H + H * np.arange(T)
     P = np.exp(np.cumsum(rng.normal(0, 0.01, (T, 3)), axis=0)) * [100, 20, 3]
-    # Nota: sin huecos internos. Con un hueco propio de una moneda, la v2.1 del servidor usa las horas globales
-    # (1) en vez de las de esa moneda; el laboratorio usa las de la moneda. Se corrige en la v2.2 del servidor.
+    P[100:105, 1] = np.nan       # hueco de 5 horas en una moneda (la v2.2 del servidor cuenta las horas de cada moneda)
     P[:50, 2] = np.nan           # moneda que empieza tarde
     F = rng.normal(1e-5, 5e-6, (T, 3))
     F[np.isnan(P)] = np.nan
@@ -46,6 +45,33 @@ def test_memoria_igual_que_el_servidor():
                 peor = max(peor, abs(c['v2'] - V2[k, j]) / max(c['v2'], 1e-12) * 1e-6)
             peor = max(peor, abs(c['fe24'] - FE24[k, j]), abs(c['fe168'] - FE168[k, j]))
             assert c['n'] == NH[k, j], (k, m, c['n'], NH[k, j])
+    assert peor < 1e-9, peor
+
+
+def test_posiciones_iguales_que_el_servidor():
+    """Para una muestra de estrategias de la rejilla, el servidor (apLabPosiciones) da las mismas posiciones que el laboratorio."""
+    rng = np.random.default_rng(3)
+    T = 1000
+    t = (1_700_000_000_000 // H) * H + H * np.arange(T)
+    monedas = ['BTC', 'ETH', 'SOL', 'XRP', 'DOGE', 'BNB']
+    P = np.exp(np.cumsum(rng.normal(0, 0.01, (T, len(monedas))), axis=0)) * 50
+    F = rng.normal(1e-5, 2e-5, (T, len(monedas)))
+    todas = rejilla()
+    muestra = [todas[i] for i in rng.choice(len(todas), 60, replace=False)]
+    specs = [{k: e[k] for k in ('senal', 'a', 'b', 'forma', 'k', 'modo', 'lado', 'filtro', 'cada') if k in e} for e in muestra]
+    ent = {'t': t.tolist(), 'P': {m: P[:, j].tolist() for j, m in enumerate(monedas)}, 'F': {m: F[:, j].tolist() for j, m in enumerate(monedas)}, 'specs': specs}
+    r = subprocess.run(['node', os.path.join(AQUI, 'memoria_servidor.mjs')], input=json.dumps(ent), capture_output=True, text=True, check=True)
+    js = json.loads(r.stdout)
+    if js['posiciones'] is None:
+        print('       (este servidor no tiene expertos del laboratorio: se omite)')
+        return
+    panel = {'t': t, 'P': P, 'Finfo': F}
+    M = memoria(panel)
+    peor = 0.0
+    for e, pos in zip(muestra, js['posiciones']):
+        obj = objetivo(e, M, 0)[-1]
+        for j, m in enumerate(monedas):
+            peor = max(peor, abs(obj[j] - (pos or {}).get(m, 0.0)))
     assert peor < 1e-9, peor
 
 
