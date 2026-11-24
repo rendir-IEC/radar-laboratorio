@@ -143,6 +143,7 @@ jobs:
       - name: Pruebas contra la suerte y resultados
         run: |
           python -m lab.juntar --trozos trozos --salida ../resultados
+          python -m lab.diagnostico --panel datos/panel.npz --resultados ../resultados
           cp datos/preparar.json ../resultados/datos.json
       - uses: actions/upload-artifact@v4
         with:
