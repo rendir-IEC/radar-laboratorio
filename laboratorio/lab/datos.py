@@ -52,7 +52,7 @@ def _http(url, cuerpo=None, intentos=5, timeout=60):
 
 
 _ULTIMA_HL = [0.0]
-PRESUPUESTO_HL = 900.0  # peso por minuto; Hyperliquid permite 1200 por IP
+PRESUPUESTO_HL = 1000.0  # peso por minuto; Hyperliquid permite 1200 por IP
 
 
 def hl(cuerpo, peso=20):
@@ -266,7 +266,7 @@ def construir_panel(monedas, con_binance=True, horas_hl=5000, registro=None):
                 fuentes.append('funding binance')
         # con Binance hasta hace poco basta lo último de Hyperliquid; sin Binance, todo lo que da (5000 h)
         hay_binance = 'binance' in fuentes and np.isfinite(P[max(0, T - 24 * 7):, j]).any()
-        velas, tasas = descargar_hl(coin, 72 if hay_binance else horas_hl, horas_funding=2000 if hay_binance else horas_hl)
+        velas, tasas = descargar_hl(coin, 72 if hay_binance else horas_hl, horas_funding=1000 if hay_binance else horas_hl)
         if velas.shape[0]:
             i = idx(velas[:, 0])
             ok = (i >= 0) & (i < T)
