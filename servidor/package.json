@@ -1,0 +1,6 @@
+{
+  "name": "radar-mercados-servidor",
+  "private": true,
+  "type": "module",
+  "description": "Worker de Cloudflare del radar y del sistema que aprende (en papel). Pruebas: node pruebas/<archivo>.mjs (Node 22+)."
+}
