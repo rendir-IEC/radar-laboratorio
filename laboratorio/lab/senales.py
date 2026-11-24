@@ -96,7 +96,11 @@ def senales_base():
     for s in (24, 168):
         out.append({'senal': 'funding_contra', 'a': s})
         out.append({'senal': 'funding_sigue', 'a': s})
+    out.append({'senal': 'tendencia_mixta', 'a': 12, 'b': 720})
     return out
+
+
+PARES_MIXTA = ((12, 72), (24, 168), (72, 336), (168, 720))
 
 
 FORMAS = [{'forma': 'signo'}, {'forma': 'continua', 'k': 0.5}, {'forma': 'continua', 'k': 2.0}]
@@ -129,7 +133,9 @@ def ident(e):
 
 def nombre(e):
     dur = lambda h: {12: '12 h', 24: '1 día', 72: '3 días', 168: '1 semana', 336: '2 semanas', 720: '1 mes'}[h]
-    if e['senal'] == 'cruce':
+    if e['senal'] == 'tendencia_mixta':
+        base = 'Tendencia mixta (4 horizontes, de 12 h a 1 mes)'
+    elif e['senal'] == 'cruce':
         base = 'Tendencia %s / %s' % (dur(e['a']), dur(e['b']))
     elif e['senal'] == 'impulso':
         base = 'Impulso de %s' % dur(e['a'])
@@ -156,6 +162,10 @@ def nombre(e):
 def bruto(e, M):
     """Señal bruta x[t, j] antes de la forma; la escala es aproximadamente la de una desviación típica."""
     sig = M['sig']
+    if e['senal'] == 'tendencia_mixta':
+        # media de los signos de cuatro cruces: de -1 (todos bajistas) a +1 (todos alcistas)
+        x = sum(np.sign(M['ema'][a] - M['ema'][b]) for a, b in PARES_MIXTA) / len(PARES_MIXTA)
+        return np.where(sig > 0, x, np.nan)
     if e['senal'] == 'cruce':
         return (M['ema'][e['a']] - M['ema'][e['b']]) / (sig * math.sqrt(e['b']))
     if e['senal'] == 'impulso':
