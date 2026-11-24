@@ -67,7 +67,10 @@ jobs:
           key: binance-${{ github.run_id }}
           restore-keys: binance-
       - name: Descargar lo nuevo y montar el panel
-        run: python -m lab.preparar --salida datos/panel.npz --universo 60 | tee datos/preparar.json
+        run: |
+          mkdir -p datos
+          python -m lab.preparar --salida datos/panel.npz --universo 60 > datos/preparar.json
+          cut -c1-3000 datos/preparar.json
       - name: Guardar lo descargado
         if: always()
         uses: actions/cache/save@v4
