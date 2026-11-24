@@ -106,6 +106,36 @@ def main():
             filas['giro_anual'] = round(float(g.sum() / anos_total), 1)
             filas['exposicion_media'] = round(float(np.abs(obj).sum(axis=1).mean()), 3)
         out['simulaciones'][nombre_r] = filas
+    # el sistema del servidor entero (Hedge sobre sus expertos con historia), con y sin las candidatas del laboratorio
+    from .sistema import ETA, REPARTO, expertos_servidor, hedge
+    monedas_u = [monedas[c] for c in cols]
+    extra = [dict(todas[i], id=i) for i in res.get('para_el_servidor', []) if i in todas]
+    out['sistema'] = {}
+    cache_rx = {}
+    for etiqueta, ex, eta in (('servidor', (), ETA), ('servidor_eta_1', (), 1.0), ('servidor_pesos_iguales', (), 0.0), ('servidor_con_laboratorio', extra, ETA)):
+        if etiqueta == 'servidor_con_laboratorio' and not ex:
+            continue
+        clave = len(ex)
+        if clave not in cache_rx:
+            cache_rx[clave] = expertos_servidor(Mu, Ru, Fu, panel['Fpago'][:, cols], hora, monedas_u, coste, ex)
+        nombres, Rx, act = cache_rx[clave]
+        rs, wmed = hedge(Rx, act, eta, REPARTO)
+        d, d0 = diario(rs, t)
+        if d_ini is not None:
+            d = d[max(0, d_ini - d0):-1]
+            d0 = max(d0, d_ini)
+        res_s = resumen_serie(d)
+        anos = {}
+        for k in range(len(d)):
+            y = (dt.date(1970, 1, 1) + dt.timedelta(days=int(d0 + k))).year
+            anos.setdefault(y, []).append(d[k])
+        dx = [diario(Rx[:, k], t)[0][(max(0, d_ini - diario(Rx[:, k], t)[1]) if d_ini is not None else 0):-1] for k in range(Rx.shape[1])]
+        out['sistema'][etiqueta] = {
+            'resumen': {k: round(v, 3) if isinstance(v, float) else v for k, v in res_s.items()},
+            'por_ano_pct': {str(y): round((math.exp(np.log1p(np.maximum(np.array(v), -0.99)).sum()) - 1) * 100, 1) for y, v in anos.items()},
+            'eta': eta,
+            'expertos': {n: {'peso_medio_pct': round(float(wmed[k] * 100), 1), 'sharpe_anual': round(float(resumen_serie(dx[k]).get('sharpe_anual', 0)), 2)} for k, n in enumerate(nombres)},
+        }
     with open(os.path.join(a.resultados, 'diagnostico.json'), 'w') as f:
         json.dump(out, f, ensure_ascii=False, indent=1)
     # resumen legible al final del informe
@@ -115,6 +145,12 @@ def main():
         c, s = v['con_costes'], v['sin_costes']
         if 'sharpe_anual' in c:
             l.append('| %s | %.1f %% | %.1f %% | %.2f | %.2f | %.0f |' % (k, c['rent_anual_pct'], s['rent_anual_pct'], c['sharpe_anual'], s['sharpe_anual'], v['giro_anual']))
+    for k, v in out['sistema'].items():
+        r = v['resumen']
+        if 'sharpe_anual' in r:
+            l.append('\n**El sistema del servidor desde %s (%s)**: %.1f %% al año, Sharpe %.2f, caída máxima %.1f %%, semanas en positivo %.0f %%. Por año: %s.' % (
+                ini or 'el inicio', {'servidor': 'tal como está: expertos de precio y funding, sin carteras ni flujo, ETA 10', 'servidor_eta_1': 'igual pero con ETA 1', 'servidor_pesos_iguales': 'igual pero con pesos fijos e iguales', 'servidor_con_laboratorio': 'ETA 10 y con las candidatas del laboratorio'}[k],
+                r['rent_anual_pct'], r['sharpe_anual'], r['caida_max_pct'], r['semanas_positivas_pct'], ', '.join('%s %+.1f %%' % (y, x) for y, x in v['por_ano_pct'].items())))
     raros = [m for m, v in out['monedas'].items() if v.get('max_mov_horario_pct') and v['max_mov_horario_pct'] > 40]
     l.append('\nMonedas con algún movimiento horario de más del 40 %% (revisar empalmes): %s.\n' % (', '.join(raros) or 'ninguna'))
     with open(os.path.join(a.resultados, 'informe.md'), 'a') as f:
