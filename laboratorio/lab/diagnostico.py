@@ -42,14 +42,16 @@ def main():
         tramo = P[i0:i1 + 1, j]
         huecos = int(np.isnan(tramo).sum())
         with np.errstate(invalid='ignore', divide='ignore'):
-            r = np.diff(np.log(tramo))
-        r = r[np.isfinite(r)]
+            r_todas = np.diff(np.log(tramo))
+        r = r_todas[np.isfinite(r_todas)]
+        k_max = int(np.nanargmax(np.abs(r_todas))) if r.size else 0
         fp = Fp[i0:i1 + 1, j]
         out['monedas'][m] = {
             'desde': dt.datetime.fromtimestamp(t[i0] / 1000, dt.timezone.utc).strftime('%Y-%m-%d'),
             'hasta': dt.datetime.fromtimestamp(t[i1] / 1000, dt.timezone.utc).strftime('%Y-%m-%d %H:00'),
             'horas': int(ok.sum()), 'huecos_internos': huecos,
             'max_mov_horario_pct': round(float(np.abs(r).max() * 100), 2) if r.size else None,
+            'max_mov_hora': dt.datetime.fromtimestamp(t[i0 + k_max + 1] / 1000, dt.timezone.utc).strftime('%Y-%m-%d %H:00') if r.size else None,
             'vol_anual_pct': round(float(r.std() * math.sqrt(8760) * 100), 1) if r.size > 10 else None,
             'funding_anual_medio_pct': round(float(fp.sum() / max((i1 - i0 + 1) / 8760, 1e-9) * 100), 2),
             'fuente': panel['fuente'].get(m, ''),
@@ -78,7 +80,7 @@ def main():
     referencias = {
         'siempre_comprado_20_monedas_escala_vol': 'siempre',
         'tendencia_semana_mes': todas.get('lab_cruce_168_720_s_ser_amb_nf_h1'),
-        'cobrar_funding_cortos': todas.get('lab_funding_sigue_168_s_ser_cor_nf_h24'),
+        'vendido_cuando_funding_positivo': todas.get('lab_funding_contra_168_s_ser_cor_nf_h24'),
     }
     elegidas = [f['id'] for f in res.get('estrategias', [])[:6]]
     for i in elegidas:
@@ -152,7 +154,7 @@ def main():
                 ini or 'el inicio', {'servidor': 'tal como está: expertos de precio y funding, sin carteras ni flujo, ETA 10', 'servidor_eta_1': 'igual pero con ETA 1', 'servidor_pesos_iguales': 'igual pero con pesos fijos e iguales', 'servidor_con_laboratorio': 'ETA 10 y con las candidatas del laboratorio'}[k],
                 r['rent_anual_pct'], r['sharpe_anual'], r['caida_max_pct'], r['semanas_positivas_pct'], ', '.join('%s %+.1f %%' % (y, x) for y, x in v['por_ano_pct'].items())))
     raros = [m for m, v in out['monedas'].items() if v.get('max_mov_horario_pct') and v['max_mov_horario_pct'] > 40]
-    l.append('\nMonedas con algún movimiento horario de más del 40 %% (revisar empalmes): %s.\n' % (', '.join(raros) or 'ninguna'))
+    l.append('\nMonedas con algún movimiento horario de más del 40 %% (revisar empalmes): %s.\n' % (', '.join('%s (%+.0f %% el %s UTC)' % (m, out['monedas'][m]['max_mov_horario_pct'], out['monedas'][m]['max_mov_hora']) for m in raros) or 'ninguna'))
     with open(os.path.join(a.resultados, 'informe.md'), 'a') as f:
         f.write('\n'.join(l) + '\n')
     print(json.dumps({'btc': out['btc_en_fechas'], 'raros': raros}, ensure_ascii=False))
