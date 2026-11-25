@@ -316,13 +316,28 @@ def estudiar(monedas, diagnostico=None):
                 f['precios'] = comparar_precios(tk, pk / mult_k, velas[:, 0], velas[:, 1] / mult_h)
             fk, inter = funding_kraken(sim)
             f['funding_intervalo_kraken_h'] = inter
+            # ¿cómo se pasa la tasa «absoluta» del ticker a tasa relativa por hora? (lo necesita el bot del servidor)
+            fr = t.get('fundingRate')
+            if fk and fr not in (None, '') and precio:
+                ultima = fk[-1][1] * (inter or 1)  # la última relativa publicada, tal cual
+                fr = float(fr)
+                f['funding_ticker'] = {'absoluta': fr, 'precio': precio, 'ultima_relativa': ultima, 'ultima_relativa_t': fk[-1][0],
+                                       'rel_sobre_abs_por_precio': (ultima / (fr * precio)) if fr else None,
+                                       'rel_sobre_abs_entre_precio': (ultima / (fr / precio)) if fr else None,
+                                       'prediccion': t.get('fundingRatePrediction')}
             if fk and tasas.shape[0]:
                 fh = [(int(a), float(r)) for a, r in tasas]
                 f['funding'] = comparar_funding(fk, fh, fin - HORAS * H)
                 if inter and inter > 1:  # por si Kraken ya publica la tasa por hora aunque la cobre cada `inter` horas
                     f['funding_si_ya_es_horaria'] = comparar_funding([(t, x * inter) for t, x in fk], fh, fin - HORAS * H)
         filas.append(f)
+    muestra = {}
+    for b, ops in por_base.items():
+        if b == 'BTC' and ops:
+            sim = sorted(ops, key=lambda x: x[0])[0][1]
+            muestra = {'instrumento': sorted(ops, key=lambda x: x[0])[0][2], 'ticker': tic.get(sim)}
     out = {
+        'muestra_btc': muestra,
         'generado': dt.datetime.now(dt.timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ'),
         'eur_usd': eur, 'comisiones': COMISIONES, 'monedas': filas,
         'perpetuos_kraken': sum(len(v) for v in por_base.values()),
@@ -385,6 +400,12 @@ def informe(r):
         l.append('\nKraken publica el funding cada %g h. Arriba se reparte entre esas horas; si su tasa ya fuera por hora, '
                  'el funding anual de Kraken sería: %s.\n' % (dobles[0]['funding_intervalo_kraken_h'], ', '.join(
                      '%s %s' % (f['moneda'], _p(f['funding_si_ya_es_horaria'].get('kraken_anual_pct'), '%+.1f %%')) for f in dobles)))
+    ft = [(f['moneda'], f['funding_ticker']) for f in r['monedas'] if f.get('funding_ticker')]
+    if ft:
+        l.append('\nTasa del ticker frente a la última tasa relativa publicada (para el bot): relativa / (absoluta × precio) = %s; '
+                 'relativa / (absoluta / precio) = %s.\n' % (
+                     ', '.join('%s %s' % (m, _p(x['rel_sobre_abs_por_precio'], '%.3g')) for m, x in ft[:6]),
+                     ', '.join('%s %s' % (m, _p(x['rel_sobre_abs_entre_precio'], '%.3g')) for m, x in ft[:6])))
     if r.get('estrategias'):
         c = r['costes_por_giro']
         l += ['\n## Las estrategias del laboratorio con las comisiones de cada sitio\n',
