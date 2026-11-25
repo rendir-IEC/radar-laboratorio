@@ -1,0 +1,40 @@
+# Sondeo manual de APIs públicas (solo lectura, sin claves): publica qué responden en resultados/sondeo.
+name: Sondeo de APIs
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  sondeo:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    defaults:
+      run:
+        working-directory: laboratorio
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install numpy
+      - run: python -m lab.sondeo --salida /tmp/son
+      - name: Publicar en el repositorio
+        working-directory: .
+        run: |
+          git config user.name "laboratorio"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          for i in 1 2 3 4 5; do
+            git fetch -q origin main && git reset -q --hard origin/main
+            mkdir -p resultados/sondeo && cp /tmp/son/sondeo.json resultados/sondeo/
+            git add resultados/sondeo
+            git diff --cached --quiet && exit 0
+            git commit -q -m "Sondeo de APIs $(date -u +%Y-%m-%dT%H:%MZ)"
+            git push -q origin HEAD:main && exit 0
+            sleep $((i * 5))
+          done
+          exit 1
