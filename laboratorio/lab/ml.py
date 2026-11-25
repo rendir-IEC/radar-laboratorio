@@ -121,12 +121,11 @@ def preparar(panel, cols):
 
 def entrenar(X, y, semilla):
     try:
-        import lightgbm as lgb
-        m = lgb.LGBMRegressor(n_estimators=300, learning_rate=0.03, num_leaves=31, min_child_samples=200,
-                              subsample=0.8, subsample_freq=1, colsample_bytree=0.8, reg_lambda=1.0,
-                              random_state=semilla, verbose=-1)
-        m.fit(X, y)
-        return m
+        import lightgbm as lgb  # interfaz propia de LightGBM: no necesita scikit-learn
+        params = dict(objective='regression', learning_rate=0.03, num_leaves=31, min_data_in_leaf=200,
+                      bagging_fraction=0.8, bagging_freq=1, feature_fraction=0.8, lambda_l2=1.0,
+                      seed=semilla, deterministic=True, verbose=-1)
+        return lgb.train(params, lgb.Dataset(X, label=y), num_boost_round=300)
     except ImportError:  # sin LightGBM: regresión lineal con contracción
         from numpy.linalg import solve
         A = np.nan_to_num(X.values)
