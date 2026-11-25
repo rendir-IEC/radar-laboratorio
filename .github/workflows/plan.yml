@@ -1,0 +1,39 @@
+# Plan semanal de Bitcoin y reto semanal: prueba con el historial diario real (solo publica resultados)
+name: Plan semanal
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  probar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Pruebas sin red
+        run: node laboratorio/plan/prueba_plan.js
+      - name: Probar con el historial real
+        run: node laboratorio/plan/probar_plan.mjs /tmp/plan
+      - name: Publicar en el repositorio
+        run: |
+          git config user.name "laboratorio"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          for i in 1 2 3 4 5; do
+            git fetch -q origin main && git reset -q --hard origin/main
+            mkdir -p resultados/plan
+            cp /tmp/plan/plan.json resultados/plan/
+            git add resultados/plan
+            git diff --cached --quiet && exit 0
+            git commit -q -m "Plan semanal $(date -u +%Y-%m-%dT%H:%MZ)"
+            git push -q origin HEAD:main && exit 0
+            sleep $((i * 5))
+          done
+          exit 1
