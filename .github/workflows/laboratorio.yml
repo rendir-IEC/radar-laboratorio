@@ -4,7 +4,7 @@ name: Laboratorio
 on:
   workflow_dispatch:
   schedule:
-    - cron: '17 4 * * *'   # cada día a las 4:17 UTC
+    - cron: '17 4,16 * * *'   # cada día a las 4:17 y a las 16:17 UTC
 
 permissions:
   contents: read   # solo el trabajo que publica puede escribir en el repositorio

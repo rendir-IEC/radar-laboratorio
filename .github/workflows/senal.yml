@@ -5,7 +5,7 @@ name: Señal diaria
 on:
   workflow_dispatch:
   schedule:
-    - cron: '43 6 * * *'   # cada día a las 6:43 UTC (Binance publica las velas del día anterior de madrugada)
+    - cron: '43 6,10 * * *'   # cada día a las 6:43 UTC (Binance publica las velas del día anterior de madrugada) y a las 10:43 de reserva; no duplica la línea del día
 
 permissions:
   contents: read

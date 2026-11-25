@@ -4,7 +4,7 @@ name: Mejores en Lighter
 on:
   workflow_dispatch:
   schedule:
-    - cron: '11 6 * * 2'   # cada martes a las 6:11 UTC
+    - cron: '11 6 * * 2,5'   # martes y viernes a las 6:11 UTC
 
 permissions:
   contents: read

@@ -5,7 +5,7 @@ name: Universo sin sesgo
 on:
   workflow_dispatch:
   schedule:
-    - cron: '23 7 5 * *'   # el día 5 de cada mes (Binance publica los archivos mensuales unos días después)
+    - cron: '23 7 5,20 * *'   # los días 5 y 20 de cada mes (Binance publica los archivos mensuales unos días después)
 
 permissions:
   contents: read

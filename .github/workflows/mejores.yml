@@ -4,7 +4,7 @@ name: Mejores operadores
 on:
   workflow_dispatch:
   schedule:
-    - cron: '41 5 * * 1'   # cada lunes a las 5:41 UTC
+    - cron: '41 5 * * 1,4'   # lunes y jueves a las 5:41 UTC
 
 permissions:
   contents: read

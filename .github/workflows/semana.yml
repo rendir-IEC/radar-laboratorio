@@ -3,7 +3,7 @@ name: Ventaja de la semana
 
 on:
   schedule:
-    - cron: '41 22 * * 1-5'   # de lunes a viernes a las 22:41 UTC, tras el cierre de EE. UU.
+    - cron: '41 13,22 * * 1-5'   # de lunes a viernes a las 13:41 UTC (Europa abierta, antes de EE. UU.) y a las 22:41 UTC (tras el cierre de EE. UU.)
   workflow_dispatch:
 
 permissions:
