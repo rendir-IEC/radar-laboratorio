@@ -160,7 +160,7 @@ def informe(r):
         l.append('## Resultado\n')
         l.append('- Meses estudiados: %d.' % s['meses_estudiados'])
         l.append('- Correlación entre el puesto de un mes y el del siguiente: **%.2f** de media (t = %.1f). 0 = no hay relación; 1 = siempre el mismo orden.' % (s['correlacion_media'], s['t_correlacion']))
-        l.append('- El 10 % mejor de un mes rinde el mes siguiente **%+.2f puntos** frente al resto (t = %.1f); tiene ventaja en el %.0f %% de los meses.\n' % (s['ventaja_mejores_vs_resto_pct_mes'], s['t_ventaja'], s['meses_con_ventaja_pct']))
+        l.append('- El 10 %% mejor de un mes rinde el mes siguiente **%+.2f puntos** frente al resto (t = %.1f); tiene ventaja en el %.0f %% de los meses.\n' % (s['ventaja_mejores_vs_resto_pct_mes'], s['t_ventaja'], s['meses_con_ventaja_pct']))
         l.append('| Mes de elección | Cuentas | Correlación | 10 % mejor, mes siguiente | Resto, mes siguiente | 10 % mejor que gana | Resto que gana |')
         l.append('|---|---|---|---|---|---|---|')
         for m in e['meses']:
