@@ -16,7 +16,7 @@
 // y un disparador Cron cada minuto (* * * * *). Primero repasa unas 5000 horas de historia, 16 por minuto;
 // después aprende cada hora en vivo. Todo en papel: no mueve dinero.
 
-const VERSION = '2.2.1';
+const VERSION = '2.3.0';
 const HL = 'https://api.hyperliquid.xyz/info';
 const BINANCE = 'https://data-api.binance.vision/api/v3';
 const KRAKEN = 'https://api.kraken.com/0/public';
@@ -1053,10 +1053,175 @@ async function apFlujoDeLaHora(env, hora) {
   return out;
 }
 
+// ---------- bot de pruebas (v2.3): ¿cuánto se ganaría con 50, 200 o 1000 € siguiendo al sistema en Kraken Futuros? ----------
+// En papel. Kraken tiene licencia MiCA (cripto) y MiFID (derivados) en el EEE: es donde operar sería legal en España.
+// Cada hora (minuto :07) cada cartera copia la posición combinada del sistema (sin el cobro del funding, que necesita
+// contado) con lo que pasaría de verdad: múltiplos del tamaño mínimo de cada contrato, comisión de toma, la mitad del
+// diferencial de ese momento y el funding de Kraken. Sin apalancamiento: la exposición bruta no pasa del dinero que hay.
+const KF = 'https://futures.kraken.com/derivatives/api/v3';
+const BOT = {
+  CAPITALES: [50, 200, 1000],  // euros
+  COMISION: 0.0005,            // toma en Kraken Futuros, nivel 1 (www.kraken.com/pro/fees, tabla del 9-7-2026)
+  BANDA: 0.25,                 // como el sistema: si la posición solo cambia un poco, no se opera
+  MINUTO: 7,
+  MINUTO_FICHAS: 27,           // fichas de los contratos (tamaño mínimo), una vez al día y en otro minuto
+  MAX_CURVA: 400,
+};
+const KR_ALIAS = { XBT: 'BTC', XDG: 'DOGE' };
+// La tasa «absoluta» del ticker (dólares por contrato y hora) entre el precio = tasa relativa por hora. Comprobado con el
+// laboratorio el 25-11-2026 (resultados/kraken): coincide con la última relativeFundingRate publicada (cociente 1,000–1,003
+// en las 20 monedas). Kraken cobra el funding cada hora; positivo: el comprado paga.
+const KR_FUNDING = (f, p) => f / p;
+
+// 'PF_XBTUSD' -> ['BTC', 1]; 'PF_1000PEPEUSD' -> ['PEPE', 1000]; null si no es un perpetuo lineal en dólares
+function krBase(simbolo) {
+  if (typeof simbolo !== 'string' || !simbolo.startsWith('PF_') || !simbolo.endsWith('USD')) return null;
+  let b = simbolo.slice(3, -3), mult = 1;
+  for (const m of [1000000, 1000]) { const s = String(m); if (b.startsWith(s) && b.length > s.length) { b = b.slice(s.length); mult = m; break; } }
+  return [KR_ALIAS[b] || b, mult];
+}
+// cantidad en múltiplos del tamaño mínimo (10^-prec), hacia cero
+const botMultiplo = (q, prec) => { const k = Math.pow(10, prec); return Number((Math.trunc(q * k + (q > 0 ? 1e-9 : -1e-9)) / k).toFixed(Math.max(0, prec))); };
+// 'kPEPE' -> 'PEPE' (en Hyperliquid la k indica lotes de mil)
+const hlBase = (coin) => (coin.length > 1 && coin[0] === 'k' && coin.slice(1) === coin.slice(1).toUpperCase() ? coin.slice(1) : coin);
+// Tasa de funding por hora, relativa al precio, a partir del ticker de Kraken (comprobado en el laboratorio: KR_FUNDING)
+const krRelativa = (tk) => { const f = num(tk.fundingRate), p = num(tk.markPrice); return f != null && p > 0 ? KR_FUNDING(f, p) : 0; };
+
+function botNuevo() { return { v: 1, fichas: null, carteras: {}, eurUsd: null }; }
+function botCartera(eur, usd, t) {
+  return { eur, usd0: eur * usd, t0: t, t: t, valor: eur * usd, pos: {}, px: {}, comision: 0, diferencial: 0, funding: 0, operaciones: 0, max: eur * usd, dd: 0, curva: [], sis0: null };
+}
+async function botCargar(env) {
+  await apTablas(env);
+  const f = await env.DB.prepare('SELECT json FROM ap_estado WHERE id = ?1').bind('bot').first();
+  return f ? JSON.parse(f.json) : botNuevo();
+}
+async function botGuardar(env, B) {
+  await env.DB.prepare('INSERT INTO ap_estado (id, json, t) VALUES (?1, ?2, ?3) ON CONFLICT(id) DO UPDATE SET json = excluded.json, t = excluded.t').bind('bot', JSON.stringify(B), Date.now()).run();
+}
+
+// Fichas de los contratos de Kraken Futuros para las monedas del sistema (1 petición, una vez al día).
+async function botFichas(env) {
+  const B = await botCargar(env);
+  if (B.fichas && Date.now() - B.fichas.t < 20 * H1) return { ok: true, modo: 'fichas al día' };
+  const j = await pedir(KF + '/instruments', {}, 2);
+  const por = {};
+  for (const i of (j && j.instruments) || []) {
+    const b = krBase(i.symbol);
+    if (!b || i.tradeable === false) continue;
+    const coin = AP.MONEDAS.find((m) => hlBase(m) === b[0]);
+    if (!coin || (por[coin] && por[coin].mult <= b[1])) continue;
+    const prec = num(i.contractValueTradePrecision);
+    por[coin] = { sym: i.symbol, mult: b[1], prec: prec != null && Number.isFinite(prec) ? prec : 0 };
+  }
+  if (!Object.keys(por).length) throw new Error('Kraken Futuros no devolvió contratos');
+  B.fichas = { t: Date.now(), monedas: por };
+  await botGuardar(env, B);
+  return { ok: true, modo: 'fichas', monedas: Object.keys(por).length };
+}
+
+// Una hora de una cartera: cobra lo que hicieron sus posiciones y el funding, y se ajusta a la posición del sistema.
+// px: {moneda: {mark, bid, ask, rel}} de Kraken. objetivo: {moneda: fracción del dinero} (posición combinada del sistema).
+function botPaso(C, px, objetivo, fichas, t, horas) {
+  // 1) resultado de la hora: precio y funding (positivo: el comprado paga)
+  let res = 0, fun = 0;
+  for (const [m, q] of Object.entries(C.pos)) {
+    const p = px[m];
+    if (!p || !(p.mark > 0) || !(C.px[m] > 0)) continue;
+    res += q * (p.mark - C.px[m]);
+    fun += q * p.mark * (p.rel || 0) * horas;
+  }
+  C.valor += res - fun;
+  C.funding += fun;
+  for (const m of Object.keys(C.pos)) if (px[m] && px[m].mark > 0) C.px[m] = px[m].mark;
+  if (!(C.valor > 0)) { C.valor = Math.max(C.valor, 0); C.pos = {}; C.t = t; return; } // sin dinero no se opera
+  // 2) posiciones nuevas, en múltiplos del tamaño mínimo y sin pasar del dinero que hay
+  const nueva = {};
+  let bruta = 0;
+  for (const m of Object.keys(fichas)) {
+    const p = px[m];
+    const w = objetivo[m] || 0;
+    if (!p || !(p.mark > 0) || !w) continue;
+    let q = botMultiplo((w * C.valor) / p.mark, fichas[m].prec);
+    const o = C.pos[m] || 0;
+    if (o && q && Math.sign(o) === Math.sign(q) && Math.abs(q - o) < BOT.BANDA * Math.abs(o)) q = o; // banda sin operar
+    if (q) { nueva[m] = q; bruta += Math.abs(q) * p.mark; }
+  }
+  const tope = C.valor * (1 - 2 * BOT.COMISION); // deja sitio a los costes de la propia operación
+  if (bruta > tope) { const k = tope / bruta; for (const m of Object.keys(nueva)) { const q = botMultiplo(nueva[m] * k, fichas[m].prec); if (q) nueva[m] = q; else delete nueva[m]; } }
+  // 3) costes de lo que se mueve: comisión de toma y la mitad del diferencial del momento
+  let com = 0, dif = 0, ops = 0;
+  for (const m of new Set([...Object.keys(nueva), ...Object.keys(C.pos)])) {
+    const d = Math.abs((nueva[m] || 0) - (C.pos[m] || 0));
+    if (!(d > 0)) continue;
+    const p = px[m];
+    if (!p || !(p.mark > 0)) { if (nueva[m] == null && C.pos[m]) nueva[m] = C.pos[m]; continue; } // sin precio no se toca
+    com += d * p.mark * BOT.COMISION;
+    dif += p.ask > p.bid && p.bid > 0 ? d * (p.ask - p.bid) / 2 : 0;
+    ops++;
+    C.px[m] = p.mark;
+  }
+  C.valor -= com + dif;
+  C.comision += com; C.diferencial += dif; C.operaciones += ops;
+  C.pos = nueva;
+  for (const m of Object.keys(C.px)) if (!C.pos[m]) delete C.px[m];
+  C.max = Math.max(C.max, C.valor);
+  C.dd = Math.max(C.dd, C.max > 0 ? 1 - C.valor / C.max : 0);
+  C.t = t;
+}
+
+async function botHora(env) {
+  const B = await botCargar(env);
+  if (!B.fichas) return { ok: true, modo: 'esperando las fichas de Kraken' };
+  const horaActual = Math.floor(Date.now() / H1) * H1;
+  if (Object.values(B.carteras).some((C) => C.t >= horaActual)) return { ok: true, modo: 'ya hecho' };
+  const E = await apCargar(env);
+  // la posición del sistema tiene que ser la de esta hora; si aún no está, se vuelve a intentar el minuto siguiente
+  if (E.t == null || E.t < horaActual) return { ok: true, modo: 'esperando la hora del sistema' };
+  const [tk, eur] = await Promise.all([pedir(KF + '/tickers', {}, 2), kraken('Ticker?pair=EURUSD').catch(() => null)]);
+  const porSym = new Map(((tk && tk.tickers) || []).map((x) => [x.symbol, x]));
+  const px = {};
+  for (const [m, f] of Object.entries(B.fichas.monedas)) {
+    const x = porSym.get(f.sym);
+    if (!x || x.suspended) continue;
+    px[m] = { mark: num(x.markPrice), bid: num(x.bid), ask: num(x.ask), rel: krRelativa(x) };
+  }
+  if (!Object.keys(px).length) throw new Error('Kraken Futuros sin precios');
+  if (eur) { const k = Object.keys(eur)[0]; const c = k && eur[k] && num(eur[k].c && eur[k].c[0]); if (c > 0) B.eurUsd = c; }
+  const eurUsd = B.eurUsd || 1.1;
+  const objetivo = E.posSistema || {};
+  for (const cap of BOT.CAPITALES) {
+    const id = String(cap);
+    let C = B.carteras[id];
+    if (!C) { C = B.carteras[id] = botCartera(cap, eurUsd, horaActual); C.sis0 = E.sistema.log; }
+    const horas = Math.max(1, Math.round((horaActual - C.t) / H1));
+    botPaso(C, px, objetivo, B.fichas.monedas, horaActual, C.t === horaActual ? 0 : horas);
+    C.sis = E.sistema.log;
+    if (horaActual % (24 * H1) === 0 || !C.curva.length) { C.curva.push([horaActual, Math.round(C.valor * 100) / 100]); if (C.curva.length > BOT.MAX_CURVA) C.curva.splice(0, C.curva.length - BOT.MAX_CURVA); }
+  }
+  await botGuardar(env, B);
+  return { ok: true, modo: 'bot', hora: iso(horaActual) };
+}
+
+async function botVista(env) {
+  const B = await botCargar(env);
+  const eurUsd = B.eurUsd || 1.1;
+  const rows = Object.values(B.carteras).sort((a, b) => a.eur - b.eur).map((C) => ({
+    capitalEur: C.eur, valorEur: C.valor / eurUsd, gananciaEur: C.valor / eurUsd - C.usd0 / eurUsd, gananciaPct: (C.valor / C.usd0 - 1) * 100,
+    sistemaIdealPct: C.sis != null && C.sis0 != null ? (Math.exp(C.sis - C.sis0) - 1) * 100 : null,
+    desde: iso(C.t0), horas: Math.round((C.t - C.t0) / H1), operaciones: C.operaciones,
+    comisionesEur: C.comision / eurUsd, diferencialEur: C.diferencial / eurUsd, fundingEur: C.funding / eurUsd, caidaMaxPct: C.dd * 100,
+    posiciones: Object.entries(C.pos).map(([m, q]) => ({ moneda: m, contrato: B.fichas && B.fichas.monedas[m] ? B.fichas.monedas[m].sym : null, cantidad: q, valorEur: (q * (C.px[m] || 0)) / eurUsd })),
+    curva: C.curva.map(([t, v]) => ({ fecha: fechaDe(t), valorEur: v / eurUsd })),
+  }));
+  return { rows, eurUsd, nota: 'Bot de pruebas en papel: tres carteras (50, 200 y 1000 €) que siguen cada hora la posición del sistema en Kraken Futuros con sus reglas reales: múltiplos del tamaño mínimo de cada contrato, comisión de toma del ' + (BOT.COMISION * 100).toFixed(2) + ' %, la mitad del diferencial del momento y el funding de Kraken, sin apalancamiento. No incluye el cobro del funding del sistema (necesita contado). sistemaIdealPct es lo que hizo el sistema en el mismo tiempo sin mínimos ni diferencial. No mueve dinero ni es una recomendación.' };
+}
+
 async function aprendizaje({ vista } = {}, env) {
   if (!env || !env.DB) throw new Error('Falta conectar la base de datos D1 (variable DB) al Worker.');
   const E = await apCargar(env);
   const v = vista || 'resumen';
+  if (v === 'bot') return botVista(env);
   const pct = (log) => (Math.exp(log) - 1) * 100;
   if (v === 'expertos') return { rows: apInforme(E), nota: 'Peso: cuánto confía hoy el sistema en cada experto. rentPct, sharpeAnual y caidaMaxPct incluyen el repaso de la historia, una simulación sobre los mismos datos con los que se diseñaron los expertos: no demuestran nada. Las columnas «Vivo» cuentan solo horas en vivo. Sharpe deflactado (solo en vivo): probabilidad estimada de que el Sharpe real sea positivo, corrigiendo por al menos ' + AP.PRUEBAS + ' pruebas; supone horas independientes. Asciende con más de 0,95 y al menos 720 horas en vivo («aprendiendo» hasta entonces). Cobro del funding, comprar y mantener y efectivo son referencias: el cobro del funding se modela sin riesgo de precio.' };
   if (v === 'posiciones') {
@@ -1248,7 +1413,7 @@ const HERRAMIENTAS = [
   { name: 'historico_diario', title: 'Historial diario largo', description: 'Velas diarias (UTC) de un activo desde una fecha: BTC desde 2015 y ETH desde 2016 vía Bitstamp; el resto, lo que haya en Kraken (hasta 720 días) o Hyperliquid. Una fila por día.', inputSchema: { type: 'object', properties: { simbolo: { type: 'string', description: 'p. ej. BTC, ETH, ORO, SP500' }, desde: { type: 'string', description: 'Fecha AAAA-MM-DD. Por defecto, la más antigua disponible.' } }, required: ['simbolo'], additionalProperties: false }, fn: historicoDiario },
   { name: 'derivados', title: 'Financiación y posiciones abiertas', description: 'Funding de los perpetuos cripto de Hyperliquid (ahora, media de 7 días y percentil de 30 días, anualizados), posiciones abiertas en dólares y prima frente al oráculo. Sirve para detectar exceso de apalancamiento.', inputSchema: { type: 'object', properties: { simbolos: S_SIMBOLOS }, additionalProperties: false }, fn: derivados },
   { name: 'funding_diario', title: 'Funding diario', description: 'Funding diario (suma de las 24 tasas horarias, UTC) de los perpetuos cripto de Hyperliquid en los últimos días cerrados (7 a 90). Una fila por símbolo y día. Sirve para el motor de cobro del funding.', inputSchema: { type: 'object', properties: { simbolos: S_SIMBOLOS, dias: { type: 'integer', minimum: 7, maximum: 90, description: 'Días cerrados hacia atrás (por defecto 60).' } }, additionalProperties: false }, fn: fundingDiario },
-  { name: 'aprendizaje', title: 'Sistema que aprende', description: 'Estado del sistema que aprende cada hora (en papel): resumen, expertos y sus pesos, posiciones combinadas, curva diaria frente a Bitcoin, carteras seguidas con su habilidad, avisos y lo que propone el laboratorio.', inputSchema: { type: 'object', properties: { vista: { type: 'string', enum: ['resumen', 'expertos', 'posiciones', 'curva', 'carteras', 'alertas', 'laboratorio'], description: 'Qué parte ver. Por defecto, resumen.' } }, additionalProperties: false }, fn: aprendizaje },
+  { name: 'aprendizaje', title: 'Sistema que aprende', description: 'Estado del sistema que aprende cada hora (en papel): resumen, expertos y sus pesos, posiciones combinadas, curva diaria frente a Bitcoin, carteras seguidas con su habilidad, avisos, lo que propone el laboratorio y el bot de pruebas (50, 200 y 1000 € en papel en Kraken Futuros).', inputSchema: { type: 'object', properties: { vista: { type: 'string', enum: ['resumen', 'expertos', 'posiciones', 'curva', 'carteras', 'alertas', 'laboratorio', 'bot'], description: 'Qué parte ver. Por defecto, resumen. bot: carteras en papel de 50, 200 y 1000 € que siguen al sistema en Kraken Futuros con costes y mínimos reales.' } }, additionalProperties: false }, fn: aprendizaje },
   { name: 'mercados', title: 'Mercados disponibles', description: 'Lista de símbolos del radar, de dónde sale cada uno y qué otros mercados (acciones de EE. UU., etc.) hay disponibles.', inputSchema: { type: 'object', properties: {}, additionalProperties: false }, fn: mercados },
   { name: 'estado_fuentes', title: 'Estado de las fuentes', description: 'Comprueba si Hyperliquid, Kraken y Binance responden y cuánto tardan.', inputSchema: { type: 'object', properties: {}, additionalProperties: false }, fn: estadoFuentes },
 ];
@@ -1335,6 +1500,9 @@ export default {
         if (minuto % 10 === 5) await apCalentarMinuto(env).catch((e) => console.log('calentar: ' + (e.message || e)));
         // laboratorio: +1 petición como mucho cada 6 h, en un minuto sin calentamiento
         if (minuto === 37) await apLabMinuto(env).catch((e) => console.log('laboratorio: ' + (e.message || e)));
+        // bot de pruebas: del minuto :07 al :12 hasta que haga la hora (+2 peticiones); fichas de Kraken a las :27 (+1, una vez al día)
+        if (minuto >= BOT.MINUTO && minuto < BOT.MINUTO + 6) await botHora(env).catch((e) => console.log('bot: ' + (e.message || e)));
+        if (minuto === BOT.MINUTO_FICHAS) await botFichas(env).catch((e) => console.log('fichas Kraken: ' + (e.message || e)));
       }
     })());
   },
