@@ -1,0 +1,194 @@
+{
+ "version": 1,
+ "generado": "2026-11-25T12:54:29Z",
+ "usar_previa": true,
+ "validacion": {
+  "meses_estudiados": 26,
+  "ic_puntuacion_media": 0.137,
+  "t_ic_puntuacion": 5.73,
+  "ventaja_elegidas_pct_mes": 15.38,
+  "t_ventaja_elegidas": 6.11
+ },
+ "carteras": [
+  {
+   "direccion": "0xb65dd7c56afbf3b272ab5fc49be44b47dca18003",
+   "t": 4.637,
+   "quincenas": 18,
+   "tipo": "vault"
+  },
+  {
+   "direccion": "0x1081e214bd6f0137234b92432d9b6033b88965b7",
+   "t": 4.353,
+   "quincenas": 11,
+   "tipo": "cuenta"
+  },
+  {
+   "direccion": "0xe31501c472d557bfa145ce105d325fb2dd4cb867",
+   "t": 3.848,
+   "quincenas": 13,
+   "tipo": "cuenta"
+  },
+  {
+   "direccion": "0xc3b1bf1f1e6fb8161ef4dc2f34e2c56f70b94b11",
+   "t": 3.156,
+   "quincenas": 15,
+   "tipo": "vault"
+  },
+  {
+   "direccion": "0x8fc7c0442e582bca195978c5a4fdec2e7c5bb0f7",
+   "t": 2.798,
+   "quincenas": 26,
+   "tipo": "vault"
+  },
+  {
+   "direccion": "0x888e000c78b8f1aada5b3c99f880794907b76d77",
+   "t": 2.621,
+   "quincenas": 26,
+   "tipo": "cuenta"
+  },
+  {
+   "direccion": "0xfdb03a2574e9e7d1c77d9ed752d99cdf25c3db25",
+   "t": 2.191,
+   "quincenas": 23,
+   "tipo": "vault"
+  },
+  {
+   "direccion": "0x72774e2fe1992d5da8c6e9cef73fd2ab980c0b98",
+   "t": 2.001,
+   "quincenas": 17,
+   "tipo": "cuenta"
+  },
+  {
+   "direccion": "0x418aa6bf98a2b2bc93779f810330d88cde488888",
+   "t": 1.912,
+   "quincenas": 26,
+   "tipo": "cuenta"
+  },
+  {
+   "direccion": "0x8bb033130be354eed1110ce7228d7095f001d9fe",
+   "t": 1.903,
+   "quincenas": 26,
+   "tipo": "vault"
+  },
+  {
+   "direccion": "0x4f12b217aa59e6d3e1f91ca2dc96f9543576618b",
+   "t": 1.866,
+   "quincenas": 15,
+   "tipo": "cuenta"
+  },
+  {
+   "direccion": "0x936cf4fb95c30ce83f658b5bbb247e4bb381bb0f",
+   "t": 1.805,
+   "quincenas": 24,
+   "tipo": "cuenta"
+  },
+  {
+   "direccion": "0xab5e6f394951c28ab1873007e373202689cdbec3",
+   "t": 1.805,
+   "quincenas": 26,
+   "tipo": "cuenta"
+  },
+  {
+   "direccion": "0x59629e23c52a0d7c092436870ef2db1dc382ddf8",
+   "t": 1.804,
+   "quincenas": 22,
+   "tipo": "cuenta"
+  },
+  {
+   "direccion": "0xfc98b6ec7f59ea13354bae6171a9120692fb8777",
+   "t": 1.724,
+   "quincenas": 26,
+   "tipo": "cuenta"
+  },
+  {
+   "direccion": "0x5661a070eb13c7c55ac3210b2447d4bea426cbf5",
+   "t": 1.708,
+   "quincenas": 26,
+   "tipo": "vault"
+  },
+  {
+   "direccion": "0xb632c6580173a16154f17cdafc6eb27e95cf73b7",
+   "t": 1.659,
+   "quincenas": 15,
+   "tipo": "cuenta"
+  },
+  {
+   "direccion": "0x3440f23a87f1950e7a88cd248fd270e92d1132c5",
+   "t": 1.622,
+   "quincenas": 26,
+   "tipo": "cuenta"
+  },
+  {
+   "direccion": "0x668cec05549105e5b05bcc779a43186735d7ea2e",
+   "t": 1.538,
+   "quincenas": 26,
+   "tipo": "cuenta"
+  },
+  {
+   "direccion": "0xa1b6d8efbcb2fb750a84dbc05649fa4968034f04",
+   "t": 1.531,
+   "quincenas": 26,
+   "tipo": "vault"
+  },
+  {
+   "direccion": "0x14ecb3f4932522b8d508fa6e237e2746a4999feb",
+   "t": 1.528,
+   "quincenas": 14,
+   "tipo": "vault"
+  },
+  {
+   "direccion": "0x77eeda199553e33b246e4b4666849b9ad0972902",
+   "t": 1.492,
+   "quincenas": 26,
+   "tipo": "cuenta"
+  },
+  {
+   "direccion": "0xac26cf5f3c46b5e102048c65b977d2551b72a9c7",
+   "t": 1.472,
+   "quincenas": 26,
+   "tipo": "vault"
+  },
+  {
+   "direccion": "0xa2ec76b6464bcbd771f11b769d40055176a6e4a3",
+   "t": 1.449,
+   "quincenas": 12,
+   "tipo": "vault"
+  },
+  {
+   "direccion": "0xd1dd6d99c5fb5d31ff52eacce5046c7158859e85",
+   "t": 1.41,
+   "quincenas": 15,
+   "tipo": "cuenta"
+  },
+  {
+   "direccion": "0x77375a8c9d13bf79afb2a87f1b0ac1dfd5f5bf66",
+   "t": 1.404,
+   "quincenas": 24,
+   "tipo": "cuenta"
+  },
+  {
+   "direccion": "0xd9012a0c82242b04ee09e45e98b24903f982d975",
+   "t": 1.396,
+   "quincenas": 23,
+   "tipo": "cuenta"
+  },
+  {
+   "direccion": "0xda51323fe9800c8365646ad5c7ade0dd17fdc167",
+   "t": 1.395,
+   "quincenas": 26,
+   "tipo": "vault"
+  },
+  {
+   "direccion": "0x90dbb196cacf24bd212b377a0dd62eaad5e8151b",
+   "t": 1.354,
+   "quincenas": 19,
+   "tipo": "cuenta"
+  },
+  {
+   "direccion": "0xd6e56265890b76413d1d527eb9b75e334c0c5b42",
+   "t": 1.353,
+   "quincenas": 26,
+   "tipo": "vault"
+  }
+ ]
+}
