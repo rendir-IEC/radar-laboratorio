@@ -16,7 +16,7 @@
 // y un disparador Cron cada minuto (* * * * *). Primero repasa unas 5000 horas de historia, 16 por minuto;
 // después aprende cada hora en vivo. Todo en papel: no mueve dinero.
 
-const VERSION = '2.2.0';
+const VERSION = '2.2.1';
 const HL = 'https://api.hyperliquid.xyz/info';
 const BINANCE = 'https://data-api.binance.vision/api/v3';
 const KRAKEN = 'https://api.kraken.com/0/public';
@@ -359,6 +359,8 @@ const AP_EXPERTOS = [
 const LAB_URL = 'https://raw.githubusercontent.com/rendir-IEC/radar-laboratorio/main/resultados/estrategias.json';
 const LAB_MAX = 6;
 const LAB_CADA_H = 6;
+const LAB_PESO_PRUEBA = 0.1;      // candidata no aprobada: entra con el 10 % del peso medio y sin reparto fijo: solo sube si gana (0 = solo observar)
+const LAB_MAX_BYTES = 262144;     // el archivo del laboratorio pesa ~16 KB; uno mucho mayor no se lee
 function apListaExpertos(E) {
   const lab = (E && E.lab && E.lab.specs) || [];
   if (!lab.length) return AP_EXPERTOS;
@@ -376,6 +378,29 @@ function apLabValida(sp) {
   if (sp.forma === 'continua' && !(typeof sp.k === 'number' && sp.k > 0 && sp.k <= 10)) return false;
   return ['serie', 'seccion'].includes(sp.modo) && ['ambos', 'largos', 'cortos'].includes(sp.lado) &&
     ['ninguno', 'btc_alcista', 'btc_bajista'].includes(sp.filtro) && [1, 24].includes(sp.cada);
+}
+function apLabNombre(sp) {
+  const dur = { 12: '12 h', 24: '1 día', 72: '3 días', 168: '1 semana', 336: '2 semanas', 720: '1 mes' };
+  const base = sp.senal === 'tendencia_mixta' ? 'Tendencia mixta (4 horizontes, de 12 h a 1 mes)'
+    : sp.senal === 'cruce' ? 'Tendencia ' + dur[sp.a] + ' / ' + dur[sp.b]
+    : sp.senal === 'impulso' ? 'Impulso de ' + dur[sp.a]
+    : sp.senal === 'rebote' ? 'Rebote de ' + dur[sp.a]
+    : sp.senal === 'funding_contra' ? 'Contra el funding (' + dur[sp.a] + ')' : 'A favor del funding (' + dur[sp.a] + ')';
+  const extra = [];
+  if (sp.modo === 'seccion') extra.push('relativa entre monedas');
+  if (sp.lado !== 'ambos') extra.push('solo ' + (sp.lado === 'largos' ? 'compras' : 'ventas'));
+  if (sp.filtro !== 'ninguno') extra.push(sp.filtro === 'btc_alcista' ? 'si BTC sube' : 'si BTC baja');
+  if (sp.forma !== 'signo') extra.push('graduada');
+  if (sp.cada === 24) extra.push('reajuste diario');
+  return base + (extra.length ? ' (' + extra.join(', ') + ')' : '');
+}
+// identificador de una estrategia, igual que senales.ident() del laboratorio: el id no puede llevar texto libre
+function apLabIdent(sp) {
+  const p = [sp.senal, String(sp.a)];
+  if (sp.b != null) p.push(String(sp.b));
+  p.push(sp.forma === 'signo' ? 's' : 'c' + String(sp.k));
+  p.push(sp.modo.slice(0, 3), sp.lado.slice(0, 3), { ninguno: 'nf', btc_alcista: 'ba', btc_bajista: 'bb' }[sp.filtro], 'h' + sp.cada);
+  return p.join('_');
 }
 function apLabBruto(sp, c) {
   const sig = c.v2 > 0 ? Math.sqrt(c.v2) : 0;
@@ -421,16 +446,25 @@ async function apLab(E) {
   if (E.labIntento && Date.now() - E.labIntento < LAB_CADA_H * 3600e3) return false;
   E.labIntento = Date.now();
   let j;
-  try { j = await pedir(LAB_URL, {}, 1); } catch (e) { return false; }
+  try {
+    const r = await fetch(LAB_URL, { headers: { 'User-Agent': 'radar-mercados/' + VERSION } });
+    if (!r.ok) return false;
+    if (Number(r.headers && r.headers.get && r.headers.get('content-length')) > LAB_MAX_BYTES) { console.log('laboratorio: archivo de más de ' + LAB_MAX_BYTES + ' bytes: no se lee'); return false; }
+    const txt = await r.text();
+    if (txt.length > LAB_MAX_BYTES) { console.log('laboratorio: ' + txt.length + ' caracteres, más de ' + LAB_MAX_BYTES + ': no se lee'); return false; }
+    j = JSON.parse(txt);
+  } catch (e) { return false; }
   if (!j || !Array.isArray(j.estrategias) || !Array.isArray(j.para_el_servidor)) return false;
-  if (E.lab && E.lab.generado === String(j.generado || '')) return false;
+  const fecha = (v) => (/^\d{4}-\d{2}-\d{2}(T\d{2}:\d{2}(:\d{2}(\.\d{1,6})?)?(Z|[+-]\d{2}:?\d{2})?)?$/.test(String(v)) ? String(v) : '');
+  const gen = String(j.generado || '').slice(0, 64); // para saber si es nuevo; no se muestra
+  if (E.lab && (E.lab.genCrudo != null ? E.lab.genCrudo : E.lab.generado) === gen) return false;
   const porId = new Map(j.estrategias.filter((x) => x && typeof x.id === 'string').map((x) => [x.id, x]));
   const specs = [];
-  for (const id of j.para_el_servidor.slice(0, LAB_MAX)) {
+  for (const id of [...new Set(j.para_el_servidor)].slice(0, LAB_MAX)) { // sin repetidos
     const x = porId.get(id);
-    if (!x || !apLabValida(x.spec) || !/^lab_[A-Za-z0-9_.]{1,80}$/.test(id) || AP_EXPERTOS.some((ex) => ex.id === id)) continue;
+    if (!x || !apLabValida(x.spec) || id !== 'lab_' + apLabIdent(x.spec) || AP_EXPERTOS.some((ex) => ex.id === id)) continue;
     const sp = x.spec;
-    specs.push({ id, nombre: String(x.nombre || id).slice(0, 140), aprobada: x.aprobada === true,
+    specs.push({ id, nombre: apLabNombre(sp), aprobada: x.aprobada === true,
       sharpeLab: Number(x.sharpe_anual) || 0, dsrLab: Number(x.sharpe_deflactado) || 0,
       spec: { senal: sp.senal, a: sp.a, b: sp.b, forma: sp.forma, k: sp.k, modo: sp.modo, lado: sp.lado, filtro: sp.filtro, cada: sp.cada } });
   }
@@ -443,8 +477,9 @@ async function apLab(E) {
   const corto = (r) => (r && typeof r === 'object' ? { rentAnualPct: Number(r.rent_anual_pct) || 0, sharpeAnual: Number(r.sharpe_anual) || 0, caidaMaxPct: Number(r.caida_max_pct) || 0, dias: Number(r.dias) || 0 } : null);
   const pr = j.pruebas || {};
   E.lab = {
-    generado: String(j.generado || ''), estado: String(j.para_el_servidor_estado || '').slice(0, 200), specs,
-    periodo: j.periodo ? { desde: String(j.periodo.desde || ''), hasta: String(j.periodo.hasta || '') } : null,
+    generado: fecha(gen), genCrudo: gen, specs,
+    estado: !specs.length ? 'sin propuestas' : specs.every((x) => x.aprobada) ? 'aprobadas en el laboratorio' : specs.some((x) => x.aprobada) ? 'aprobadas y candidatas en prueba' : 'candidatas en prueba (ninguna pasa la prueba contra la suerte)',
+    periodo: j.periodo ? { desde: fecha(j.periodo.desde), hasta: fecha(j.periodo.hasta) } : null,
     probadas: Number(pr.estrategias_probadas) || 0, aprobadas: Number(pr.aprobadas) || 0, sobreajuste: Number(pr.probabilidad_sobreajuste),
     suerte: Number(pr.sharpe_anual_que_daria_la_suerte) || 0, fueraDeMuestra: corto(fos.top5), btc: corto(fos.comprar_y_mantener_btc),
   };
@@ -471,6 +506,8 @@ function apPaso(E, snap) {
   const horas = E.t == null ? 1 : Math.max(1, Math.round((snap.t - E.t) / 3600e3));
   if (E.t != null && snap.t <= E.t) return E;
   E._silencio = !!snap.historia;
+  // si otra versión sin horas por moneda (p. ej. la v2.1.2, al volver atrás) avanzó E.t, las monedas que estaban al día lo siguen
+  if (E.tHoras != null && E.t != null && E.tHoras !== E.t) for (const c of Object.values(E.monedas)) { if (c.t != null && c.t >= E.tHoras) c.t = E.t; if (c.tf != null && c.tf >= E.tHoras) c.tf = E.t; }
   if ((E.v || 1) < 2) { for (const X of Object.values(E.expertos)) X.ascendido = false; E.v = 2; } // los ascensos pasan a medirse solo en vivo
   const EXPERTOS = apListaExpertos(E);
   // 1) resultado de la hora que acaba para cada experto
@@ -569,7 +606,8 @@ function apPaso(E, snap) {
     for (const ex of activos) { const X = E.expertos[ex.id]; E.lw[ex.id] = (E.lw[ex.id] || 0) + AP.ETA * Math.log(1 + Math.max(X.ultima || 0, -0.99)); }
     const w = apPesos(E);
     const M = activos.length;
-    for (const ex of activos) E.lw[ex.id] = Math.log((1 - AP.REPARTO) * w[ex.id] + AP.REPARTO / M);
+    // las candidatas en prueba no reciben el reparto fijo (si no, se acercarían al peso medio sin ganar a nadie)
+    for (const ex of activos) E.lw[ex.id] = Math.log((1 - AP.REPARTO) * w[ex.id] + (ex.tipo === 'lab' && !ex.aprobadaLab ? 1e-12 : AP.REPARTO / M));
     const maxLw = Math.max(...activos.map((ex) => E.lw[ex.id]));
     for (const ex of activos) E.lw[ex.id] -= maxLw;
   }
@@ -584,6 +622,7 @@ function apPaso(E, snap) {
       X = E.expertos[ex.id] = { activo: true, desde: snap.t, st: apStats(), pos: {}, coste: 0, ultima: 0 };
       const vals = Object.values(E.lw);
       E.lw[ex.id] = vals.length ? Math.log(vals.reduce((a, b) => a + Math.exp(b), 0) / vals.length) : 0;
+      if (ex.tipo === 'lab' && !ex.aprobadaLab) E.lw[ex.id] += Math.log(Math.max(LAB_PESO_PRUEBA, 1e-9));
       apAlerta(E, snap.t, 'nuevo', ex.id, 'Empieza a aprender: ' + ex.nombre);
     }
     // banda sin operar: si la posición solo cambia un poco (menos del 25 %), se deja como estaba y no se pagan comisiones
@@ -632,7 +671,7 @@ function apPaso(E, snap) {
     if (X.ascendido && !antes) apAlerta(E, snap.t, 'ascenso', r.id, 'Asciende en papel: ' + r.nombre + ' (Sharpe deflactado ' + r.dsr.toFixed(2) + ' con ' + r.horasVivo + ' h en vivo; no garantiza resultados futuros)');
     if (!X.ascendido && antes) apAlerta(E, snap.t, 'descenso', r.id, 'Pierde el ascenso: ' + r.nombre);
   }
-  E.t = snap.t; E.horas += E.horas === 0 ? 1 : horas;
+  E.t = snap.t; E.tHoras = snap.t; E.horas += E.horas === 0 ? 1 : horas;
   delete E._silencio;
   return E;
 }
@@ -874,8 +913,7 @@ async function apCiclo(env) {
     await apGuardar(env, E, curva);
     return { ok: true, modo: 'repasando la historia', horas: hechas, hasta: iso(E.t), faltan: Math.round((horaActual - E.t) / H1) };
   }
-  // en vivo (el laboratorio se consulta como mucho cada 6 h: +1 petición)
-  await apLab(E);
+  // en vivo (el laboratorio se lee aparte, en el minuto :37: apLabMinuto)
   const [meta, ctxs] = await hl({ type: 'metaAndAssetCtxs' });
   const p = {}, f = {}, todos = {}, enDex = new Set();
   (meta.universe || []).forEach((a, i) => {
@@ -940,6 +978,17 @@ async function apCalentar(E, limite, enDex) {
   }
   if (hechos.length) apAlerta(E, Math.floor(Date.now() / 60e3) * 60e3, 'mercados', hechos.join(','), 'Se incorporan al aprendizaje: ' + hechos.join(', ') + ' (con sus últimas 800 horas de memoria)');
   return hechos;
+}
+
+// Laboratorio: como mucho cada 6 h, en el minuto :37, lejos de la hora en vivo. Guarda solo si nadie ha escrito
+// una hora nueva entretanto (mismo patrón que apCalentarMinuto). +1 petición.
+async function apLabMinuto(env) {
+  const E = await apCargar(env);
+  if (E.t == null || (E.labIntento && Date.now() - E.labIntento < LAB_CADA_H * 3600e3)) return { ok: true, modo: 'nada que leer' };
+  const tAntes = E.t;
+  const cambio = await apLab(E);
+  await env.DB.prepare('UPDATE ap_estado SET json = ?1 WHERE id = ?2 AND t = ?3').bind(JSON.stringify(E), 'principal', tAntes).run();
+  return { ok: true, modo: 'laboratorio', cambio };
 }
 
 // Calienta 1 mercado en un minuto sin hora en vivo (CPU y peticiones aparte). Escribe solo si nadie ha guardado otra hora entretanto.
@@ -1035,7 +1084,7 @@ async function aprendizaje({ vista } = {}, env) {
     const vivo = new Map(apInforme(E).filter((r) => r.familia === 'laboratorio').map((r) => [r.id, r]));
     const rows = L.specs.map((x) => { const r = vivo.get(x.id) || {}; return { id: x.id, nombre: x.nombre, aprobadaEnLaboratorio: x.aprobada, sharpeLaboratorio: x.sharpeLab, deflactadoLaboratorio: x.dsrLab, horasEnVivo: r.horasVivo || 0, pesoPct: r.pesoPct || 0, rentEnVivoPct: r.rentVivoPct == null ? null : r.rentVivoPct, estadoEnVivo: r.estado || 'esperando datos' }; });
     return { rows, laboratorio: { generado: L.generado, periodo: L.periodo, estrategiasProbadas: L.probadas, aprobadas: L.aprobadas, probabilidadSobreajuste: L.sobreajuste, sharpeQueDariaLaSuerte: L.suerte, fueraDeMuestraTop5: L.fueraDeMuestra, btcMismoPeriodo: L.btc, estado: L.estado },
-      nota: 'Estrategias que el laboratorio propone tras probar miles en años de historia. En vivo compiten como un experto más y su peso lo deciden sus resultados reales. En papel.' };
+      nota: 'Estrategias que el laboratorio propone tras probar miles en años de historia. Las aprobadas (pasan la prueba contra la suerte) entran con el peso medio; las candidatas en prueba, con el ' + Math.round(LAB_PESO_PRUEBA * 100) + ' % del peso medio. Después, su peso lo deciden sus resultados en vivo. En papel.' };
   }
   const inf = apInforme(E);
   const mejor = inf.filter((r) => r.horas).sort((a, b) => (b.pesoPct || 0) - (a.pesoPct || 0))[0];
@@ -1284,6 +1333,8 @@ export default {
         await apMinuto(env).catch((e) => console.log('flujo de órdenes: ' + (e.message || e)));
         // mercados nuevos: 1 cada 10 minutos (:05, :15… :55), lejos de la hora en vivo; +2 peticiones
         if (minuto % 10 === 5) await apCalentarMinuto(env).catch((e) => console.log('calentar: ' + (e.message || e)));
+        // laboratorio: +1 petición como mucho cada 6 h, en un minuto sin calentamiento
+        if (minuto === 37) await apLabMinuto(env).catch((e) => console.log('laboratorio: ' + (e.message || e)));
       }
     })());
   },

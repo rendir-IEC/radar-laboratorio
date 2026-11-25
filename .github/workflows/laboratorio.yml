@@ -7,7 +7,7 @@ on:
     - cron: '17 4 * * *'   # cada día a las 4:17 UTC
 
 permissions:
-  contents: write
+  contents: read   # solo el trabajo que publica puede escribir en el repositorio
 
 concurrency:
   group: laboratorio
@@ -119,6 +119,8 @@ jobs:
   juntar:
     needs: buscar
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     timeout-minutes: 30
     defaults:
       run:

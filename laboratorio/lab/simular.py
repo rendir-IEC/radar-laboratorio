@@ -7,24 +7,55 @@ from .comun import BANDA
 
 
 @njit(cache=True)
+def _reajustar(pos, obj, banda, nueva):
+    """Lleva pos hacia obj con las reglas del servidor (apPaso): banda sin operar y, si la banda deja la exposición
+    bruta por encima del 100 % (p. ej. al entrar una moneda), se toma el objetivo. Cambia pos y devuelve el giro."""
+    N = pos.shape[0]
+    bruto = 0.0
+    for j in range(N):
+        n = obj[j]
+        o = pos[j]
+        if o != 0.0 and n != 0.0 and (o > 0.0) == (n > 0.0) and abs(n - o) < banda * abs(o):
+            n = o
+        nueva[j] = n
+        bruto += abs(n)
+    if bruto > 1.0 + 1e-9:
+        for j in range(N):
+            nueva[j] = obj[j]
+    g = 0.0
+    for j in range(N):
+        g += abs(nueva[j] - pos[j])
+        pos[j] = nueva[j]
+    return g
+
+
+@njit(cache=True)
+def camino(objetivo, hora_utc, cada, banda):
+    """Cartera que se mantiene cada hora (la que usa simular). Para comparar con el servidor hora a hora."""
+    T, N = objetivo.shape
+    pos = np.zeros(N)
+    nueva = np.zeros(N)
+    out = np.zeros((T, N))
+    for t in range(T):
+        if cada == 1 or hora_utc[t] % cada == 0:
+            _reajustar(pos, objetivo[t], banda, nueva)
+        out[t] = pos
+    return out
+
+
+@njit(cache=True)
 def simular(objetivo, R, Fsig, hora_utc, cada, coste, banda):
     """objetivo[t, j]: posición deseada decidida al final de la hora t (con lo que se sabe en t).
     R[t, j]: rendimiento de t a t+1 (0 si falta algún precio). Fsig[t, j]: funding que se paga en t+1.
     Devuelve el rendimiento neto de cada hora (de t a t+1) y el giro de cada hora."""
     T, N = objetivo.shape
     pos = np.zeros(N)
+    nueva = np.zeros(N)
     r = np.zeros(T)
     giro = np.zeros(T)
     for t in range(T):
         if cada == 1 or hora_utc[t] % cada == 0:
-            g = 0.0
-            for j in range(N):
-                nuevo = objetivo[t, j]
-                o = pos[j]
-                if o != 0.0 and nuevo != 0.0 and (o > 0.0) == (nuevo > 0.0) and abs(nuevo - o) < banda * abs(o):
-                    nuevo = o
-                g += abs(nuevo - o)
-                pos[j] = nuevo
+            g = _reajustar(pos, objetivo[t], banda, nueva)
             giro[t] = g
             r[t] -= g * coste
         acc = 0.0

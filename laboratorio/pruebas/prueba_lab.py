@@ -75,6 +75,47 @@ def test_posiciones_iguales_que_el_servidor():
     assert peor < 1e-9, peor
 
 
+def _camino_servidor(t, P, F, specs):
+    lista = lambda a: [None if not np.isfinite(x) else float(x) for x in a]
+    monedas = list(P)
+    ent = {'t': t.tolist(), 'P': {m: lista(P[m]) for m in monedas}, 'F': {m: lista(F[m]) for m in monedas}, 'specs': specs}
+    r = subprocess.run(['node', os.path.join(AQUI, 'camino_servidor.mjs')], input=json.dumps(ent), capture_output=True, text=True, check=True)
+    return json.loads(r.stdout)
+
+
+def test_camino_igual_que_el_servidor():
+    """Hora a hora (no solo la última): la cartera que el servidor mantiene para cada estrategia es la que simula el
+    laboratorio (simular.camino), con banda, reajuste cada 24 h, huecos de datos y el tope del 100 % al entrar una moneda."""
+    from lab.comun import BANDA
+    from lab.simular import camino
+    T = 1400
+    t = (1_700_000_000_000 // H + 3) * H + H * np.arange(T)   # nacen en la hora 719, que cae a las 00:00 UTC
+    hora = ((t // H) % 24).astype(np.int64)
+    monedas = ['BTC', 'ETH', 'SOL', 'XRP', 'DOGE', 'BNB']
+    todas = rejilla()
+    for escenario in ('huecos', 'tope'):
+        rng = np.random.default_rng(11)
+        vol = 0.01 if escenario == 'huecos' else 0.002          # con poca volatilidad, la exposición llega al 100 %
+        P = np.exp(np.cumsum(rng.normal(0, vol, (T, len(monedas))), axis=0)) * 50
+        F = rng.normal(1e-5, 2e-5, (T, len(monedas)))
+        if escenario == 'huecos':
+            P[900:903, 2] = np.nan; F[900:903, 2] = np.nan
+            P[1100, 4] = np.nan; F[1100, 4] = np.nan
+        else:
+            P[:300, 5] = np.nan; F[:300, 5] = np.nan             # BNB entra más tarde (con 720 h de memoria, en la hora ~1019)
+        muestra = [todas[i] for i in rng.choice(len(todas), 80, replace=False)]
+        muestra += [e for e in todas if e['cada'] == 24][:20] + [e for e in todas if e['senal'] == 'tendencia_mixta'][:8]
+        specs = [{k: e[k] for k in ('senal', 'a', 'b', 'forma', 'k', 'modo', 'lado', 'filtro', 'cada') if k in e} for e in muestra]
+        cam = _camino_servidor(t, {m: P[:, j] for j, m in enumerate(monedas)}, {m: F[:, j] for j, m in enumerate(monedas)}, specs)
+        M = memoria({'t': t, 'P': P, 'Finfo': F})
+        peor = 0.0
+        for e, cs in zip(muestra, cam):
+            lab = camino(objetivo(e, M, 0), hora, int(e['cada']), BANDA)
+            srv = np.array([[(c or {}).get(m, 0.0) for m in monedas] for c in cs])
+            peor = max(peor, float(np.abs(lab - srv).max()))
+        assert peor < 1e-9, (escenario, peor)
+
+
 def test_sin_mirar_al_futuro():
     """La posición decidida en t solo gana el rendimiento de t a t+1, y se paga comisión al cambiarla."""
     T, N = 5, 1

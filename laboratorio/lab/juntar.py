@@ -146,7 +146,7 @@ def informe(s):
     l.append('- Estrategias probadas: **%d** en %d máquinas. Coste por cada 100 %% de giro: %.3f %%.' % (p['estrategias_probadas'], p['maquinas'], p['coste_por_giro_pct']))
     l.append('- Sharpe anual que daría la pura suerte con tantas pruebas: **%.2f**.' % p['sharpe_anual_que_daria_la_suerte'])
     l.append('- Pasan la prueba contra la suerte (Sharpe deflactado ≥ 0,95, positivas en las dos mitades y en el universo amplio): **%d**.' % p['aprobadas'])
-    l.append('- Probabilidad de sobreajuste (CSCV): **%.0f %%** (cuanto más baja, mejor; 50 %% equivale a elegir al azar).\n' % (p['probabilidad_sobreajuste'] * 100))
+    l.append('- Probabilidad de sobreajuste (CSCV): **%.0f %%** (cuanto más baja, mejor; 50 %% equivale a elegir al azar). Mide si la mejor dentro de muestra queda por encima de la mediana fuera de muestra; no dice si gana dinero: eso lo dice la tabla siguiente.\n' % (p['probabilidad_sobreajuste'] * 100))
     l.append('## ¿Funciona elegir a las mejores? (fuera de muestra)\n')
     l.append(q['explicacion'] + '\n')
     l.append('| | Rent. anual | Sharpe | Caída máx. | Semanas en positivo |')
