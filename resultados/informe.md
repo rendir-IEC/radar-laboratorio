@@ -1,4 +1,4 @@
-# Laboratorio: resultados del 2026-11-24
+# Laboratorio: resultados del 2026-11-25
 
 > Investigación en papel. Resultados pasados, con costes estimados; no garantizan nada en el futuro.
 
@@ -23,18 +23,18 @@ Cada 91 días se eligen las 5 mejores con la historia de ese momento y se mantie
 
 | Estrategia | Aprobada | Sharpe | Deflactado | Rent. anual | Caída máx. | 1ª mitad | 2ª mitad | Último año | Amplio |
 |---|---|---|---|---|---|---|---|---|---|
-| Tendencia 1 día / 2 semanas (relativa entre monedas, graduada) | no | 1.38 | 0.43 | 1.8 % | 1.6 % | 0.52 | 2.15 | 2.15 | -0.38 |
-| Tendencia 1 día / 1 semana (solo compras, si BTC sube, graduada, reajuste diario) | no | 1.32 | 0.38 | 4.9 % | 4.1 % | 1.73 | 0.98 | 0.72 | 1.21 |
-| Tendencia 12 h / 2 semanas (si BTC sube) | no | 1.27 | 0.34 | 27.0 % | 19.9 % | 1.33 | 1.22 | 0.81 | 1.22 |
-| Impulso de 3 días (solo compras, si BTC sube, graduada, reajuste diario) | no | 1.18 | 0.24 | 5.5 % | 7.6 % | 1.02 | 1.32 | 1.10 | 1.05 |
-| Impulso de 1 mes (solo compras, graduada, reajuste diario) | no | 1.12 | 0.22 | 17.1 % | 21.2 % | 1.29 | 0.93 | 0.72 | 0.94 |
-| Tendencia 1 día / 2 semanas (si BTC sube, graduada, reajuste diario) | no | 1.12 | 0.21 | 5.1 % | 4.0 % | 1.50 | 0.77 | 0.29 | 1.04 |
-| Tendencia 1 día / 1 mes (si BTC sube) | no | 1.10 | 0.20 | 21.7 % | 22.4 % | 1.28 | 0.92 | 0.40 | 1.08 |
-| Tendencia 1 día / 1 mes (relativa entre monedas, graduada, reajuste diario) | no | 1.10 | 0.20 | 6.4 % | 8.2 % | 0.27 | 1.81 | 1.35 | 0.18 |
-| Tendencia 12 h / 2 semanas | no | 1.10 | 0.20 | 33.5 % | 29.5 % | 1.33 | 0.86 | 0.66 | 0.99 |
-| Tendencia 1 día / 3 días (solo compras, si BTC sube) | no | 1.05 | 0.16 | 19.0 % | 21.0 % | 1.21 | 0.92 | 0.67 | 0.95 |
-| Tendencia 12 h / 1 semana (solo compras, graduada) | no | 1.05 | 0.16 | 4.9 % | 6.2 % | 0.97 | 1.13 | 0.54 | 0.89 |
-| Contra el funding (1 semana) (si BTC baja) | no | 1.04 | 0.15 | 18.8 % | 21.8 % | 1.47 | 0.55 | 1.68 | 1.08 |
+| Tendencia 1 día / 2 semanas (relativa entre monedas, graduada) | no | 1.38 | 0.43 | 1.8 % | 1.6 % | 0.52 | 2.15 | 2.15 | -0.40 |
+| Tendencia 1 día / 1 semana (solo compras, si BTC sube, graduada, reajuste diario) | no | 1.32 | 0.38 | 4.9 % | 4.1 % | 1.73 | 0.98 | 0.72 | 1.19 |
+| Tendencia 12 h / 2 semanas (si BTC sube) | no | 1.27 | 0.34 | 27.0 % | 19.9 % | 1.33 | 1.22 | 0.81 | 1.20 |
+| Impulso de 3 días (solo compras, si BTC sube, graduada, reajuste diario) | no | 1.18 | 0.24 | 5.5 % | 7.6 % | 1.02 | 1.32 | 1.10 | 1.03 |
+| Impulso de 1 mes (solo compras, graduada, reajuste diario) | no | 1.12 | 0.22 | 17.1 % | 21.2 % | 1.29 | 0.93 | 0.72 | 0.92 |
+| Tendencia 1 día / 2 semanas (si BTC sube, graduada, reajuste diario) | no | 1.12 | 0.21 | 5.1 % | 4.0 % | 1.50 | 0.77 | 0.29 | 1.02 |
+| Tendencia 1 día / 1 mes (si BTC sube) | no | 1.10 | 0.20 | 21.7 % | 22.4 % | 1.28 | 0.92 | 0.40 | 1.07 |
+| Tendencia 1 día / 1 mes (relativa entre monedas, graduada, reajuste diario) | no | 1.10 | 0.20 | 6.4 % | 8.2 % | 0.27 | 1.81 | 1.35 | 0.17 |
+| Tendencia 12 h / 2 semanas | no | 1.10 | 0.20 | 33.5 % | 29.5 % | 1.33 | 0.86 | 0.66 | 0.98 |
+| Tendencia 1 día / 3 días (solo compras, si BTC sube) | no | 1.05 | 0.16 | 19.0 % | 21.0 % | 1.21 | 0.92 | 0.67 | 0.93 |
+| Tendencia 12 h / 1 semana (solo compras, graduada) | no | 1.05 | 0.16 | 4.9 % | 6.2 % | 0.97 | 1.13 | 0.54 | 0.88 |
+| Contra el funding (1 semana) (si BTC baja) | no | 1.04 | 0.15 | 18.8 % | 21.8 % | 1.47 | 0.55 | 1.68 | 0.97 |
 
 Para el servidor: lab_cruce_24_336_c2_sec_amb_nf_h1, lab_cruce_24_168_c2_ser_lar_ba_h24, lab_cruce_12_336_s_ser_amb_ba_h1 (candidatas en prueba (ninguna pasa la prueba contra la suerte)).
 
