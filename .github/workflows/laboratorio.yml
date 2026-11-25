@@ -39,6 +39,7 @@ jobs:
         run: |
           python pruebas/prueba_lab.py
           python pruebas/prueba_datos.py
+          python pruebas/prueba_ml.py
       - name: Pruebas del servidor (sin red)
         working-directory: servidor
         run: |
@@ -147,6 +148,7 @@ jobs:
           mkdir -p /tmp/res
           python -m lab.juntar --trozos trozos --salida /tmp/res
           python -m lab.diagnostico --panel datos/panel.npz --resultados /tmp/res
+          python -m lab.ml --panel datos/panel.npz --salida /tmp/res/ml
           cp datos/preparar.json /tmp/res/datos.json
       - uses: actions/upload-artifact@v4
         with:
@@ -162,6 +164,7 @@ jobs:
             git fetch -q origin main && git reset -q --hard origin/main
             mkdir -p resultados
             cp /tmp/res/estrategias.json /tmp/res/informe.md /tmp/res/diagnostico.json /tmp/res/datos.json resultados/
+            mkdir -p resultados/ml && cp /tmp/res/ml/ml.json /tmp/res/ml/informe.md resultados/ml/
             [ -f resultados/historial.csv ] || head -1 /tmp/res/historial_linea.csv > resultados/historial.csv
             tail -1 /tmp/res/historial_linea.csv >> resultados/historial.csv
             git add resultados
