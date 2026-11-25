@@ -86,7 +86,8 @@ def informe(r):
          '> Datos públicos de Lighter (operaciones recientes e historial diario de cada cuenta). Investigación en papel; no es una recomendación.\n',
          '- Generado: %s.' % r['generado'],
          '- Cuentas vistas operando hoy: %d (se estudian %d) y %d elegidas al azar entre los números de cuenta 1–%d.' % (r['activas_vistas'], r['activas'], r['azar'], r['maximo']),
-         '- Historiales útiles (perpetuos puros): %d. Al menos %s $ al empezar cada mes.\n' % (r['historiales'], format(int(r['min_valor']), ',').replace(',', '.'))]
+         '- Historiales útiles (perpetuos puros): %d. Al menos %s $ al empezar cada mes.' % (r['historiales'], format(int(r['min_valor']), ',').replace(',', '.')),
+         '- Diagnóstico: %s.\n' % json.dumps(r.get('diagnostico', {}), ensure_ascii=False)]
     e = r['estudio']
     if 'resumen' in e:
         s = e['resumen']
@@ -126,9 +127,17 @@ def main():
         if h:
             historias[str(idx)] = h
     estudio = estudiar(historias, min_valor=a.min_valor)
+    import numpy as np
+    filas_n = [len(h['pnl']) for h in historias.values()]
+    valores = [h['valor'][-1][1] for h in historias.values() if h['valor']]
+    primeros = [h['pnl'][0][0] for h in historias.values() if h['pnl']]
+    diag = {'filas_mediana': float(np.median(filas_n)) if filas_n else 0, 'filas_max': max(filas_n) if filas_n else 0,
+            'primer_dia_mediana': dt.datetime.fromtimestamp(float(np.median(primeros)) / 1000, dt.timezone.utc).strftime('%Y-%m-%d') if primeros else None,
+            'valor_hoy_p50': float(np.median(valores)) if valores else 0, 'valor_hoy_p90': float(np.quantile(valores, 0.9)) if valores else 0,
+            'con_mas_de_min_valor_hoy': int(sum(v >= a.min_valor for v in valores))}
     res = {'generado': dt.datetime.now(dt.timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ'), 'mercados': len(ms),
            'activas_vistas': len(vistas), 'activas': len(activas), 'azar': len(azar), 'maximo': maximo,
-           'historiales': len(historias), 'min_valor': a.min_valor, 'estudio': estudio, 'segundos': round(time.time() - t0, 1)}
+           'historiales': len(historias), 'min_valor': a.min_valor, 'estudio': estudio, 'diagnostico': diag, 'segundos': round(time.time() - t0, 1)}
     os.makedirs(a.salida, exist_ok=True)
     with open(os.path.join(a.salida, 'lighter.json'), 'w') as f:
         json.dump(res, f, ensure_ascii=False, indent=1)

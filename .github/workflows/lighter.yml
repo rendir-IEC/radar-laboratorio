@@ -33,7 +33,7 @@ jobs:
       - name: Pruebas sin red
         run: python pruebas/prueba_lighter.py
       - name: Leer cuentas e historiales de Lighter y estudiar
-        run: python -m lab.lighter --salida /tmp/lig
+        run: python -m lab.lighter --salida /tmp/lig --min-valor 1000
       - uses: actions/upload-artifact@v4
         with:
           name: lighter
