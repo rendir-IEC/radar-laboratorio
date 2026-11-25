@@ -1,14 +1,71 @@
 {
- "generado": "2026-11-25T11:24:59Z",
+ "generado": "2026-11-25T11:52:40Z",
  "mercados": 210,
- "activas_vistas": 2578,
+ "activas_vistas": 2505,
  "activas": 1200,
  "azar": 600,
  "maximo": 772126,
- "historiales": 1218,
- "min_valor": 10000.0,
+ "historiales": 1225,
+ "min_valor": 1000.0,
  "estudio": {
-  "meses": []
+  "meses": [
+   {
+    "mes_eleccion": "2026-07",
+    "cuentas": 40,
+    "correlacion_rangos": -0.384,
+    "mejores_10pct_mes_siguiente_pct": -31.02,
+    "resto_mes_siguiente_pct": -4.69,
+    "mejores_10pct_ganan_siguiente_pct": 0.0,
+    "resto_ganan_siguiente_pct": 55.6,
+    "todos_ganan_este_mes_pct": 72.5
+   },
+   {
+    "mes_eleccion": "2026-08",
+    "cuentas": 50,
+    "correlacion_rangos": 0.252,
+    "mejores_10pct_mes_siguiente_pct": 46.88,
+    "resto_mes_siguiente_pct": -8.4,
+    "mejores_10pct_ganan_siguiente_pct": 60.0,
+    "resto_ganan_siguiente_pct": 37.8,
+    "todos_ganan_este_mes_pct": 48.0
+   },
+   {
+    "mes_eleccion": "2026-09",
+    "cuentas": 49,
+    "correlacion_rangos": 0.443,
+    "mejores_10pct_mes_siguiente_pct": 9.28,
+    "resto_mes_siguiente_pct": 0.86,
+    "mejores_10pct_ganan_siguiente_pct": 80.0,
+    "resto_ganan_siguiente_pct": 50.0,
+    "todos_ganan_este_mes_pct": 40.8
+   },
+   {
+    "mes_eleccion": "2026-10",
+    "cuentas": 67,
+    "correlacion_rangos": -0.231,
+    "mejores_10pct_mes_siguiente_pct": 11.6,
+    "resto_mes_siguiente_pct": 14.54,
+    "mejores_10pct_ganan_siguiente_pct": 42.9,
+    "resto_ganan_siguiente_pct": 66.7,
+    "todos_ganan_este_mes_pct": 55.2
+   }
+  ],
+  "resumen": {
+   "meses_estudiados": 4,
+   "correlacion_media": 0.02,
+   "t_correlacion": 0.1,
+   "ventaja_mejores_vs_resto_pct_mes": 8.61,
+   "t_ventaja": 0.5,
+   "meses_con_ventaja_pct": 50.0
+  }
  },
- "segundos": 1592.8
+ "diagnostico": {
+  "filas_mediana": 53.0,
+  "filas_max": 421,
+  "primer_dia_mediana": "2026-10-05",
+  "valor_hoy_p50": 16.713940000000015,
+  "valor_hoy_p90": 4759.216073800024,
+  "con_mas_de_min_valor_hoy": 215
+ },
+ "segundos": 1595.0
 }
