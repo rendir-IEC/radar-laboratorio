@@ -16,7 +16,7 @@
 // y un disparador Cron cada minuto (* * * * *). Primero repasa unas 5000 horas de historia, 16 por minuto;
 // después aprende cada hora en vivo. Todo en papel: no mueve dinero.
 
-const VERSION = '2.4.1';
+const VERSION = '2.5.0';
 const HL = 'https://api.hyperliquid.xyz/info';
 const BINANCE = 'https://data-api.binance.vision/api/v3';
 const KRAKEN = 'https://api.kraken.com/0/public';
@@ -368,7 +368,16 @@ const ML_URL = 'https://raw.githubusercontent.com/rendir-IEC/radar-laboratorio/m
 const ML_CADA_H = 3;              // la señal es diaria: se mira cada 3 horas, en el minuto :37
 const ML_MAX_BYTES = 65536;
 const ML_PESO_MAX = 0.2;          // como mucho un 20 % del dinero por moneda
-const ML_DIAS_VALIDA = 3;         // si el laboratorio deja de publicar, a los 3 días el experto se queda sin posición     // el archivo del laboratorio pesa ~16 KB; uno mucho mayor no se lee
+const ML_DIAS_VALIDA = 3;
+// Traders elegidos por su historial completo (laboratorio, dos veces por semana): a quién sigue el sistema y, si el
+// laboratorio comprobó que la puntuación predice, con qué habilidad parte cada uno en vez de empezar desde cero.
+const TRADERS_URL = 'https://raw.githubusercontent.com/rendir-IEC/radar-laboratorio/main/resultados/traders/seleccion.json';
+const TRADERS_CADA_H = 6;
+const TRADERS_MAX = 30;            // el minuto en vivo no admite más peticiones
+const TRADERS_MAX_BYTES = 32768;
+const TRADERS_ENCOGE = 0.5;        // se eligieron las mejores entre cientos: su puntuación se encoge a la mitad (maldición del ganador)
+const TRADERS_HORAS_PREVIA = 336;  // la previa cuenta como dos semanas de horas en vivo; con más horas manda lo visto en vivo
+const TRADERS_DIAS_VALIDA = 14;    // si el laboratorio deja de publicar, se vuelve a la lista fija         // si el laboratorio deja de publicar, a los 3 días el experto se queda sin posición     // el archivo del laboratorio pesa ~16 KB; uno mucho mayor no se lee
 function apListaExpertos(E) {
   const lab = (E && E.lab && E.lab.specs) || [];
   if (!lab.length) return AP_EXPERTOS;
@@ -631,6 +640,7 @@ function apPaso(E, snap) {
   if (snap.carteras) {
     for (const [addr, d] of Object.entries(snap.carteras)) {
       const W = E.carteras[addr] || (E.carteras[addr] = { st: apStats(), pos: {}, av: null, desde: snap.t });
+      W.visto = snap.t;
       if (W.av > 0 && snap.pxTodos) {
         let pnl = 0;
         for (const [m, szi] of Object.entries(W.pos)) { const a = W.px && W.px[m], b = snap.pxTodos[m]; if (a > 0 && b > 0) pnl += szi * (b - a); }
@@ -725,14 +735,29 @@ function apPesos(E) {
   return out;
 }
 
+// Habilidad de cada cartera: prueba t de su rentabilidad hora a hora en vivo (desde 24 horas), combinada con la
+// puntuación de su historial (encogida) cuando el laboratorio comprobó que predice. Sin previa, igual que antes.
+function apPrevias(E) {
+  const out = {};
+  if (E.traders && E.traders.previa) for (const x of E.traders.lista || []) out[x.d] = TRADERS_ENCOGE * x.t;
+  return out;
+}
 function apHabilidades(E) {
+  const previas = apPrevias(E);
   const out = {};
   for (const [addr, W] of Object.entries(E.carteras)) {
     const st = W.st;
-    if (st.n < 24) { out[addr] = { habilidad: 0, t: 0, n: st.n }; continue; }
-    const m = st.s1 / st.n, v = Math.max(st.s2 / st.n - m * m, 1e-12);
-    const t = (m / Math.sqrt(v)) * Math.sqrt(st.n);
-    out[addr] = { habilidad: Math.max(0, 2 * apPhi(t) - 1) * (t > 0 ? 1 : 0), t, n: st.n };
+    const zp = previas[addr] || 0;
+    let zl = 0, n = 0;
+    if (st.n >= 24) {
+      const m = st.s1 / st.n, v = Math.max(st.s2 / st.n - m * m, 1e-12);
+      zl = (m / Math.sqrt(v)) * Math.sqrt(st.n);
+      n = st.n;
+    }
+    const a = zp ? Math.sqrt(TRADERS_HORAS_PREVIA) : 0, b = Math.sqrt(n);
+    if (!(a + b > 0)) { out[addr] = { habilidad: 0, t: 0, tVivo: 0, previa: 0, n: st.n }; continue; }
+    const t = (a * zp + b * zl) / Math.sqrt(a * a + b * b);
+    out[addr] = { habilidad: t > 0 ? Math.max(0, 2 * apPhi(t) - 1) : 0, t, tVivo: zl, previa: zp, n: st.n };
   }
   return out;
 }
@@ -760,7 +785,8 @@ function apPosiciones(E, ex, listas, habilidad, t) {
     return pos;
   }
   if (ex.tipo === 'copia') {
-    const cart = Object.entries(E.carteras).filter(([, W]) => W.av > 0 && W.st.n >= 24);
+    // con previa del historial, una cartera cuenta desde su primera hora; sin ella, desde las 24 horas
+    const cart = Object.entries(E.carteras).filter(([addr, W]) => W.av > 0 && (W.st.n >= 24 || (ex.habilidad && habilidad[addr] && habilidad[addr].previa > 0)));
     if (cart.length < 3 || !listas.length) return null;
     let total = 0;
     const suma = {};
@@ -893,6 +919,59 @@ const CARTERAS_SEGUIDAS = [
   '0xd1dd6d99c5fb5d31ff52eacce5046c7158859e85', '0x8cc94dc843e1ea7a19805e0cca43001123512b6a', '0xceec48581b3145a575508719f45da07dc57fa7ce',
   '0x418aa6bf98a2b2bc93779f810330d88cde488888', '0x936cf4fb95c30ce83f658b5bbb247e4bb381bb0f', '0xda26ab2a88881523ce002477fdee2f4ac9eb572a',
 ];
+// A quién se sigue: la selección del laboratorio si es reciente; si no, la lista fija de arriba.
+function apSeguidas(E, ahora) {
+  const T = E.traders;
+  if (T && Array.isArray(T.lista) && T.lista.length >= 5 && ahora - T.tGen <= TRADERS_DIAS_VALIDA * 86400e3) return T.lista.map((x) => x.d).slice(0, TRADERS_MAX);
+  return CARTERAS_SEGUIDAS;
+}
+// La que deja de seguirse guarda lo aprendido (su rentabilidad en vivo), pero no sus posiciones: así no cuenta en la copia.
+// Si pasan 60 días sin volver a la selección, se olvida.
+function apDejarDeSeguir(E, seguidas, ahora) {
+  const set = new Set(seguidas);
+  for (const [addr, W] of Object.entries(E.carteras || {})) {
+    if (set.has(addr)) continue;
+    W.pos = {}; W.px = {}; W.av = null;
+    if (ahora - (W.visto || W.desde || ahora) > 60 * 86400e3) delete E.carteras[addr];
+  }
+  E.seguidas = seguidas.length;
+}
+
+// Dos veces al día como mucho (en vivo, minuto :37) lee la selección de traders del laboratorio. Usa 1 petición.
+// Solo acepta direcciones bien formadas y puntuaciones acotadas; nunca ejecuta nada que venga de fuera.
+async function apTraders(E) {
+  E.tradersIntento = Date.now();
+  let j;
+  try {
+    const r = await fetch(TRADERS_URL, { headers: { 'User-Agent': 'radar-mercados/' + VERSION } });
+    if (!r.ok) return false;
+    if (Number(r.headers && r.headers.get && r.headers.get('content-length')) > TRADERS_MAX_BYTES) return false;
+    const txt = await r.text();
+    if (txt.length > TRADERS_MAX_BYTES) return false;
+    j = JSON.parse(txt);
+  } catch (e) { return false; }
+  if (!j || typeof j !== 'object' || j.version !== 1 || !Array.isArray(j.carteras)) return false;
+  const gen = String(j.generado || '').slice(0, 32);
+  const tGen = Date.parse(gen);
+  if (!Number.isFinite(tGen) || tGen > Date.now() + 3600e3) return false;
+  if (E.traders && E.traders.gen === gen) return false;
+  const lista = [], vistas = new Set();
+  for (const c of j.carteras) {
+    const d = String((c && c.direccion) || '').toLowerCase();
+    const t = Number(c && c.t);
+    if (!/^0x[0-9a-f]{40}$/.test(d) || vistas.has(d) || !Number.isFinite(t) || t <= 0) continue;
+    vistas.add(d);
+    lista.push({ d, t: Math.min(t, 8), tipo: c.tipo === 'vault' ? 'vault' : 'cuenta' });
+    if (lista.length >= TRADERS_MAX) break;
+  }
+  if (lista.length < 5) return false;
+  const antes = new Set(((E.traders && E.traders.lista) || CARTERAS_SEGUIDAS.map((d) => ({ d }))).map((x) => x.d));
+  const nuevas = lista.filter((x) => !antes.has(x.d)).length;
+  E.traders = { gen, tGen, previa: j.usar_previa === true, lista, leida: Date.now() };
+  apAlerta(E, E.t, 'traders', gen, 'Nueva selección de traders por su historial completo: sigue a ' + lista.length + ' (' + nuevas + ' nuevas). ' + (E.traders.previa ? 'El laboratorio comprobó que su historial predice algo: parten con esa habilidad, encogida, y la ajustan en vivo.' : 'Su historial no predijo lo bastante en la prueba: la habilidad se aprende en vivo, como hasta ahora.'));
+  return true;
+}
+
 const AP_HORAS_HISTORIA = 5000;
 const AP_LOTE = 16;
 const H1 = 3600e3;
@@ -978,13 +1057,15 @@ async function apCiclo(env) {
   // los mercados nuevos se calientan en otros minutos (apCalentarMinuto), no en este, que ya es el más cargado
   E.fueraDex = AP.MONEDAS.filter((m) => !enDex.has(m));
   const carteras = {};
+  const seguidas = apSeguidas(E, ahora);
+  apDejarDeSeguir(E, seguidas, ahora);
   // un solo intento por cartera: con 30 carteras y 3 intentos, un 429 de Hyperliquid agota el límite de 50 subpeticiones
-  const res = await Promise.allSettled(CARTERAS_SEGUIDAS.map((addr) => pedir(HL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ type: 'clearinghouseState', user: addr }) }, 1)));
+  const res = await Promise.allSettled(seguidas.map((addr) => pedir(HL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ type: 'clearinghouseState', user: addr }) }, 1)));
   res.forEach((r, i) => {
     if (r.status !== 'fulfilled' || !r.value || !r.value.marginSummary) return;
     const pos = {};
     for (const ap of r.value.assetPositions || []) { const q = ap && ap.position; if (q && num(q.szi)) pos[q.coin] = num(q.szi); }
-    carteras[CARTERAS_SEGUIDAS[i]] = { av: num(r.value.marginSummary.accountValue), pos };
+    carteras[seguidas[i]] = { av: num(r.value.marginSummary.accountValue), pos };
   });
   const flujo = await apFlujoDeLaHora(env, horaActual - H1);
   apPaso(E, { t: horaActual, px: p, f, carteras, pxTodos: todos, flujo });
@@ -1037,10 +1118,12 @@ async function apLabMinuto(env) {
   const ahora = Date.now();
   const tocaLab = !(E.labIntento && ahora - E.labIntento < LAB_CADA_H * 3600e3);
   const tocaMl = !(E.mlIntento && ahora - E.mlIntento < ML_CADA_H * 3600e3);
-  if (E.t == null || (!tocaLab && !tocaMl)) return { ok: true, modo: 'nada que leer' };
+  const tocaTraders = !(E.tradersIntento && ahora - E.tradersIntento < TRADERS_CADA_H * 3600e3);
+  if (E.t == null || (!tocaLab && !tocaMl && !tocaTraders)) return { ok: true, modo: 'nada que leer' };
   const tAntes = E.t;
   const cambio = tocaLab ? await apLab(E) : false;
   if (tocaMl) await apMl(E);
+  if (tocaTraders) await apTraders(E);
   await env.DB.prepare('UPDATE ap_estado SET json = ?1 WHERE id = ?2 AND t = ?3').bind(JSON.stringify(E), 'principal', tAntes).run();
   return { ok: true, modo: 'laboratorio', cambio };
 }
@@ -1302,9 +1385,19 @@ async function aprendizaje({ vista } = {}, env) {
   }
   if (v === 'carteras') {
     const hab = apHabilidades(E);
-    const rows = Object.entries(E.carteras).map(([addr, W]) => ({ cartera: addr.slice(0, 6) + '…' + addr.slice(-4), direccion: addr, horas: W.st.n, rentPct: pct(W.st.log), t: hab[addr] ? hab[addr].t : 0, habilidadPct: hab[addr] ? hab[addr].habilidad * 100 : 0, posiciones: Object.keys(W.pos || {}).length }));
+    const seg = new Set(apSeguidas(E, Date.now()));
+    const tipos = new Map(((E.traders && E.traders.lista) || []).map((x) => [x.d, x.tipo]));
+    const rows = Object.entries(E.carteras).filter(([addr]) => seg.has(addr)).map(([addr, W]) => ({
+      cartera: addr.slice(0, 6) + '…' + addr.slice(-4), direccion: addr, tipo: tipos.get(addr) || 'cuenta', horas: W.st.n, rentPct: pct(W.st.log),
+      t: hab[addr] ? hab[addr].t : 0, tVivo: hab[addr] ? hab[addr].tVivo : 0, previa: hab[addr] ? hab[addr].previa : 0,
+      habilidadPct: hab[addr] ? hab[addr].habilidad * 100 : 0, posiciones: Object.keys(W.pos || {}).length,
+    }));
     rows.sort((a, b) => b.habilidadPct - a.habilidadPct || b.t - a.t);
-    return { rows, nota: 'Rentabilidad estimada hora a hora desde que se siguen (solo por el precio de sus posiciones, sin funding ni operaciones dentro de la hora). Habilidad: indicador de 0 a 100 basado en la prueba t de esa rentabilidad. No es la probabilidad de que no sea suerte: no corrige por haber elegido 30 carteras del ranking de ganadoras ni por la autocorrelación. Hacen falta al menos 24 horas.' };
+    const T = E.traders;
+    const origen = T && seg.size && T.lista.some((x) => seg.has(x.d))
+      ? 'Elegidas por el laboratorio el ' + String(T.gen).slice(0, 10) + ' por su historial completo (puntuación t de sus rentabilidades quincenales del último año). ' + (T.previa ? 'Previa: esa puntuación encogida a la mitad, que cuenta como ' + TRADERS_HORAS_PREVIA + ' horas en vivo.' : 'Sin previa: el historial no predijo lo bastante en la prueba del laboratorio.')
+      : 'Lista fija del ranking de Hyperliquid (24-nov-2026), hasta que llegue la selección del laboratorio.';
+    return { rows, seleccion: T ? { generado: T.gen, previa: T.previa, carteras: T.lista.length } : null, nota: origen + ' Rentabilidad estimada hora a hora desde que se siguen (solo por el precio de sus posiciones, sin funding ni operaciones dentro de la hora). Habilidad: indicador de 0 a 100 basado en la prueba t combinada (historial y vivo). No es la probabilidad de que no sea suerte. Sin previa hacen falta al menos 24 horas.' };
   }
   if (v === 'alertas') return { rows: (E.alertas || []).map((a) => ({ hora: iso(a.t), tipo: a.tipo, texto: a.texto })) };
   if (v === 'laboratorio') {
@@ -1325,7 +1418,7 @@ async function aprendizaje({ vista } = {}, env) {
       horasEnVivo: E.vivo ? E.vivo.n : 0, sistemaVivoPct: E.vivo ? pct(E.vivo.log) : 0, btcVivoPct: pct(E.btcVivo || 0), caidaMaxVivoPct: E.vivo ? E.vivo.dd * 100 : 0,
       enVivoDesde: E.inicioVivo != null ? iso(E.inicioVivo) : null,
       expertos: inf.filter((r) => r.horas).length, ascendidos: inf.filter((r) => r.estado === 'ascendida').length,
-      mejorExperto: mejor ? mejor.nombre : null, pesoMejorPct: mejor ? mejor.pesoPct : null, carterasSeguidas: Object.keys(E.carteras).length,
+      mejorExperto: mejor ? mejor.nombre : null, pesoMejorPct: mejor ? mejor.pesoPct : null, carterasSeguidas: E.seguidas || CARTERAS_SEGUIDAS.length, seleccionTraders: E.traders ? { generado: E.traders.gen, previa: E.traders.previa, carteras: E.traders.lista.length } : null,
     }],
     nota: 'Todo en papel: el sistema no mueve dinero. sistemaPct y btcPct incluyen el repaso de la historia (una simulación sobre los datos con los que se diseñaron los expertos, que no demuestra nada); lo que cuenta es sistemaVivoPct, solo horas en vivo. Costes: 0,045 % sobre cada cambio de la cartera combinada, y funding; sin diferencial ni deslizamiento. mejorExperto es el que más peso tiene hoy, no uno probado.',
   };

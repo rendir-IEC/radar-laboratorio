@@ -39,6 +39,7 @@ globalThis.fetch = async (url, init = {}) => {
   llamadas++;
   const u = new URL(url);
   if (u.host === 'raw.githubusercontent.com' && u.pathname.endsWith('/senal.json')) { porTipo.ml = (porTipo.ml || 0) + 1; return new Response('no', { status: 404 }); }
+  if (u.host === 'raw.githubusercontent.com' && u.pathname.endsWith('/traders/seleccion.json')) { porTipo.traders = (porTipo.traders || 0) + 1; return new Response('no', { status: 404 }); }
   if (u.host === 'raw.githubusercontent.com') { porTipo.lab = (porTipo.lab || 0) + 1; return resp(LAB_JSON); }
   if (u.host !== 'api.hyperliquid.xyz') throw new Error('Host no simulado ' + u.host);
   if (JSON.parse(init.body).type === 'metaAndAssetCtxs' && HUECO_ETH(AHORA)) { const r = await metaOriginal(url, init); const j = await r.json(); const i = j[0].universe.findIndex((a) => a.name === 'ETH'); j[1][i].markPx = ''; return resp(j); }
