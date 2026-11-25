@@ -190,6 +190,7 @@ for (const r of bot.rows) {
 }
 check(bot.rows[0].posiciones.length < bot.rows[2].posiciones.length, 'con 50 € caben menos posiciones que con 1000 € (mínimos): ' + bot.rows[0].posiciones.length + ' frente a ' + bot.rows[2].posiciones.length);
 check(Math.abs(bot.eurUsd - 1.09) < 1e-9, 'EUR/USD de Kraken: ' + bot.eurUsd);
+check(bot.rows.every((r) => Math.abs(r.valorEur - (r.capitalEur + r.gananciaEur)) < 1e-9), 'valor en euros = capital + ganancia (el cambio euro/dólar no mueve el capital)');
 const estB = db.prepare("SELECT length(json) AS b FROM ap_estado WHERE id = 'bot'").get();
 check(estB.b < 60000, 'estado del bot pequeño: ' + estB.b + ' bytes');
 msBot.sort((a, b) => a - b); msOtros.sort((a, b) => a - b);

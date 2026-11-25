@@ -16,7 +16,7 @@
 // y un disparador Cron cada minuto (* * * * *). Primero repasa unas 5000 horas de historia, 16 por minuto;
 // después aprende cada hora en vivo. Todo en papel: no mueve dinero.
 
-const VERSION = '2.4.0';
+const VERSION = '2.4.1';
 const HL = 'https://api.hyperliquid.xyz/info';
 const BINANCE = 'https://data-api.binance.vision/api/v3';
 const KRAKEN = 'https://api.kraken.com/0/public';
@@ -1261,12 +1261,13 @@ async function botVista(env) {
   const B = await botCargar(env);
   const eurUsd = B.eurUsd || 1.1;
   const rows = Object.values(B.carteras).sort((a, b) => a.eur - b.eur).map((C) => ({
-    capitalEur: C.eur, valorEur: C.valor / eurUsd, gananciaEur: C.valor / eurUsd - C.usd0 / eurUsd, gananciaPct: (C.valor / C.usd0 - 1) * 100,
+    // el capital se aporta en euros (garantía en EUR): el cambio euro/dólar solo afecta a la ganancia, no al capital
+    capitalEur: C.eur, valorEur: C.eur + (C.valor - C.usd0) / eurUsd, gananciaEur: (C.valor - C.usd0) / eurUsd, gananciaPct: (C.valor / C.usd0 - 1) * 100,
     sistemaIdealPct: C.sis != null && C.sis0 != null ? (Math.exp(C.sis - C.sis0) - 1) * 100 : null,
     desde: iso(C.t0), horas: Math.round((C.t - C.t0) / H1), operaciones: C.operaciones,
     comisionesEur: C.comision / eurUsd, diferencialEur: C.diferencial / eurUsd, fundingEur: C.funding / eurUsd, caidaMaxPct: C.dd * 100,
     posiciones: Object.entries(C.pos).map(([m, q]) => ({ moneda: m, contrato: B.fichas && B.fichas.monedas[m] ? B.fichas.monedas[m].sym : null, cantidad: q, valorEur: (q * (C.px[m] || 0)) / eurUsd })),
-    curva: C.curva.map(([t, v]) => ({ fecha: fechaDe(t), valorEur: v / eurUsd })),
+    curva: C.curva.map(([t, v]) => ({ fecha: fechaDe(t), valorEur: C.eur + (v - C.usd0) / eurUsd })),
   }));
   return { rows, eurUsd, nota: 'Bot de pruebas en papel: tres carteras (50, 200 y 1000 €) que siguen cada hora la posición del sistema en Kraken Futuros con sus reglas reales: múltiplos del tamaño mínimo de cada contrato, comisión de toma del ' + (BOT.COMISION * 100).toFixed(2) + ' %, la mitad del diferencial del momento y el funding de Kraken, sin apalancamiento. No incluye el cobro del funding del sistema (necesita contado). sistemaIdealPct es lo que hizo el sistema en el mismo tiempo sin mínimos ni diferencial. No mueve dinero ni es una recomendación.' };
 }
