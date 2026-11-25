@@ -1,0 +1,67 @@
+# Señal diaria del aprendizaje automático para el servidor: ranking de las 20 monedas de más volumen y la cartera
+# lenta largo-corto (5 y 5) entre las que el servidor sabe operar. En papel.
+name: Señal diaria
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '43 6 * * *'   # cada día a las 6:43 UTC (Binance publica las velas del día anterior de madrugada)
+
+permissions:
+  contents: read
+
+concurrency:
+  group: senal
+  cancel-in-progress: false
+
+jobs:
+  senal:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    permissions:
+      contents: write
+    defaults:
+      run:
+        working-directory: laboratorio
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: laboratorio/requirements.txt
+      - run: pip install -r requirements.txt
+      - name: Pruebas sin red
+        run: python pruebas/prueba_senal.py
+      - name: Recuperar lo ya descargado
+        uses: actions/cache/restore@v4
+        with:
+          path: laboratorio/datos/universo
+          key: universo-${{ github.run_id }}
+          restore-keys: universo-
+      - name: Datos nuevos, modelo y señal
+        run: python -m lab.senal --salida /tmp/sen --anterior ../resultados/ml/senal.json
+      - name: Guardar lo descargado
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: laboratorio/datos/universo
+          key: universo-${{ github.run_id }}
+      - name: Publicar en el repositorio
+        working-directory: .
+        run: |
+          git config user.name "laboratorio"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          for i in 1 2 3 4 5; do
+            git fetch -q origin main && git reset -q --hard origin/main
+            mkdir -p resultados/ml
+            cp /tmp/sen/senal.json resultados/ml/senal.json
+            python3 -c "import json; r=json.load(open('/tmp/sen/senal.json')); print(json.dumps({'fecha': r['fecha'], 'generado': r['generado'], 'cartera': r['cartera']}, ensure_ascii=False))" > /tmp/sen/linea.json
+            grep -qF "$(cut -c1-24 /tmp/sen/linea.json)" resultados/ml/senales.jsonl 2>/dev/null || cat /tmp/sen/linea.json >> resultados/ml/senales.jsonl
+            git add resultados/ml/senal.json resultados/ml/senales.jsonl
+            git diff --cached --quiet && exit 0
+            git commit -q -m "Señal diaria $(date -u +%Y-%m-%dT%H:%MZ)"
+            git push -q origin HEAD:main && exit 0
+            sleep $((i * 5))
+          done
+          exit 1

@@ -165,7 +165,8 @@ def cargar(simbolos_=None):
         carpeta = os.path.join(base, sym)
         if not os.path.isdir(carpeta):
             continue
-        v = [np.load(os.path.join(carpeta, f)) for f in sorted(os.listdir(carpeta)) if f.startswith('d_') and f.endswith('.npy')]
+        # mensuales (d_AAAA-MM) y, para el mes en curso, diarios (dia_AAAA-MM-DD)
+        v = [np.load(os.path.join(carpeta, f)) for f in sorted(os.listdir(carpeta)) if (f.startswith('d_') or f.startswith('dia_')) and f.endswith('.npy')]
         v = [x for x in v if x.ndim == 2 and x.shape[0]]
         if not v:
             continue
@@ -179,9 +180,10 @@ def cargar(simbolos_=None):
             fu = np.concatenate(fu)
             # el funding que se cobra a las 00:00 corresponde a la posición del día anterior
             fd = pd.Series(fu[:, 1], index=pd.to_datetime(((fu[:, 0] - 1) // DIA) * DIA, unit='ms', utc=True)).groupby(level=0).sum()
-            d['f'] = fd.reindex(d.index).fillna(0.0)
+            # sin funding publicado (mes en curso: Binance solo da archivos mensuales) queda vacío, no a cero
+            d['f'] = fd.reindex(d.index).where(d.index <= fd.index.max(), np.nan).fillna(0.0).where(d.index <= fd.index.max())
         else:
-            d['f'] = 0.0
+            d['f'] = np.nan
         # días seguidos: los huecos quedan en NaN (sin rellenar precios)
         d = d.reindex(pd.date_range(d.index[0], d.index[-1], freq='D', tz='UTC'))
         out[sym] = d
