@@ -1,0 +1,833 @@
+{
+ "generado": "2026-11-25T07:39:50Z",
+ "ranking_total": 46575,
+ "grupo": 400,
+ "historiales": 400,
+ "min_valor": 10000.0,
+ "estudio": {
+  "meses": [
+   {
+    "mes_eleccion": "2024-07",
+    "cuentas": 53,
+    "correlacion_rangos": 0.279,
+    "mejores_10pct_mes_siguiente_pct": -10.88,
+    "resto_mes_siguiente_pct": 1.89,
+    "mejores_10pct_ganan_siguiente_pct": 33.3,
+    "resto_ganan_siguiente_pct": 53.2,
+    "todos_ganan_este_mes_pct": 62.3
+   },
+   {
+    "mes_eleccion": "2024-08",
+    "cuentas": 55,
+    "correlacion_rangos": 0.506,
+    "mejores_10pct_mes_siguiente_pct": 68.13,
+    "resto_mes_siguiente_pct": -0.23,
+    "mejores_10pct_ganan_siguiente_pct": 83.3,
+    "resto_ganan_siguiente_pct": 55.1,
+    "todos_ganan_este_mes_pct": 50.9
+   },
+   {
+    "mes_eleccion": "2024-09",
+    "cuentas": 59,
+    "correlacion_rangos": -0.304,
+    "mejores_10pct_mes_siguiente_pct": -28.17,
+    "resto_mes_siguiente_pct": 12.24,
+    "mejores_10pct_ganan_siguiente_pct": 33.3,
+    "resto_ganan_siguiente_pct": 49.1,
+    "todos_ganan_este_mes_pct": 59.3
+   },
+   {
+    "mes_eleccion": "2024-10",
+    "cuentas": 64,
+    "correlacion_rangos": 0.15,
+    "mejores_10pct_mes_siguiente_pct": 10.8,
+    "resto_mes_siguiente_pct": 5.81,
+    "mejores_10pct_ganan_siguiente_pct": 57.1,
+    "resto_ganan_siguiente_pct": 63.2,
+    "todos_ganan_este_mes_pct": 51.6
+   },
+   {
+    "mes_eleccion": "2024-11",
+    "cuentas": 73,
+    "correlacion_rangos": 0.353,
+    "mejores_10pct_mes_siguiente_pct": 167.82,
+    "resto_mes_siguiente_pct": 16.33,
+    "mejores_10pct_ganan_siguiente_pct": 62.5,
+    "resto_ganan_siguiente_pct": 38.5,
+    "todos_ganan_este_mes_pct": 60.3
+   },
+   {
+    "mes_eleccion": "2024-12",
+    "cuentas": 76,
+    "correlacion_rangos": -0.271,
+    "mejores_10pct_mes_siguiente_pct": -46.82,
+    "resto_mes_siguiente_pct": 43.38,
+    "mejores_10pct_ganan_siguiente_pct": 25.0,
+    "resto_ganan_siguiente_pct": 67.6,
+    "todos_ganan_este_mes_pct": 40.8
+   },
+   {
+    "mes_eleccion": "2025-01",
+    "cuentas": 77,
+    "correlacion_rangos": 0.328,
+    "mejores_10pct_mes_siguiente_pct": 86.47,
+    "resto_mes_siguiente_pct": 30.27,
+    "mejores_10pct_ganan_siguiente_pct": 87.5,
+    "resto_ganan_siguiente_pct": 65.2,
+    "todos_ganan_este_mes_pct": 59.7
+   },
+   {
+    "mes_eleccion": "2025-02",
+    "cuentas": 108,
+    "correlacion_rangos": 0.26,
+    "mejores_10pct_mes_siguiente_pct": 1.39,
+    "resto_mes_siguiente_pct": 12.57,
+    "mejores_10pct_ganan_siguiente_pct": 54.5,
+    "resto_ganan_siguiente_pct": 55.7,
+    "todos_ganan_este_mes_pct": 60.2
+   },
+   {
+    "mes_eleccion": "2025-03",
+    "cuentas": 129,
+    "correlacion_rangos": 0.371,
+    "mejores_10pct_mes_siguiente_pct": 43.73,
+    "resto_mes_siguiente_pct": -9.66,
+    "mejores_10pct_ganan_siguiente_pct": 61.5,
+    "resto_ganan_siguiente_pct": 44.0,
+    "todos_ganan_este_mes_pct": 51.9
+   },
+   {
+    "mes_eleccion": "2025-04",
+    "cuentas": 131,
+    "correlacion_rangos": 0.204,
+    "mejores_10pct_mes_siguiente_pct": 20.06,
+    "resto_mes_siguiente_pct": 12.35,
+    "mejores_10pct_ganan_siguiente_pct": 50.0,
+    "resto_ganan_siguiente_pct": 47.9,
+    "todos_ganan_este_mes_pct": 50.4
+   },
+   {
+    "mes_eleccion": "2025-05",
+    "cuentas": 146,
+    "correlacion_rangos": 0.373,
+    "mejores_10pct_mes_siguiente_pct": 68.63,
+    "resto_mes_siguiente_pct": -9.46,
+    "mejores_10pct_ganan_siguiente_pct": 60.0,
+    "resto_ganan_siguiente_pct": 36.6,
+    "todos_ganan_este_mes_pct": 48.6
+   },
+   {
+    "mes_eleccion": "2025-06",
+    "cuentas": 162,
+    "correlacion_rangos": 0.086,
+    "mejores_10pct_mes_siguiente_pct": 11.79,
+    "resto_mes_siguiente_pct": 4.38,
+    "mejores_10pct_ganan_siguiente_pct": 35.3,
+    "resto_ganan_siguiente_pct": 54.5,
+    "todos_ganan_este_mes_pct": 42.6
+   },
+   {
+    "mes_eleccion": "2025-07",
+    "cuentas": 172,
+    "correlacion_rangos": -0.087,
+    "mejores_10pct_mes_siguiente_pct": -14.81,
+    "resto_mes_siguiente_pct": 41.09,
+    "mejores_10pct_ganan_siguiente_pct": 44.4,
+    "resto_ganan_siguiente_pct": 52.6,
+    "todos_ganan_este_mes_pct": 57.6
+   },
+   {
+    "mes_eleccion": "2025-08",
+    "cuentas": 180,
+    "correlacion_rangos": -0.097,
+    "mejores_10pct_mes_siguiente_pct": -22.67,
+    "resto_mes_siguiente_pct": 5.83,
+    "mejores_10pct_ganan_siguiente_pct": 38.9,
+    "resto_ganan_siguiente_pct": 50.6,
+    "todos_ganan_este_mes_pct": 54.4
+   },
+   {
+    "mes_eleccion": "2025-09",
+    "cuentas": 192,
+    "correlacion_rangos": 0.207,
+    "mejores_10pct_mes_siguiente_pct": 6.75,
+    "resto_mes_siguiente_pct": -7.67,
+    "mejores_10pct_ganan_siguiente_pct": 35.0,
+    "resto_ganan_siguiente_pct": 44.2,
+    "todos_ganan_este_mes_pct": 49.0
+   },
+   {
+    "mes_eleccion": "2025-10",
+    "cuentas": 196,
+    "correlacion_rangos": 0.177,
+    "mejores_10pct_mes_siguiente_pct": 19.07,
+    "resto_mes_siguiente_pct": -8.34,
+    "mejores_10pct_ganan_siguiente_pct": 35.0,
+    "resto_ganan_siguiente_pct": 39.2,
+    "todos_ganan_este_mes_pct": 44.4
+   },
+   {
+    "mes_eleccion": "2025-11",
+    "cuentas": 170,
+    "correlacion_rangos": 0.444,
+    "mejores_10pct_mes_siguiente_pct": 40.29,
+    "resto_mes_siguiente_pct": 6.09,
+    "mejores_10pct_ganan_siguiente_pct": 52.9,
+    "resto_ganan_siguiente_pct": 39.9,
+    "todos_ganan_este_mes_pct": 44.1
+   },
+   {
+    "mes_eleccion": "2025-12",
+    "cuentas": 168,
+    "correlacion_rangos": 0.58,
+    "mejores_10pct_mes_siguiente_pct": 2.2,
+    "resto_mes_siguiente_pct": -8.8,
+    "mejores_10pct_ganan_siguiente_pct": 64.7,
+    "resto_ganan_siguiente_pct": 39.1,
+    "todos_ganan_este_mes_pct": 45.2
+   },
+   {
+    "mes_eleccion": "2026-01",
+    "cuentas": 163,
+    "correlacion_rangos": 0.129,
+    "mejores_10pct_mes_siguiente_pct": -13.35,
+    "resto_mes_siguiente_pct": -0.98,
+    "mejores_10pct_ganan_siguiente_pct": 35.3,
+    "resto_ganan_siguiente_pct": 37.7,
+    "todos_ganan_este_mes_pct": 41.7
+   },
+   {
+    "mes_eleccion": "2026-02",
+    "cuentas": 170,
+    "correlacion_rangos": 0.155,
+    "mejores_10pct_mes_siguiente_pct": -18.63,
+    "resto_mes_siguiente_pct": -0.36,
+    "mejores_10pct_ganan_siguiente_pct": 35.3,
+    "resto_ganan_siguiente_pct": 43.1,
+    "todos_ganan_este_mes_pct": 39.4
+   },
+   {
+    "mes_eleccion": "2026-03",
+    "cuentas": 158,
+    "correlacion_rangos": 0.211,
+    "mejores_10pct_mes_siguiente_pct": 16.63,
+    "resto_mes_siguiente_pct": -10.92,
+    "mejores_10pct_ganan_siguiente_pct": 37.5,
+    "resto_ganan_siguiente_pct": 38.0,
+    "todos_ganan_este_mes_pct": 50.6
+   },
+   {
+    "mes_eleccion": "2026-04",
+    "cuentas": 155,
+    "correlacion_rangos": 0.281,
+    "mejores_10pct_mes_siguiente_pct": 7.75,
+    "resto_mes_siguiente_pct": -3.53,
+    "mejores_10pct_ganan_siguiente_pct": 50.0,
+    "resto_ganan_siguiente_pct": 41.0,
+    "todos_ganan_este_mes_pct": 42.6
+   },
+   {
+    "mes_eleccion": "2026-05",
+    "cuentas": 159,
+    "correlacion_rangos": 0.172,
+    "mejores_10pct_mes_siguiente_pct": 47.46,
+    "resto_mes_siguiente_pct": 5.82,
+    "mejores_10pct_ganan_siguiente_pct": 62.5,
+    "resto_ganan_siguiente_pct": 49.7,
+    "todos_ganan_este_mes_pct": 42.8
+   },
+   {
+    "mes_eleccion": "2026-06",
+    "cuentas": 163,
+    "correlacion_rangos": 0.206,
+    "mejores_10pct_mes_siguiente_pct": 18.1,
+    "resto_mes_siguiente_pct": 11.13,
+    "mejores_10pct_ganan_siguiente_pct": 52.9,
+    "resto_ganan_siguiente_pct": 47.3,
+    "todos_ganan_este_mes_pct": 51.5
+   },
+   {
+    "mes_eleccion": "2026-07",
+    "cuentas": 141,
+    "correlacion_rangos": 0.087,
+    "mejores_10pct_mes_siguiente_pct": 24.02,
+    "resto_mes_siguiente_pct": -4.39,
+    "mejores_10pct_ganan_siguiente_pct": 53.3,
+    "resto_ganan_siguiente_pct": 38.1,
+    "todos_ganan_este_mes_pct": 49.6
+   },
+   {
+    "mes_eleccion": "2026-08",
+    "cuentas": 137,
+    "correlacion_rangos": -0.075,
+    "mejores_10pct_mes_siguiente_pct": 25.66,
+    "resto_mes_siguiente_pct": 20.17,
+    "mejores_10pct_ganan_siguiente_pct": 50.0,
+    "resto_ganan_siguiente_pct": 43.1,
+    "todos_ganan_este_mes_pct": 41.6
+   },
+   {
+    "mes_eleccion": "2026-09",
+    "cuentas": 133,
+    "correlacion_rangos": 0.398,
+    "mejores_10pct_mes_siguiente_pct": 16.96,
+    "resto_mes_siguiente_pct": 17.75,
+    "mejores_10pct_ganan_siguiente_pct": 57.1,
+    "resto_ganan_siguiente_pct": 37.8,
+    "todos_ganan_este_mes_pct": 45.9
+   },
+   {
+    "mes_eleccion": "2026-10",
+    "cuentas": 141,
+    "correlacion_rangos": -0.174,
+    "mejores_10pct_mes_siguiente_pct": -6.46,
+    "resto_mes_siguiente_pct": -5.33,
+    "mejores_10pct_ganan_siguiente_pct": 33.3,
+    "resto_ganan_siguiente_pct": 46.8,
+    "todos_ganan_este_mes_pct": 41.1
+   }
+  ],
+  "resumen": {
+   "meses_estudiados": 28,
+   "correlacion_media": 0.177,
+   "t_correlacion": 4.2,
+   "ventaja_mejores_vs_resto_pct_mes": 13.02,
+   "t_ventaja": 1.52,
+   "meses_con_ventaja_pct": 64.3
+  }
+ },
+ "muestra_formato": {
+  "puntos_pnl": 71,
+  "primero": [
+   [
+    1730326920183,
+    0.0
+   ],
+   [
+    1730330520183,
+    0.0
+   ],
+   [
+    1731540120103,
+    -14444.795605
+   ]
+  ],
+  "ultimo": [
+   [
+    1794700320029,
+    19523418.211367
+   ],
+   [
+    1795359120064,
+    19523418.211367
+   ],
+   [
+    1795591910951,
+    19523418.211367
+   ]
+  ]
+ },
+ "top_ganancia": [
+  {
+   "direccion": "0x5b5d51203a0f9079f8aeb098a6523a13f298c060",
+   "valor": 5176.448332,
+   "pnl_total": 311249799.17,
+   "roi_total": 0.9626141598,
+   "vlm_total": 6649205898.56,
+   "pnl_mes": 120607553.237464,
+   "roi_mes": 0.7344767238,
+   "vlm_mes": 828307393.87
+  },
+  {
+   "direccion": "0x4ec8fe22a531a96c8a846aaf5cbef73202649a80",
+   "valor": 80999647.259109,
+   "pnl_total": 301041400.929109,
+   "roi_total": 17866.1175572657,
+   "vlm_total": 15999.34,
+   "pnl_mes": 0.0,
+   "roi_mes": 0.0,
+   "vlm_mes": 0.0
+  },
+  {
+   "direccion": "0xb83de012dba672c76a7dbbbf3e459cb59d7d6e36",
+   "valor": 3423.286678,
+   "pnl_total": 241242135.069984,
+   "roi_total": 1.7004137718,
+   "vlm_total": 6744655046.99,
+   "pnl_mes": 99352343.58835,
+   "roi_mes": 0.6356673176,
+   "vlm_mes": 825692919.46
+  },
+  {
+   "direccion": "0xecb63caa47c7c4e77f60f1ce858cf28dc2b82b00",
+   "valor": 84462450.758497,
+   "pnl_total": 232751377.908497,
+   "roi_total": 2.3059148277,
+   "vlm_total": 330790742248.46,
+   "pnl_mes": 28170156.877911,
+   "roi_mes": 0.481384404,
+   "vlm_mes": 16297306520.42
+  },
+  {
+   "direccion": "0x393d0b87ed38fc779fd9611144ae649ba6082109",
+   "valor": 536863773.854657,
+   "pnl_total": 189740418.864657,
+   "roi_total": 0.1061472981,
+   "vlm_total": 0.0,
+   "pnl_mes": 0.0,
+   "roi_mes": 0.0,
+   "vlm_mes": 0.0
+  },
+  {
+   "direccion": "0x7fdafde5cfb5465924316eced2d3715494c517d1",
+   "valor": 14829247.267595,
+   "pnl_total": 182504021.08759502,
+   "roi_total": 2.7229926403,
+   "vlm_total": 23068913960.829998,
+   "pnl_mes": 36992352.004243,
+   "roi_mes": 0.7518001293,
+   "vlm_mes": 2158272415.2
+  },
+  {
+   "direccion": "0x9794bbbc222b6b93c1417d01aa1ff06d42e5333b",
+   "valor": 46.939061,
+   "pnl_total": 144136369.219061,
+   "roi_total": 7.586717142,
+   "vlm_total": 26418469.16,
+   "pnl_mes": 0.0,
+   "roi_mes": 0.0,
+   "vlm_mes": 20.59
+  },
+  {
+   "direccion": "0xdfc24b077bc1425ad1dea75bcb6f8158e10df303",
+   "valor": 151516134.456458,
+   "pnl_total": 141135252.886458,
+   "roi_total": 0.2674695229,
+   "vlm_total": 0.0,
+   "pnl_mes": 2234300.048065,
+   "roi_mes": 0.0127479219,
+   "vlm_mes": 0.0
+  },
+  {
+   "direccion": "0x880ac484a1743862989a441d6d867238c7aa311c",
+   "valor": 2360333.087359,
+   "pnl_total": 123240636.047359,
+   "roi_total": 1.7842014804,
+   "vlm_total": 6876024737.68,
+   "pnl_mes": 4961773.076932,
+   "roi_mes": 0.7175553851,
+   "vlm_mes": 178312007.95
+  },
+  {
+   "direccion": "0x20c2d95a3dfdca9e9ad12794d5fa6fad99da44f5",
+   "valor": 3.197577,
+   "pnl_total": 122544571.777577,
+   "roi_total": 1.1416696279,
+   "vlm_total": 1534574048.57,
+   "pnl_mes": 0.0,
+   "roi_mes": 0.0,
+   "vlm_mes": 0.0
+  },
+  {
+   "direccion": "0x2ea18c23f72a4b6172c55b411823cdc5335923f4",
+   "valor": 1.512199,
+   "pnl_total": 106341324.52,
+   "roi_total": 6.7335227018,
+   "vlm_total": 2139884917.17,
+   "pnl_mes": 0.0,
+   "roi_mes": 0.0,
+   "vlm_mes": 0.0
+  },
+  {
+   "direccion": "0x45d26f28196d226497130c4bac709d808fed4029",
+   "valor": 51085649.501582,
+   "pnl_total": 104713764.471582,
+   "roi_total": 2.2219768557,
+   "vlm_total": 772178271.14,
+   "pnl_mes": 41017350.220794,
+   "roi_mes": 1.2476970275,
+   "vlm_mes": 7756963.13
+  },
+  {
+   "direccion": "0x87f9cd15f5050a9283b8896300f7c8cf69ece2cf",
+   "valor": 116020320.42438903,
+   "pnl_total": 102386744.12438904,
+   "roi_total": 0.408233802,
+   "vlm_total": 641531270923.7498,
+   "pnl_mes": 45281310.71225401,
+   "roi_mes": 0.3357190754,
+   "vlm_mes": 25353359322.16
+  },
+  {
+   "direccion": "0xbde2ddc49a2e6827300faa6afc93d572114a60b1",
+   "valor": 1.009742,
+   "pnl_total": 97508580.879742,
+   "roi_total": 43.3280616196,
+   "vlm_total": 25191221.12,
+   "pnl_mes": 0.0,
+   "roi_mes": 0.0,
+   "vlm_mes": 0.0
+  },
+  {
+   "direccion": "0xbdfa4f4492dd7b7cf211209c4791af8d52bf5c50",
+   "valor": 55554489.613643005,
+   "pnl_total": 95432085.343643,
+   "roi_total": 7.9125028566,
+   "vlm_total": 131567037.78999999,
+   "pnl_mes": 0.01,
+   "roi_mes": 5e-05,
+   "vlm_mes": 117602.61
+  },
+  {
+   "direccion": "0xa312114b5795dff9b8db50474dd57701aa78ad1e",
+   "valor": 539288.069925,
+   "pnl_total": 93776517.479925,
+   "roi_total": 3.2666784759,
+   "vlm_total": 1880848295.98,
+   "pnl_mes": -92716.220276,
+   "roi_mes": -0.28356634,
+   "vlm_mes": 4024569.38
+  },
+  {
+   "direccion": "0x4e14fc11f58b64740e66e4b1aa188a4b007c0eab",
+   "valor": 59617109.312898,
+   "pnl_total": 90306930.092898,
+   "roi_total": 39.5012470164,
+   "vlm_total": 174649300.53,
+   "pnl_mes": 0.0,
+   "roi_mes": 0.0,
+   "vlm_mes": 0.0
+  },
+  {
+   "direccion": "0x493db0ed7514c975e9abcc110bd40c473b6763e3",
+   "valor": 77773163.343548,
+   "pnl_total": 89716599.363548,
+   "roi_total": 344.0106744126,
+   "vlm_total": 105.31,
+   "pnl_mes": 0.0,
+   "roi_mes": 0.0,
+   "vlm_mes": 0.0
+  },
+  {
+   "direccion": "0x2e3d94f0562703b25c83308a05046ddaf9a8dd14",
+   "valor": 999998.574897,
+   "pnl_total": 84715878.284897,
+   "roi_total": 1.0743661456,
+   "vlm_total": 3335431474.11,
+   "pnl_mes": 0.0,
+   "roi_mes": 0.0,
+   "vlm_mes": 0.0
+  },
+  {
+   "direccion": "0xd47587702a91731dc1089b5db0932cf820151a91",
+   "valor": 13704139.817349,
+   "pnl_total": 81328589.729536,
+   "roi_total": 0.5179774145,
+   "vlm_total": 5440352850.68,
+   "pnl_mes": 12347346.275379,
+   "roi_mes": 0.5602619202,
+   "vlm_mes": 9318239.36
+  },
+  {
+   "direccion": "0x488d2a9b70cc18ef66057a48ab3d59da1c59fe08",
+   "valor": 181923731.424604,
+   "pnl_total": 78324585.704604,
+   "roi_total": 0.7560350528,
+   "vlm_total": 0.0,
+   "pnl_mes": 0.0,
+   "roi_mes": 0.0,
+   "vlm_mes": 0.0
+  },
+  {
+   "direccion": "0x0d446c3372a9ba9cddef0eef7a1afab6dc0e8c0b",
+   "valor": 76271676.184966,
+   "pnl_total": 76247284.654966,
+   "roi_total": 1270.7880775828,
+   "vlm_total": 0.0,
+   "pnl_mes": 4428281.123801,
+   "roi_mes": 0.0616379713,
+   "vlm_mes": 0.0
+  },
+  {
+   "direccion": "0xcfdb74a8c080bb7b4360ed6fe21f895c653efff4",
+   "valor": 73.467541,
+   "pnl_total": 74503098.127541,
+   "roi_total": 3.174039481,
+   "vlm_total": 111259614.64,
+   "pnl_mes": 0.0,
+   "roi_mes": 0.0,
+   "vlm_mes": 0.0
+  },
+  {
+   "direccion": "0x51156f7002c4f74f4956c9e0f2b7bfb6e9dbfac2",
+   "valor": 192500.339861,
+   "pnl_total": 71715771.039861,
+   "roi_total": 5.9503372621,
+   "vlm_total": 12016949.42,
+   "pnl_mes": 0.0,
+   "roi_mes": 0.0,
+   "vlm_mes": 0.0
+  },
+  {
+   "direccion": "0x8af700ba841f30e0a3fcb0ee4c4a9d223e1efa05",
+   "valor": 27541764.710681,
+   "pnl_total": 70987702.860681,
+   "roi_total": 2.7805343497,
+   "vlm_total": 4866144221.66,
+   "pnl_mes": -2368124.302357,
+   "roi_mes": -0.1887217593,
+   "vlm_mes": 19634598.56
+  },
+  {
+   "direccion": "0x13c50dcdee4bbcba71baf578b345cdd35c7928be",
+   "valor": 33215296.917965,
+   "pnl_total": 70308436.277965,
+   "roi_total": 59.9185488437,
+   "vlm_total": 32331986.5,
+   "pnl_mes": 0.0,
+   "roi_mes": 0.0,
+   "vlm_mes": 4132625.14
+  },
+  {
+   "direccion": "0x03b9a189e2480d1e4c3007080b29f362282130fa",
+   "valor": 46270546.562451996,
+   "pnl_total": 67105085.39245202,
+   "roi_total": 9.317959305,
+   "vlm_total": 61512634332.740005,
+   "pnl_mes": -25062.015757,
+   "roi_mes": -0.0074797679,
+   "vlm_mes": 346693313.89000005
+  },
+  {
+   "direccion": "0x5d2f4460ac3514ada79f5d9838916e508ab39bb7",
+   "valor": 2492383.283575,
+   "pnl_total": 64047166.083575,
+   "roi_total": 2.5675138944,
+   "vlm_total": 1737926131.91,
+   "pnl_mes": -1030769.556224,
+   "roi_mes": -0.3124503945,
+   "vlm_mes": 24463328.85
+  },
+  {
+   "direccion": "0x8e096995c3e4a3f0bc5b3ea1cba94de2aa4d70c9",
+   "valor": 7561223.245482,
+   "pnl_total": 61863115.985482,
+   "roi_total": 14.723013843,
+   "vlm_total": 1480132126.17,
+   "pnl_mes": 2329447.642425,
+   "roi_mes": 0.8200798477,
+   "vlm_mes": 38260626.72
+  },
+  {
+   "direccion": "0x7dacca323e44f168494c779bb5e7483c468ef410",
+   "valor": 26109357.131556,
+   "pnl_total": 61236634.501555994,
+   "roi_total": 5.4965911597,
+   "vlm_total": 330231942.56,
+   "pnl_mes": 2520166.160515,
+   "roi_mes": 0.707166419,
+   "vlm_mes": 102650212.73
+  },
+  {
+   "direccion": "0x35d1151ef1aab579cbb3109e69fa82f94ff5acb1",
+   "valor": 0.569357,
+   "pnl_total": 59088891.169357,
+   "roi_total": 2.9157822984,
+   "vlm_total": 607710718.09,
+   "pnl_mes": -0.188626,
+   "roi_mes": -0.00188626,
+   "vlm_mes": 0.0
+  },
+  {
+   "direccion": "0x023a3d058020fb76cca98f01b3c48c8938a22355",
+   "valor": 15897609.729844,
+   "pnl_total": 58992486.029844,
+   "roi_total": 1.4750053293,
+   "vlm_total": 246901816900.56,
+   "pnl_mes": 4173141.040861,
+   "roi_mes": 0.2714172104,
+   "vlm_mes": 2154107743.57
+  },
+  {
+   "direccion": "0x77375a8c9d13bf79afb2a87f1b0ac1dfd5f5bf66",
+   "valor": 43573007.87205,
+   "pnl_total": 58542036.292050004,
+   "roi_total": 16.266287302,
+   "vlm_total": 3279690888.4399996,
+   "pnl_mes": 7652720.130891,
+   "roi_mes": 1.0245312249,
+   "vlm_mes": 217788130.45
+  },
+  {
+   "direccion": "0x656c8da58d738295e03550796dd83900aa7c6525",
+   "valor": 7946.71375,
+   "pnl_total": 56064844.93375,
+   "roi_total": 16.6491742008,
+   "vlm_total": 470768494.46,
+   "pnl_mes": 7425.936145,
+   "roi_mes": 0.1087769419,
+   "vlm_mes": 65418.76
+  },
+  {
+   "direccion": "0x659ddde484fd9dc313917d5de92a52b6a74a9d63",
+   "valor": 53278198.66674,
+   "pnl_total": 54591628.73674,
+   "roi_total": 5.971738705,
+   "vlm_total": 0.0,
+   "pnl_mes": 54616533.73674,
+   "roi_mes": 5.9907839767,
+   "vlm_mes": 0.0
+  },
+  {
+   "direccion": "0x4eb8d907136189a34c9b087950211b6a566f7819",
+   "valor": 144809383.613868,
+   "pnl_total": 52490810.863868,
+   "roi_total": 0.5685834313,
+   "vlm_total": 0.0,
+   "pnl_mes": 0.0,
+   "roi_mes": 0.0,
+   "vlm_mes": 0.0
+  },
+  {
+   "direccion": "0x939f95036d2e7b6d7419ec072bf9d967352204d2",
+   "valor": 6263223.536441,
+   "pnl_total": 51455339.546441,
+   "roi_total": 4.4579287809,
+   "vlm_total": 2778580278.38,
+   "pnl_mes": 630791.717575,
+   "roi_mes": 0.0590535538,
+   "vlm_mes": 260891310.38
+  },
+  {
+   "direccion": "0xfc667adba8d4837586078f4fdcdc29804337ca06",
+   "valor": 64006711.67129099,
+   "pnl_total": 50006846.201291,
+   "roi_total": 0.4889697932,
+   "vlm_total": 64568268875.5,
+   "pnl_mes": 12087107.358476,
+   "roi_mes": 0.1010770819,
+   "vlm_mes": 6586331542.4
+  },
+  {
+   "direccion": "0x05cafe987297448f21a3c7ae0ae815fddecac655",
+   "valor": 140297080.598666,
+   "pnl_total": 49805759.338666,
+   "roi_total": 0.5503926636,
+   "vlm_total": 0.0,
+   "pnl_mes": 0.0,
+   "roi_mes": 0.0,
+   "vlm_mes": 0.0
+  },
+  {
+   "direccion": "0x1419e75330c71ce463102e6a1eb62fe80b412d5f",
+   "valor": 36743907.893672,
+   "pnl_total": 49135201.593672,
+   "roi_total": 4.3743399241,
+   "vlm_total": 939432.17,
+   "pnl_mes": 0.0,
+   "roi_mes": 0.0,
+   "vlm_mes": 0.0
+  },
+  {
+   "direccion": "0x03b3e2069830dd3bd1a5b5e45dad60a770227ed7",
+   "valor": 0.541645,
+   "pnl_total": 46496350.361645,
+   "roi_total": 4.5833356792,
+   "vlm_total": 38791426.12,
+   "pnl_mes": 0.0,
+   "roi_mes": 0.0,
+   "vlm_mes": 0.0
+  },
+  {
+   "direccion": "0x010461c14e146ac35fe42271bdc1134ee31c703a",
+   "valor": 3144878.812505,
+   "pnl_total": 46127130.452505,
+   "roi_total": 0.3326315446,
+   "vlm_total": 194161376105.7,
+   "pnl_mes": 4688.582573,
+   "roi_mes": 0.0014930887,
+   "vlm_mes": 306254887.89
+  },
+  {
+   "direccion": "0x0e8bf301805df4e6ba7151297e5f7dfedc1eaab9",
+   "valor": 180.147658,
+   "pnl_total": 44344441.387658,
+   "roi_total": 16.2403116512,
+   "vlm_total": 14068234.4,
+   "pnl_mes": 0.0,
+   "roi_mes": 0.0,
+   "vlm_mes": 0.0
+  },
+  {
+   "direccion": "0xb695651daa495f59dd2725c6fe98322d8b51a92d",
+   "valor": 24644807.505599,
+   "pnl_total": 44319711.671133,
+   "roi_total": 0.9358383863,
+   "vlm_total": 405830747.22,
+   "pnl_mes": 38142624.400989,
+   "roi_mes": 0.7810383115,
+   "vlm_mes": 172976453.17
+  },
+  {
+   "direccion": "0xda3cdff67ce27fa68ba5600a7c95efd8153d9f15",
+   "valor": 0.157244,
+   "pnl_total": 43348850.957244,
+   "roi_total": 28.419764429,
+   "vlm_total": 120285618.78,
+   "pnl_mes": 0.00478,
+   "roi_mes": 4.78e-05,
+   "vlm_mes": 0.0
+  },
+  {
+   "direccion": "0x856c35038594767646266bc7fd68dc26480e910d",
+   "valor": 53714950.153591,
+   "pnl_total": 43009973.023591004,
+   "roi_total": 0.5267606512,
+   "vlm_total": 29899070103.789997,
+   "pnl_mes": -1380443.1301610002,
+   "roi_mes": -0.0240033033,
+   "vlm_mes": 2338319474.54
+  },
+  {
+   "direccion": "0xfc27136e42af1732ddc9ce2605ea9bff1b959d9d",
+   "valor": 44856692.236487,
+   "pnl_total": 42778477.556487,
+   "roi_total": 1.3990087017,
+   "vlm_total": 14774959041.43,
+   "pnl_mes": 32738040.680989,
+   "roi_mes": 0.8731308211,
+   "vlm_mes": 2327493355.01
+  },
+  {
+   "direccion": "0x162cc7c861ebd0c06b3d72319201150482518185",
+   "valor": 214340.962358,
+   "pnl_total": 42776185.242358,
+   "roi_total": 0.603280432,
+   "vlm_total": 722411465040.04,
+   "pnl_mes": 0.0,
+   "roi_mes": 0.0,
+   "vlm_mes": 90369.58
+  },
+  {
+   "direccion": "0x4f7634c03ec4e87e14725c84913ade523c6fad5a",
+   "valor": 1708.287923,
+   "pnl_total": 42620933.627923,
+   "roi_total": 1.4266403486,
+   "vlm_total": 421990924.56,
+   "pnl_mes": 0.0,
+   "roi_mes": 0.0,
+   "vlm_mes": 0.0
+  },
+  {
+   "direccion": "0x8196e0648cb16e9151c2920618a58605706b5836",
+   "valor": 4132732.158218,
+   "pnl_total": 42245457.898218,
+   "roi_total": 21.1227367812,
+   "vlm_total": 30680515.6,
+   "pnl_mes": 306785.087952,
+   "roi_mes": 0.0272916589,
+   "vlm_mes": 791638.96
+  }
+ ],
+ "segundos": 480.1
+}
