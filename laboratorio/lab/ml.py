@@ -235,6 +235,8 @@ def evaluar_df(df, Xn, yn, feats, nombre, coste):
         bruto, _ = cartera(df, pred, k, modo, 0.0, salida, col)
         c = {k2: (round(v, 3) if isinstance(v, float) else v) for k2, v in s.items()}
         c['giro_diario'] = round(giro, 3)
+        anos = serie.groupby(serie.index.year).apply(lambda x: (np.exp(np.log1p(np.maximum(x.values, -0.99)).sum()) - 1) * 100)
+        c['por_ano_pct'] = {str(int(a)): round(float(v), 1) for a, v in anos.items()}
         c['sharpe_sin_costes'] = round(float(sharpe(bruto.values) * math.sqrt(365)), 3)
         res['carteras'][nombre_c] = c
     # referencia: todas las monedas del universo a partes iguales (comprado)
@@ -273,10 +275,12 @@ def informe(r, titulo='Aprendizaje automático (estilo Qlib) — todo fuera de m
             l.append('- Entrando un día más tarde: IC %.3f (t = %.1f). Si se mantiene, la ventaja no depende del precio exacto de cierre.' % (x['ic_un_dia_tarde'], x['t_ic_un_dia_tarde']))
         ref = x['referencia_todas_a_partes_iguales']
         l.append('- Referencia (todas comprado a partes iguales): %.1f %% al año, Sharpe %.2f, caída máxima %.1f %%.\n' % (ref.get('rent_anual_pct', 0), ref.get('sharpe_anual', 0), ref.get('caida_max_pct', 0)))
-        l.append('| Cartera | Rent. anual | Sharpe | Sharpe sin costes | Caída máx. | Giro diario |')
-        l.append('|---|---|---|---|---|---|')
+        anos = sorted({a for c in x['carteras'].values() for a in c.get('por_ano_pct', {})})
+        l.append('| Cartera | Rent. anual | Sharpe | Sharpe sin costes | Caída máx. | Giro diario | ' + ' | '.join(anos) + (' |' if anos else ''))
+        l.append('|---|---|---|---|---|---|' + '---|' * len(anos))
         for nombre, c in x['carteras'].items():
-            l.append('| %s | %.1f %% | %.2f | %.2f | %.1f %% | %.2f |' % (nombre.replace('_', ' '), c.get('rent_anual_pct', 0), c.get('sharpe_anual', 0), c.get('sharpe_sin_costes', 0), c.get('caida_max_pct', 0), c.get('giro_diario', 0)))
+            l.append('| %s | %.1f %% | %.2f | %.2f | %.1f %% | %.2f |' % (nombre.replace('_', ' '), c.get('rent_anual_pct', 0), c.get('sharpe_anual', 0), c.get('sharpe_sin_costes', 0), c.get('caida_max_pct', 0), c.get('giro_diario', 0))
+                     + ''.join(' %+.0f %% |' % c['por_ano_pct'][a] if a in c.get('por_ano_pct', {}) else ' — |' for a in anos))
         l.append('')
     l.append('«Lenta»: una moneda se mantiene mientras siga entre las 15 mejores (o peores), así se opera mucho menos. '
              '«Un día tarde»: la misma cartera lenta, pero entrando al cierre del día siguiente.\n')
