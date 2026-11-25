@@ -40,6 +40,8 @@ globalThis.fetch = async (url, init = {}) => {
   const u = new URL(url);
   if (u.host === 'raw.githubusercontent.com' && u.pathname.endsWith('/senal.json')) { porTipo.ml = (porTipo.ml || 0) + 1; return new Response('no', { status: 404 }); }
   if (u.host === 'raw.githubusercontent.com' && u.pathname.endsWith('/traders/seleccion.json')) { porTipo.traders = (porTipo.traders || 0) + 1; return new Response('no', { status: 404 }); }
+  if (u.host === 'raw.githubusercontent.com' && u.pathname.endsWith('/semana/ranking.json')) { porTipo.semana = (porTipo.semana || 0) + 1; return new Response('no', { status: 404 }); }
+  if (u.host === 'ntfy.sh') { porTipo.ntfy = (porTipo.ntfy || 0) + 1; return new Response('{}', { status: 200 }); }
   if (u.host === 'raw.githubusercontent.com') { porTipo.lab = (porTipo.lab || 0) + 1; return resp(LAB_JSON); }
   if (u.host !== 'api.hyperliquid.xyz') throw new Error('Host no simulado ' + u.host);
   if (JSON.parse(init.body).type === 'metaAndAssetCtxs' && HUECO_ETH(AHORA)) { const r = await metaOriginal(url, init); const j = await r.json(); const i = j[0].universe.findIndex((a) => a.name === 'ETH'); j[1][i].markPx = ''; return resp(j); }
@@ -88,6 +90,7 @@ check(exp.length === 26, 'hay 26 expertos: 23 fijos (con el de aprendizaje autom
 const lab = await herramienta('aprendizaje', { vista: 'laboratorio' });
 check(lab.rows.length === 3 && lab.rows.every((r) => r.horasEnVivo > 0), 'los 3 del laboratorio aprenden en vivo: ' + lab.rows.map((r) => r.id + ' ' + r.horasEnVivo + ' h').join(', '));
 check(lab.laboratorio.estrategiasProbadas === 2232 && lab.laboratorio.fueraDeMuestraTop5.sharpeAnual === 1, 'la vista laboratorio resume lo publicado');
+check((porTipo.semana || 0) >= 7 && (porTipo.semana || 0) <= 9 && (porTipo.ntfy || 0) === 1, 'avisos: el ranking semanal se mira una vez por hora (' + porTipo.semana + ' en 8 h); con precios tranquilos solo sale el resumen de las 8:47 de Madrid (' + (porTipo.ntfy || 0) + ')');
 check((porTipo.lab || 0) >= 1 && (porTipo.lab || 0) <= 3, 'consulta el laboratorio como mucho cada 6 horas: ' + porTipo.lab + ' veces en 8 h');
 const al = (await herramienta('aprendizaje', { vista: 'alertas' })).rows;
 check(al.some((a) => a.tipo === 'laboratorio' && a.texto.startsWith('Llegan del laboratorio')), 'avisa de las que llegan del laboratorio');

@@ -16,7 +16,7 @@
 // y un disparador Cron cada minuto (* * * * *). Primero repasa unas 5000 horas de historia, 16 por minuto;
 // después aprende cada hora en vivo. Todo en papel: no mueve dinero.
 
-const VERSION = '2.5.1';
+const VERSION = '2.5.2';
 const HL = 'https://api.hyperliquid.xyz/info';
 const BINANCE = 'https://data-api.binance.vision/api/v3';
 const KRAKEN = 'https://api.kraken.com/0/public';
@@ -381,7 +381,24 @@ const TRADERS_DIAS_VALIDA = 14;
 // Dónde está la ventaja esta semana (laboratorio, cada día laborable a las 22:41 UTC): ~25 mercados ordenados por su
 // tendencia de 12 semanas ajustada a la volatilidad, con su historial. Se lee al pedir la vista (caché de 10 minutos).
 const SEMANA_URL = 'https://raw.githubusercontent.com/rendir-IEC/radar-laboratorio/main/resultados/semana/ranking.json';
-const SEMANA_MAX_BYTES = 65536;    // si el laboratorio deja de publicar, se vuelve a la lista fija         // si el laboratorio deja de publicar, a los 3 días el experto se queda sin posición     // el archivo del laboratorio pesa ~16 KB; uno mucho mayor no se lee
+const SEMANA_MAX_BYTES = 65536;    // el archivo del laboratorio pesa ~16 KB; uno mucho mayor no se lee
+
+// Avisos al móvil (v2.5.2) con ntfy (app gratuita, sin cuenta). El nombre del canal se genera al azar la primera vez,
+// se guarda en la base de datos D1 y solo se ve con el TOKEN (vista «avisos»): nunca está en este código.
+const NTFY_URL = 'https://ntfy.sh/';
+const AVISO = {
+  MINUTO: 47,                       // ranking semanal y resumen de la mañana: minuto libre de calentamiento, laboratorio y bot
+  HORA_RESUMEN: 8,                  // de lunes a viernes a las 8:47 de Madrid
+  NOCHE: [23, 8],                   // de 23:00 a 7:59 de Madrid los avisos llegan sin sonido; los del ranking esperan al resumen
+  MOV_PCT: { BTC: 5, ETH: 5 },      // movimiento en la última hora que dispara el aviso
+  MOV_OTRAS_PCT: 10,                // resto de monedas que vigila el sistema
+  MOV_MAX_PCT: 40,                  // más que esto en una hora es un dato roto: no se avisa
+  MUESTRA_MIN: 4.5,                 // una muestra de precio cada ~5 minutos, 65 minutos guardados
+  REPETIR_H: 3,                     // el mismo aviso (moneda y sentido) no se repite en 3 h salvo que el movimiento crezca otro tanto
+  PRUEBA_MIN: 10,                   // como mucho un aviso de prueba cada 10 minutos
+  MAX_GUARDADOS: 30,
+  MAX_POR_MINUTO: 3,
+};
 function apListaExpertos(E) {
   const lab = (E && E.lab && E.lab.specs) || [];
   if (!lab.length) return AP_EXPERTOS;
@@ -1158,6 +1175,7 @@ async function apMinuto(env) {
   if (!F.abierta || F.abierta.hora !== horaActual) { if (F.abierta) F.cerrada = F.abierta; F.abierta = { hora: horaActual, monedas: {} }; }
   const minuto = Math.floor((ahora - horaActual) / 60e3);
   const inicioCuarto = minuto % 15 < 2;
+  const mids = {};
   const libros = await Promise.allSettled(AP.MONEDAS.map((m) => pedir(HL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ type: 'l2Book', coin: m }) }, 1)));
   libros.forEach((r, i) => {
     const m = AP.MONEDAS[i];
@@ -1169,6 +1187,7 @@ async function apMinuto(env) {
     for (let k = 0; k < Math.min(10, compras.length); k++) sc += num(compras[k].sz);
     for (let k = 0; k < Math.min(10, ventas.length); k++) sv += num(ventas[k].sz);
     const deseq = sc + sv > 0 ? (sc - sv) / (sc + sv) : 0;
+    if (pc > 0 && pv > 0) mids[m] = (pc + pv) / 2;
     const p = F.prev[m];
     let ofi = 0;
     if (p && ahora - p.t < 5 * 60e3) {
@@ -1180,8 +1199,10 @@ async function apMinuto(env) {
     const a = F.abierta.monedas[m] || (F.abierta.monedas[m] = { ofi: 0, ofiQ: 0, deseq: 0, n: 0 });
     a.ofi += ofi; if (inicioCuarto) a.ofiQ += ofi; a.deseq += deseq; a.n++;
   });
+  const movs = avisoMovimientos(F, mids, ahora);
   await env.DB.prepare('INSERT INTO ap_estado (id, json, t) VALUES (?1, ?2, ?3) ON CONFLICT(id) DO UPDATE SET json = excluded.json, t = excluded.t').bind('flujo', JSON.stringify(F), ahora).run();
-  return { ok: true, modo: 'flujo', minuto };
+  if (movs.length) await avisosMovimientos(env, movs, ahora).catch((e) => console.log('avisos: ' + (e.message || e)));
+  return { ok: true, modo: 'flujo', minuto, avisos: movs.length };
 }
 async function apFlujoDeLaHora(env, hora) {
   const fila = await env.DB.prepare('SELECT json FROM ap_estado WHERE id = ?1').bind('flujo').first();
@@ -1395,6 +1416,172 @@ async function semanaLeer() {
 }
 const SEMANA_NOTA = 'Laboratorio: cada día laborable ordena unos 25 mercados (cripto, materias primas, índices, bonos y divisas) por su tendencia de 12 semanas dividida por su volatilidad (puntuación). Fuerza: fuerte desde 1, débil entre 0 y 1, ninguna por debajo de 0. Historial con cierres semanales públicos desde 2004 y un 0,10 % por operación. Investigación en papel; no es una recomendación.';
 
+// ---------- avisos al móvil (v2.5.2) por ntfy ----------
+// Tres avisos: 1) BTC o ETH se mueven un 5 % o más en una hora (el resto de monedas que vigila el sistema, un 10 %),
+// medido cada minuto con el libro de órdenes que ya se lee para el flujo (sin peticiones de más);
+// 2) un mercado entra o sale de la tendencia fuerte del ranking semanal (se mira cada hora en el minuto :47);
+// 3) un resumen de lunes a viernes a las 8:47 de Madrid. De noche no suenan: los del ranking esperan al resumen.
+function madrid(ms) {
+  const p = {};
+  for (const x of new Intl.DateTimeFormat('en-GB', { timeZone: 'Europe/Madrid', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', hourCycle: 'h23', weekday: 'short' }).formatToParts(new Date(ms))) p[x.type] = x.value;
+  return { fecha: p.year + '-' + p.month + '-' + p.day, hora: Number(p.hour), laborable: p.weekday !== 'Sat' && p.weekday !== 'Sun' };
+}
+const deNoche = (hora) => hora >= AVISO.NOCHE[0] || hora < AVISO.NOCHE[1];
+const comaFija = (x, d = 1) => x.toFixed(d).replace('.', ',');
+const conSigno = (x, d = 1) => (x > 0 ? '+' : x < 0 ? '−' : '') + comaFija(Math.abs(x), d);
+function fmtPx(x) {
+  if (x >= 1000) return Math.round(x).toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+  return x >= 1 ? comaFija(x, 2) : x.toPrecision(3).replace('.', ',');
+}
+function avisoCanalNuevo() {
+  const abc = 'abcdefghijkmnpqrstuvwxyz23456789', b = new Uint8Array(15);
+  crypto.getRandomValues(b);
+  return 'radar-' + Array.from(b, (x) => abc[x % 32]).join('');
+}
+async function avisosCargar(env) {
+  await apTablas(env);
+  let fila = await env.DB.prepare('SELECT json FROM ap_estado WHERE id = ?1').bind('avisos').first();
+  if (!fila) { // primera vez: el canal se crea una sola vez aunque dos minutos lleguen a la vez
+    await env.DB.prepare('INSERT INTO ap_estado (id, json, t) VALUES (?1, ?2, ?3) ON CONFLICT(id) DO NOTHING').bind('avisos', JSON.stringify({ canal: avisoCanalNuevo(), creado: iso(Date.now()), enviados: [] }), Date.now()).run();
+    fila = await env.DB.prepare('SELECT json FROM ap_estado WHERE id = ?1').bind('avisos').first();
+  }
+  const A = JSON.parse(fila.json);
+  if (!Array.isArray(A.enviados)) A.enviados = [];
+  return A;
+}
+async function avisosGuardar(env, A) {
+  await env.DB.prepare('INSERT INTO ap_estado (id, json, t) VALUES (?1, ?2, ?3) ON CONFLICT(id) DO UPDATE SET json = excluded.json, t = excluded.t').bind('avisos', JSON.stringify(A), Date.now()).run();
+}
+async function avisoMandar(A, { titulo, texto, prioridad = 3, etiquetas = [] }, ahora) {
+  let ok = false, estado = null;
+  try {
+    const r = await fetch(NTFY_URL, { method: 'POST', headers: { 'Content-Type': 'application/json', 'User-Agent': 'radar-mercados/' + VERSION }, body: JSON.stringify({ topic: A.canal, title: titulo, message: texto, priority: prioridad, tags: etiquetas }) });
+    ok = r.ok; estado = r.status;
+  } catch (e) { estado = 'sin respuesta'; }
+  A.enviados.unshift({ t: iso(ahora), titulo, texto, prioridad, ok, estado });
+  if (A.enviados.length > AVISO.MAX_GUARDADOS) A.enviados.length = AVISO.MAX_GUARDADOS;
+  return ok;
+}
+
+// Guarda una muestra de precio cada ~5 minutos y devuelve las monedas que se han movido de más en la última hora.
+function avisoMovimientos(F, mids, ahora) {
+  F.px = F.px || {}; F.avMov = F.avMov || {};
+  for (const m of Object.keys(F.px)) if (!AP.MONEDAS.includes(m)) delete F.px[m];
+  const salen = [];
+  for (const [m, mid] of Object.entries(mids)) {
+    if (!(mid > 0)) continue;
+    const serie = (Array.isArray(F.px[m]) ? F.px[m] : []).filter((x) => Array.isArray(x) && ahora - x[0] <= 65 * 60e3 && x[1] > 0);
+    let mayor = null;
+    for (const [t, p] of serie) {
+      if (ahora - t > 60 * 60e3 + 30e3) continue;
+      const c = (mid / p - 1) * 100;
+      if (!mayor || Math.abs(c) > Math.abs(mayor.c)) mayor = { c, p, t };
+    }
+    // una muestra que salta más del máximo respecto a la anterior es un dato roto: no se guarda
+    const ult = serie[serie.length - 1];
+    if ((!ult || ahora - ult[0] >= AVISO.MUESTRA_MIN * 60e3) && !(ult && Math.abs((mid / ult[1] - 1) * 100) > AVISO.MOV_MAX_PCT)) serie.push([ahora, mid]);
+    F.px[m] = serie;
+    const umbral = AVISO.MOV_PCT[m] || AVISO.MOV_OTRAS_PCT;
+    if (!mayor || Math.abs(mayor.c) < umbral || Math.abs(mayor.c) > AVISO.MOV_MAX_PCT) continue;
+    const dir = mayor.c > 0 ? 1 : -1, u = F.avMov[m];
+    if (u && ahora - u.t < AVISO.REPETIR_H * H1 && u.dir === dir && Math.abs((mid / u.px - 1) * 100) < umbral) continue;
+    F.avMov[m] = { t: ahora, px: mid, dir };
+    salen.push({ m, c: mayor.c, desde: mayor.p, hasta: mid, min: Math.max(1, Math.round((ahora - mayor.t) / 60e3)) });
+  }
+  return salen;
+}
+function avisoTextoMovimientos(movs, noche) {
+  const orden = movs.slice().sort((a, b) => Math.abs(b.c) - Math.abs(a.c));
+  const x = orden[0], baja = x.c < 0;
+  const titulo = orden.length === 1
+    ? x.m + (baja ? ' cae un ' : ' sube un ') + comaFija(Math.abs(x.c)) + ' % en ' + x.min + ' min'
+    : 'Movimiento fuerte: ' + orden.slice(0, 3).map((y) => y.m + ' ' + conSigno(y.c) + ' %').join(', ') + (orden.length > 3 ? ' y ' + (orden.length - 3) + ' más' : '');
+  const lineas = orden.slice(0, 8).map((y) => y.m + ' ' + conSigno(y.c) + ' % en ' + y.min + ' min: de ' + fmtPx(y.desde) + ' a ' + fmtPx(y.hasta) + ' $');
+  return { titulo, texto: lineas.join('\n') + '\nPrecio de Hyperliquid. Es un aviso de vigilancia, no una recomendación.', prioridad: noche ? 2 : 4, etiquetas: [baja ? 'chart_with_downwards_trend' : 'chart_with_upwards_trend'] };
+}
+async function avisosMovimientos(env, movs, ahora) {
+  const A = await avisosCargar(env);
+  await avisoMandar(A, avisoTextoMovimientos(movs, deNoche(madrid(ahora).hora)), ahora);
+  await avisosGuardar(env, A);
+}
+
+// Ranking semanal: quién entra o sale de la tendencia fuerte (puntuación desde 1).
+const avisoFicha = (m) => ({ simbolo: m.simbolo, nombre: m.nombre, puntuacion: m.puntuacion, siguienteComoAhoraPct: m.siguienteComoAhoraPct, aciertoPct: m.aciertoPct, comoComprar: m.comoComprar });
+function avisoLineasCambio(cambios) {
+  const l = [];
+  for (const c of cambios) {
+    for (const m of c.entran) l.push('Entra ' + (m.nombre || m.simbolo) + ' (' + m.simbolo + '), puntuación ' + comaFija(m.puntuacion || 0, 2) + (m.siguienteComoAhoraPct != null ? '. Cuando estuvo así, la semana siguiente hizo de media ' + conSigno(m.siguienteComoAhoraPct, 2) + ' %' : '') + (m.aciertoPct != null ? ' (acierto ' + Math.round(m.aciertoPct) + ' %)' : '') + (m.comoComprar ? '. Cómo: ' + m.comoComprar : '') + '.');
+    for (const m of c.salen) l.push('Sale ' + (m.nombre || m.simbolo) + ' (' + m.simbolo + '): su tendencia ya no es fuerte.');
+  }
+  return l;
+}
+function avisoTextoCambio(cambios) {
+  const entran = cambios.flatMap((c) => c.entran.map((m) => m.simbolo)), salen = cambios.flatMap((c) => c.salen.map((m) => m.simbolo));
+  const titulo = 'Tendencia fuerte: ' + [entran.length ? (entran.length > 1 ? 'entran ' : 'entra ') + entran.join(', ') : '', salen.length ? (salen.length > 1 ? 'salen ' : 'sale ') + salen.join(', ') : ''].filter(Boolean).join(' · ');
+  return { titulo, texto: avisoLineasCambio(cambios).join('\n') + '\nRanking de 12 semanas del laboratorio. Investigación en papel, no una recomendación.', prioridad: 3, etiquetas: ['bar_chart'] };
+}
+function avisoTextoResumen(S, pendientes) {
+  const l = [];
+  if (S.error) l.push('No he podido leer el ranking de la semana: ' + S.error);
+  else {
+    const f = S.mercados.filter((m) => m.fuerza === 'fuerte');
+    l.push(f.length ? 'En tendencia fuerte: ' + f.map((m) => (m.nombre || m.simbolo) + ' ' + comaFija(m.puntuacion, 2)).join(', ') + '.' : 'Ningún mercado en tendencia fuerte: sin fuerza, la ventaja histórica de la semana siguiente es pequeña.');
+    const top = S.mercados.filter((m) => m.puntuacion != null).sort((a, b) => b.puntuacion - a.puntuacion).slice(0, 3);
+    if (top.length) l.push('Primeros del ranking: ' + top.map((m) => m.simbolo + ' ' + comaFija(m.puntuacion, 2)).join(' · ') + '.');
+    const alza = S.mercados.filter((m) => m.puntuacion > 0).length;
+    l.push(alza + ' de ' + S.mercados.length + ' mercados al alza en 12 semanas.');
+  }
+  if (pendientes.length) { l.push('Novedades del ranking:'); l.push(...avisoLineasCambio(pendientes)); }
+  l.push('Investigación en papel, no una recomendación.');
+  return { titulo: 'Radar: buenos días', texto: l.join('\n'), prioridad: 3, etiquetas: ['sunrise'] };
+}
+async function avisosHora(env, ahora = Date.now()) {
+  const S = await semanaLeer();
+  const A = await avisosCargar(env);
+  const md = madrid(ahora);
+  const tocaResumen = md.hora === AVISO.HORA_RESUMEN && A.resumenFecha !== md.fecha;
+  let cambia = false;
+  if (!S.error && S.generado && S.generado !== A.semanaGenerado) {
+    const fuertes = S.mercados.filter((m) => m.fuerza === 'fuerte');
+    if (Array.isArray(A.fuertes)) { // la primera lectura solo fija el punto de partida
+      const antes = new Set(A.fuertes.map((m) => m.simbolo)), ya = new Set(fuertes.map((m) => m.simbolo));
+      const cambio = { t: iso(ahora), entran: fuertes.filter((m) => !antes.has(m.simbolo)).map(avisoFicha), salen: A.fuertes.filter((m) => !ya.has(m.simbolo)) };
+      if (cambio.entran.length || cambio.salen.length) {
+        if (deNoche(md.hora) || tocaResumen) A.pendientes = [...(A.pendientes || []), cambio].slice(-5); // va en el resumen
+        else await avisoMandar(A, avisoTextoCambio([cambio]), ahora);
+      }
+    }
+    A.fuertes = fuertes.map((m) => ({ simbolo: m.simbolo, nombre: m.nombre }));
+    A.semanaGenerado = S.generado; cambia = true;
+  }
+  const pendientes = A.pendientes || [];
+  if (tocaResumen && (md.laborable || pendientes.length)) {
+    await avisoMandar(A, avisoTextoResumen(S, pendientes), ahora);
+    A.pendientes = []; A.resumenFecha = md.fecha; cambia = true;
+  }
+  if (cambia) await avisosGuardar(env, A);
+  return { ok: true, cambia };
+}
+async function avisosVista(env, prueba) {
+  const A = await avisosCargar(env);
+  const ahora = Date.now();
+  let resultado = null;
+  if (prueba) {
+    if (A.pruebaT && ahora - Date.parse(A.pruebaT) < AVISO.PRUEBA_MIN * 60e3) resultado = 'Ya se mandó una prueba hace menos de ' + AVISO.PRUEBA_MIN + ' minutos.';
+    else {
+      A.pruebaT = iso(ahora);
+      const ok = await avisoMandar(A, { titulo: 'Radar: aviso de prueba', texto: 'Si lees esto, los avisos del radar llegan a tu móvil.', prioridad: 3, etiquetas: ['white_check_mark'] }, ahora);
+      resultado = ok ? 'Prueba enviada.' : 'ntfy no aceptó la prueba: ' + A.enviados[0].estado;
+      await avisosGuardar(env, A);
+    }
+  }
+  return {
+    rows: A.enviados, canal: A.canal, servidor: 'ntfy.sh', creado: A.creado, prueba: resultado,
+    vigilando: { tendenciaFuerte: (A.fuertes || []).map((m) => m.simbolo), pendientesParaLaManana: (A.pendientes || []).length, ultimoRanking: A.semanaGenerado || null, ultimoResumen: A.resumenFecha || null },
+    nota: 'Avisos al móvil con la app ntfy: suscríbete al canal (servidor ntfy.sh). BTC y ETH: un ' + AVISO.MOV_PCT.BTC + ' % o más en una hora; el resto de monedas del sistema: un ' + AVISO.MOV_OTRAS_PCT + ' %. Ranking semanal: cuando un mercado entra o sale de la tendencia fuerte. Resumen de lunes a viernes a las ' + AVISO.HORA_RESUMEN + ':' + AVISO.MINUTO + ' de Madrid. De 23:00 a 8:00 los avisos llegan sin sonido y los del ranking esperan al resumen. El nombre del canal es la única llave: no lo publiques.',
+  };
+}
+
 async function aprendizaje({ vista } = {}, env) {
   const vs = vista || 'resumen';
   if (vs === 'semana' || vs === 'semana_resumen' || vs === 'semana_fuerza') {
@@ -1404,8 +1591,9 @@ async function aprendizaje({ vista } = {}, env) {
     return { rows, generado: S.generado, nota: SEMANA_NOTA };
   }
   if (!env || !env.DB) throw new Error('Falta conectar la base de datos D1 (variable DB) al Worker.');
-  const E = await apCargar(env);
   const v = vista || 'resumen';
+  if (v === 'avisos' || v === 'avisos_prueba') return avisosVista(env, v === 'avisos_prueba');
+  const E = await apCargar(env);
   if (v === 'bot') return botVista(env);
   if (v === 'ml') {
     const M = E.ml;
@@ -1617,7 +1805,7 @@ const HERRAMIENTAS = [
   { name: 'historico_diario', title: 'Historial diario largo', description: 'Velas diarias (UTC) de un activo desde una fecha: BTC desde 2015 y ETH desde 2016 vía Bitstamp; el resto, lo que haya en Kraken (hasta 720 días) o Hyperliquid. Una fila por día.', inputSchema: { type: 'object', properties: { simbolo: { type: 'string', description: 'p. ej. BTC, ETH, ORO, SP500' }, desde: { type: 'string', description: 'Fecha AAAA-MM-DD. Por defecto, la más antigua disponible.' } }, required: ['simbolo'], additionalProperties: false }, fn: historicoDiario },
   { name: 'derivados', title: 'Financiación y posiciones abiertas', description: 'Funding de los perpetuos cripto de Hyperliquid (ahora, media de 7 días y percentil de 30 días, anualizados), posiciones abiertas en dólares y prima frente al oráculo. Sirve para detectar exceso de apalancamiento.', inputSchema: { type: 'object', properties: { simbolos: S_SIMBOLOS }, additionalProperties: false }, fn: derivados },
   { name: 'funding_diario', title: 'Funding diario', description: 'Funding diario (suma de las 24 tasas horarias, UTC) de los perpetuos cripto de Hyperliquid en los últimos días cerrados (7 a 90). Una fila por símbolo y día. Sirve para el motor de cobro del funding.', inputSchema: { type: 'object', properties: { simbolos: S_SIMBOLOS, dias: { type: 'integer', minimum: 7, maximum: 90, description: 'Días cerrados hacia atrás (por defecto 60).' } }, additionalProperties: false }, fn: fundingDiario },
-  { name: 'aprendizaje', title: 'Sistema que aprende', description: 'Estado del sistema que aprende cada hora (en papel): resumen, expertos y sus pesos, posiciones combinadas, curva diaria frente a Bitcoin, carteras seguidas con su habilidad, avisos, lo que propone el laboratorio y el bot de pruebas (50, 200 y 1000 € en papel en Kraken Futuros).', inputSchema: { type: 'object', properties: { vista: { type: 'string', enum: ['resumen', 'expertos', 'posiciones', 'curva', 'carteras', 'alertas', 'laboratorio', 'bot', 'ml', 'semana', 'semana_resumen', 'semana_fuerza'], description: 'Qué parte ver. Por defecto, resumen. bot: carteras en papel de 50, 200 y 1000 € que siguen al sistema en Kraken Futuros con costes y mínimos reales. ml: la señal diaria del aprendizaje automático y cómo le va a su experto. semana: unos 25 mercados ordenados por su tendencia de 12 semanas, con su historial; semana_resumen: cómo le fue a comprar cada semana las 3 mejores; semana_fuerza: la semana siguiente según la fuerza de la señal.' } }, additionalProperties: false }, fn: aprendizaje },
+  { name: 'aprendizaje', title: 'Sistema que aprende', description: 'Estado del sistema que aprende cada hora (en papel): resumen, expertos y sus pesos, posiciones combinadas, curva diaria frente a Bitcoin, carteras seguidas con su habilidad, avisos, lo que propone el laboratorio y el bot de pruebas (50, 200 y 1000 € en papel en Kraken Futuros).', inputSchema: { type: 'object', properties: { vista: { type: 'string', enum: ['resumen', 'expertos', 'posiciones', 'curva', 'carteras', 'alertas', 'laboratorio', 'bot', 'ml', 'semana', 'semana_resumen', 'semana_fuerza', 'avisos', 'avisos_prueba'], description: 'Qué parte ver. Por defecto, resumen. bot: carteras en papel de 50, 200 y 1000 € que siguen al sistema en Kraken Futuros con costes y mínimos reales. ml: la señal diaria del aprendizaje automático y cómo le va a su experto. semana: unos 25 mercados ordenados por su tendencia de 12 semanas, con su historial; semana_resumen: cómo le fue a comprar cada semana las 3 mejores; semana_fuerza: la semana siguiente según la fuerza de la señal. avisos: el canal de ntfy para recibir avisos en el móvil y los últimos enviados; avisos_prueba: manda un aviso de prueba (uno cada 10 minutos como mucho).' } }, additionalProperties: false }, fn: aprendizaje },
   { name: 'mercados', title: 'Mercados disponibles', description: 'Lista de símbolos del radar, de dónde sale cada uno y qué otros mercados (acciones de EE. UU., etc.) hay disponibles.', inputSchema: { type: 'object', properties: {}, additionalProperties: false }, fn: mercados },
   { name: 'estado_fuentes', title: 'Estado de las fuentes', description: 'Comprueba si Hyperliquid, Kraken y Binance responden y cuánto tardan.', inputSchema: { type: 'object', properties: {}, additionalProperties: false }, fn: estadoFuentes },
 ];
@@ -1703,6 +1891,8 @@ export default {
         // mercados nuevos: 1 cada 10 minutos (:05, :15… :55), lejos de la hora en vivo; +2 peticiones
         if (minuto % 10 === 5) await apCalentarMinuto(env).catch((e) => console.log('calentar: ' + (e.message || e)));
         // laboratorio: +1 petición como mucho cada 6 h, y la señal del aprendizaje automático +1 cada 3 h, en un minuto sin calentamiento
+        // avisos al móvil: ranking semanal y resumen de la mañana (+1 petición con caché, +2 a ntfy como mucho)
+        if (minuto === AVISO.MINUTO) await avisosHora(env).catch((e) => console.log('avisos: ' + (e.message || e)));
         if (minuto === 37) await apLabMinuto(env).catch((e) => console.log('laboratorio: ' + (e.message || e)));
         // bot de pruebas: del minuto :07 al :12 hasta que haga la hora (+2 peticiones); fichas de Kraken a las :27 (+1, una vez al día)
         if (minuto >= BOT.MINUTO && minuto < BOT.MINUTO + 6) await botHora(env).catch((e) => console.log('bot: ' + (e.message || e)));
