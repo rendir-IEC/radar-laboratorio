@@ -1,0 +1,49 @@
+# Dónde está la ventaja esta semana: ~25 mercados ordenados por su tendencia, con su historial (solo publica resultados)
+name: Ventaja de la semana
+
+on:
+  schedule:
+    - cron: '41 22 * * 1-5'   # de lunes a viernes a las 22:41 UTC, tras el cierre de EE. UU.
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: semana
+  cancel-in-progress: false
+
+jobs:
+  ranking:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Instalar dependencias
+        run: pip install -q numpy pandas
+      - name: Pruebas sin red
+        working-directory: laboratorio
+        run: python pruebas/prueba_semana.py
+      - name: Descargar cierres, probar y ordenar
+        working-directory: laboratorio
+        run: python -m lab.semana --salida /tmp/sem
+      - name: Publicar en el repositorio
+        run: |
+          git config user.name "laboratorio"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          for i in 1 2 3 4 5; do
+            git fetch -q origin main && git reset -q --hard origin/main
+            mkdir -p resultados/semana
+            cp /tmp/sem/semana.json /tmp/sem/ranking.json /tmp/sem/informe.md resultados/semana/
+            git add resultados/semana
+            git diff --cached --quiet && exit 0
+            git commit -q -m "Ventaja de la semana $(date -u +%Y-%m-%dT%H:%MZ)"
+            git push -q origin HEAD:main && exit 0
+            sleep $((i * 5))
+          done
+          exit 1
