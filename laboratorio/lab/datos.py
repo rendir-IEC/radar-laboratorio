@@ -155,8 +155,10 @@ def descargar_binance(monedas, hilos=8, registro=None):
                 else:
                     url = '%s/monthly/fundingRate/%s/%s-fundingRate-%s.zip' % (VISION, sym, sym, mes)
                 tareas.append((ruta, url, tipo))
-        # días del mes en curso (solo velas; los diarios de días ya cerrados no cambian)
-        dia = ahora.replace(day=1).date()
+        # días del mes en curso (solo velas; los diarios de días ya cerrados no cambian) y, mientras Binance no
+        # publique el archivo mensual del mes anterior, también los días de ese mes
+        sin_mensual = not os.path.exists(os.path.join(carpeta, 'klines_%s.npy' % ultimo_mes.strftime('%Y-%m')))
+        dia = (ultimo_mes.replace(day=1) if sin_mensual else ahora.replace(day=1)).date()
         while dia < ahora.date():
             ruta = os.path.join(carpeta, 'klinesd_%s.npy' % dia.isoformat())
             if not os.path.exists(ruta) and not os.path.exists(ruta + '.vacio'):
@@ -182,6 +184,11 @@ def descargar_binance(monedas, hilos=8, registro=None):
         for f in os.listdir(carpeta):
             if f.startswith('klinesd_') and f.endswith('.vacio') and f[8:18] >= hace2:
                 os.remove(os.path.join(carpeta, f))
+            # el mensual del mes anterior puede publicarse días después del 1: se reintenta hasta el día 28 (el funding no
+            # tiene archivos diarios de respaldo y Hyperliquid solo da ~41 días) y se anota mientras siga vacío
+            elif ahora.day <= 28 and f in ('klines_%s.npy.vacio' % ultimo_mes.strftime('%Y-%m'), 'funding_%s.npy.vacio' % ultimo_mes.strftime('%Y-%m')):
+                os.remove(os.path.join(carpeta, f))
+                registro.setdefault('binance_mensual_pendiente', []).append(coin + ' ' + f[:-10])
     return registro
 
 
