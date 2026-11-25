@@ -199,8 +199,28 @@ def estudiar(P):
     # resumen de la regla en todos los mercados juntos (cada mercado-semana cuenta una vez)
     todas_ls = ls.where(punt.notna() & sig.notna()).stack().dropna()
     todas_lo = lo.where(punt.notna() & sig.notna()).stack().dropna()
-    global_ = {'alzaYBaja': _stats(todas_ls), 'soloCompras': _stats(todas_lo),
+    def _juntos(x):
+        # todos los mercados juntos: cada mercado-semana cuenta una vez (no se encadenan, así que sin «al año» ni caída)
+        x = x.dropna()
+        if len(x) < 10:
+            return None
+        return {'semanas': int(len(x)), 'positivasPct': round(float((x > 0).mean()) * 100, 1), 'mediaSemanaPct': round(float(x.mean()) * 100, 3),
+                't': round(float(x.mean() / (x.std(ddof=1) / math.sqrt(len(x)))), 2)}
+    global_ = {'alzaYBaja': _juntos(todas_ls), 'soloCompras': _juntos(todas_lo),
                'aciertoPct': round(float((todas_ls > 0).mean()) * 100, 1) if len(todas_ls) else None}
+    # ¿cuánto importa la fuerza de la señal? semana siguiente según la puntuación, todos los mercados juntos
+    tramos = [(-99, -2), (-2, -1), (-1, -0.5), (-0.5, 0), (0, 0.5), (0.5, 1), (1, 2), (2, 99)]
+    pu, sg = punt.stack(), sig.stack()
+    pu, sg = pu.align(sg, join='inner')
+    ok = pu.notna() & sg.notna()
+    pu, sg = pu[ok], sg[ok]
+    global_['porFuerza'] = []
+    for a_, b_ in tramos:
+        m_ = (pu >= a_) & (pu < b_)
+        if int(m_.sum()) >= 30:
+            x = sg[m_]
+            global_['porFuerza'].append({'desde': a_, 'hasta': b_, 'casos': int(m_.sum()), 'mediaSemanaSiguientePct': round(float(x.mean()) * 100, 3),
+                                         'subePct': round(float((x > 0).mean()) * 100, 1), 't': round(float(x.mean() / (x.std(ddof=1) / math.sqrt(len(x)))), 2)})
     return r12, vol, punt, por_mercado, cart, global_, top[validas], pesos
 
 
@@ -230,6 +250,8 @@ def hoy(series, por_mercado):
             'mantenerAnualPct': (h.get('comprarYMantener') or {}).get('anualPct'),
             'cuandoAlAlzaMediaPct': h.get('cuandoAlAlzaMediaPct'), 'cuandoAlaBajaMediaPct': h.get('cuandoAlaBajaMediaPct'),
             'semanas': ls.get('semanas'), 'desde': h.get('desde'),
+            # lo que hizo de media la semana siguiente las veces que este mercado estaba como ahora (al alza o a la baja)
+            'siguienteComoAhoraPct': h.get('cuandoAlAlzaMediaPct') if punt > 0 else h.get('cuandoAlaBajaMediaPct'),
         })
     filas.sort(key=lambda f: -f['puntuacion'])
     positivos = [f for f in filas if f['puntuacion'] > 0][:TOP]
@@ -237,6 +259,10 @@ def hoy(series, por_mercado):
         f['puesto'] = i + 1
         f['enTop3'] = f in positivos
     return filas
+
+
+def _juntos_txt(s):
+    return '—' if not s else '%+.2f %% por semana (t = %.1f, %d casos)' % (s['mediaSemanaPct'], s['t'], s['semanas'])
 
 
 def informe(res):
@@ -252,12 +278,16 @@ def informe(res):
          fila('Las 3 mejores cada semana (desde %s)' % c.get('desde'), c.get('top3')), fila('Las 3 mejores, últimos 2 años', c.get('top3UltimosDosAnos')),
          fila('Todas a partes iguales', c.get('todosIgual')), fila('Todas, últimos 2 años', c.get('todosIgualUltimosDosAnos')),
          fila('Solo Bitcoin', c.get('bitcoin')), fila('Solo Bitcoin, últimos 2 años', c.get('bitcoinUltimosDosAnos')),
-         fila('Regla al alza y a la baja, todos los mercados juntos', g.get('alzaYBaja')), fila('Regla solo comprando, todos juntos', g.get('soloCompras')),
-         '\nAcierto de la dirección, todos juntos: %s %%. Semanas de la cartera con parte en efectivo: %s %%.\n' % (g.get('aciertoPct'), c.get('semanasEnEfectivoPct')),
-         '## Esta semana\n', '| Puesto | Mercado | Señal | Puntuación | 12 semanas | Acierto histórico | Media por semana siguiendo la señal | Desde |', '|---|---|---|---|---|---|---|---|']
+         '\nTodos los mercados juntos (cada mercado-semana una vez): siguiendo la señal al alza y a la baja, %s; solo comprando, %s. Acierto de la dirección: %s %%. Semanas de la cartera con parte en efectivo: %s %%.\n' % (
+             _juntos_txt(g.get('alzaYBaja')), _juntos_txt(g.get('soloCompras')), g.get('aciertoPct'), c.get('semanasEnEfectivoPct')),
+         '## La fuerza de la señal importa\n', '| Puntuación | Casos | La semana siguiente, de media | Semanas que sube |', '|---|---|---|---|']
+    for t_ in g.get('porFuerza', []):
+        l.append('| %s a %s | %d | %+.2f %% (t = %.1f) | %.1f %% |' % (t_['desde'] if t_['desde'] > -99 else '−∞', t_['hasta'] if t_['hasta'] < 99 else '+∞', t_['casos'], t_['mediaSemanaSiguientePct'], t_['t'], t_['subePct']))
+    l += ['',
+         '## Esta semana\n', '| Puesto | Mercado | Señal | Puntuación | 12 semanas | Acierto histórico | Siguiendo la señal, por semana | Cuando estaba así, la semana siguiente | Desde |', '|---|---|---|---|---|---|---|---|---|']
     for f in res['hoy']:
-        l.append('| %d%s | %s | %s | %.2f | %+.1f %% | %s %% | %s %% | %s |' % (f['puesto'], ' ★' if f['enTop3'] else '', f['nombre'], f['direccion'], f['puntuacion'], f['rend12SemPct'],
-                                                                     f['aciertoPct'], f['mediaSemanaPct'], f['desde']))
+        l.append('| %d%s | %s | %s | %.2f | %+.1f %% | %s %% | %s %% | %s %% | %s |' % (f['puesto'], ' ★' if f['enTop3'] else '', f['nombre'], f['direccion'], f['puntuacion'], f['rend12SemPct'],
+                                                                     f['aciertoPct'], f['mediaSemanaPct'], f.get('siguienteComoAhoraPct'), f['desde']))
     l.append('\nFuentes: ' + ', '.join('%s: %s' % (k, v) for k, v in res['fuentes'].items()))
     return '\n'.join(l) + '\n'
 
@@ -296,7 +326,7 @@ def main():
                'cartera': {k: cart.get(k) for k in ('desde', 'top3', 'top3UltimosDosAnos', 'todosIgual', 'bitcoin')},
                'global': global_,
                'mercados': [{k: f[k] for k in ('puesto', 'simbolo', 'nombre', 'clase', 'comoComprar', 'cierre', 'rend12SemPct', 'volSemanalPct', 'puntuacion', 'direccion',
-                                                  'aciertoPct', 'mediaSemanaPct', 'tSenal', 'soloComprasAnualPct', 'soloComprasCaidaMaxPct', 'mantenerAnualPct', 'cuandoAlAlzaMediaPct', 'cuandoAlaBajaMediaPct', 'semanas', 'desde', 'enTop3')} for f in res['hoy']]}
+                                                  'aciertoPct', 'mediaSemanaPct', 'siguienteComoAhoraPct', 'tSenal', 'soloComprasAnualPct', 'soloComprasCaidaMaxPct', 'mantenerAnualPct', 'cuandoAlAlzaMediaPct', 'cuandoAlaBajaMediaPct', 'semanas', 'desde', 'enTop3')} for f in res['hoy']]}
     with open(os.path.join(a.salida, 'ranking.json'), 'w') as f:
         json.dump(limpio(ranking), f, ensure_ascii=False, indent=1, allow_nan=False, default=lambda o: None)
     with open(os.path.join(a.salida, 'informe.md'), 'w') as f:
