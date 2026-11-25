@@ -4,37 +4,37 @@
 
 ## Universo: servidor (20 monedas), desde 2023-03-02 (1364 días fuera de muestra)
 
-- Acierto en el orden (IC medio, correlación de rangos entre lo previsto y lo que pasó): **0.055** (t = 7.1); positivo el 58 % de los días. 0 = no sabe nada.
-- Entrando un día más tarde: IC 0.051 (t = 6.7). Si se mantiene, la ventaja no depende del precio exacto de cierre.
+- Acierto en el orden (IC medio, correlación de rangos entre lo previsto y lo que pasó): **0.054** (t = 7.1); positivo el 58 % de los días. 0 = no sabe nada.
+- Entrando un día más tarde: IC 0.050 (t = 6.6). Si se mantiene, la ventaja no depende del precio exacto de cierre.
 - Referencia (todas comprado a partes iguales): 14.7 % al año, Sharpe 0.54, caída máxima 65.2 %.
 
 | Cartera | Rent. anual | Sharpe | Sharpe sin costes | Caída máx. | Giro diario | 2023 | 2024 | 2025 | 2026 |
 |---|---|---|---|---|---|---|---|---|---|
-| largo corto k3 | -41.0 % | -1.40 | -0.58 | 88.7 % | 1.07 | -19 % | -59 % | -28 % | -42 % |
-| solo compras k3 | -5.7 % | 0.24 | 0.65 | 70.0 % | 1.06 | +7 % | +56 % | -15 % | -44 % |
-| largo corto k5 | -32.8 % | -1.52 | -0.59 | 80.0 % | 0.88 | -17 % | -47 % | -25 % | -31 % |
-| solo compras k5 | -6.3 % | 0.21 | 0.57 | 70.9 % | 0.87 | +32 % | +50 % | -32 % | -42 % |
-| lenta largo corto k5 | -19.9 % | -0.84 | -0.72 | 62.0 % | 0.11 | -28 % | -14 % | +7 % | -33 % |
-| lenta solo compras k5 | 0.9 % | 0.32 | 0.36 | 67.0 % | 0.10 | +19 % | +120 % | -34 % | -41 % |
-| lenta largo corto k5 un dia tarde | -20.6 % | -0.88 | -0.76 | 64.5 % | 0.11 | -30 % | -17 % | +5 % | -31 % |
-| lenta solo compras k5 un dia tarde | 3.3 % | 0.36 | 0.40 | 70.0 % | 0.10 | +24 % | +144 % | -37 % | -40 % |
+| largo corto k3 | -41.6 % | -1.43 | -0.61 | 88.7 % | 1.07 | -19 % | -59 % | -28 % | -44 % |
+| solo compras k3 | -6.8 % | 0.22 | 0.63 | 71.0 % | 1.06 | +7 % | +56 % | -15 % | -46 % |
+| largo corto k5 | -33.0 % | -1.53 | -0.60 | 80.0 % | 0.88 | -17 % | -47 % | -25 % | -32 % |
+| solo compras k5 | -6.8 % | 0.20 | 0.56 | 71.3 % | 0.87 | +32 % | +50 % | -32 % | -43 % |
+| lenta largo corto k5 | -20.1 % | -0.85 | -0.73 | 62.0 % | 0.11 | -28 % | -14 % | +7 % | -34 % |
+| lenta solo compras k5 | 2.2 % | 0.34 | 0.38 | 67.0 % | 0.10 | +19 % | +120 % | -34 % | -38 % |
+| lenta largo corto k5 un dia tarde | -21.1 % | -0.91 | -0.79 | 64.5 % | 0.11 | -30 % | -17 % | +5 % | -33 % |
+| lenta solo compras k5 un dia tarde | 3.6 % | 0.36 | 0.40 | 70.0 % | 0.10 | +24 % | +144 % | -37 % | -40 % |
 
 ## Universo: amplio (60 monedas), desde 2023-03-02 (1364 días fuera de muestra)
 
-- Acierto en el orden (IC medio, correlación de rangos entre lo previsto y lo que pasó): **0.074** (t = 12.7); positivo el 64 % de los días. 0 = no sabe nada.
-- Entrando un día más tarde: IC 0.049 (t = 8.5). Si se mantiene, la ventaja no depende del precio exacto de cierre.
-- Referencia (todas comprado a partes iguales): -2.6 % al año, Sharpe 0.31, caída máxima 74.1 %.
+- Acierto en el orden (IC medio, correlación de rangos entre lo previsto y lo que pasó): **0.073** (t = 12.3); positivo el 63 % de los días. 0 = no sabe nada.
+- Entrando un día más tarde: IC 0.051 (t = 8.8). Si se mantiene, la ventaja no depende del precio exacto de cierre.
+- Referencia (todas comprado a partes iguales): -3.6 % al año, Sharpe 0.30, caída máxima 73.6 %.
 
 | Cartera | Rent. anual | Sharpe | Sharpe sin costes | Caída máx. | Giro diario | 2023 | 2024 | 2025 | 2026 |
 |---|---|---|---|---|---|---|---|---|---|
-| largo corto k3 | 4.7 % | 0.32 | 1.09 | 52.6 % | 1.26 | -35 % | +78 % | +17 % | -12 % |
-| solo compras k3 | 14.5 % | 0.53 | 1.00 | 50.9 % | 1.22 | -18 % | +171 % | +17 % | -36 % |
-| largo corto k5 | 23.3 % | 0.83 | 1.74 | 32.5 % | 1.12 | -10 % | +44 % | +46 % | +16 % |
-| solo compras k5 | 30.2 % | 0.73 | 1.16 | 44.2 % | 1.08 | +1 % | +277 % | -4 % | -26 % |
-| lenta largo corto k5 | 7.1 % | 0.38 | 0.73 | 56.1 % | 0.43 | -21 % | +33 % | +40 % | -12 % |
-| lenta solo compras k5 | 25.7 % | 0.68 | 0.85 | 46.2 % | 0.41 | +33 % | +126 % | +10 % | -29 % |
-| lenta largo corto k5 un dia tarde | -26.2 % | -0.86 | -0.49 | 72.1 % | 0.43 | -29 % | -33 % | -2 % | -31 % |
-| lenta solo compras k5 un dia tarde | -0.5 % | 0.29 | 0.47 | 61.8 % | 0.41 | +31 % | +56 % | -10 % | -47 % |
+| largo corto k3 | 16.3 % | 0.58 | 1.34 | 48.8 % | 1.23 | -14 % | +74 % | +14 % | +4 % |
+| solo compras k3 | 21.0 % | 0.62 | 1.09 | 49.2 % | 1.21 | -12 % | +121 % | +8 % | -2 % |
+| largo corto k5 | 17.7 % | 0.69 | 1.61 | 29.3 % | 1.11 | -10 % | +42 % | +25 % | +16 % |
+| solo compras k5 | 15.8 % | 0.55 | 0.98 | 51.3 % | 1.08 | +11 % | +113 % | -15 % | -14 % |
+| lenta largo corto k5 | 12.0 % | 0.51 | 0.86 | 44.1 % | 0.43 | -10 % | +37 % | -3 % | +28 % |
+| lenta solo compras k5 | 36.4 % | 0.81 | 0.99 | 45.3 % | 0.42 | +48 % | +142 % | +6 % | -16 % |
+| lenta largo corto k5 un dia tarde | -4.6 % | -0.01 | 0.36 | 53.6 % | 0.43 | -13 % | -11 % | -7 % | +16 % |
+| lenta solo compras k5 un dia tarde | 8.1 % | 0.43 | 0.61 | 61.6 % | 0.42 | +58 % | +68 % | -32 % | -27 % |
 
 «Lenta»: una moneda se mantiene mientras siga entre las 15 mejores (o peores), así se opera mucho menos. «Un día tarde»: la misma cartera lenta, pero entrando al cierre del día siguiente.
 
