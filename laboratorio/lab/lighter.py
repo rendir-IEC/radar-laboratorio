@@ -41,14 +41,14 @@ def _get(ruta, pausa=0.45):
 
 def mercados():
     j = _get('/api/v1/orderBooks') or {}
-    return [m['market_id'] for m in j.get('order_books', []) if m.get('market_type', 'perp') == 'perp' and m.get('status', 'active') == 'active']
+    return [m['market_id'] for m in (j.get('order_books') or []) if m.get('market_type', 'perp') == 'perp' and m.get('status', 'active') == 'active']
 
 
 def cuentas_activas(ids_mercado, por_mercado=100):
     vistas = set()
     for m in ids_mercado:
         j = _get('/api/v1/recentTrades?market_id=%d&limit=%d' % (m, por_mercado)) or {}
-        for t in j.get('trades', []):
+        for t in j.get('trades') or []:
             for k in ('ask_account_id', 'bid_account_id'):
                 v = t.get(k)
                 if isinstance(v, int) and v > 0:
