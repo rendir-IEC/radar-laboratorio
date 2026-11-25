@@ -41,7 +41,7 @@ def _memoria(P, Finfo, spans):
                 lp = math.log(p)
                 if t_prev >= 0:
                     lr = (lp - lp_prev) / math.sqrt(horas)
-                    v2 = lr * lr if np.isnan(v2) else v2 + a_v * (lr * lr - v2)
+                    v2 = lr * lr if np.isnan(v2) else v2 + (1.0 - (1.0 - a_v) ** horas) * (lr * lr - v2)
                 for s in range(S):
                     a = 1.0 - (1.0 - 2.0 / (spans[s] + 1.0)) ** horas
                     ema[s] = lp if np.isnan(ema[s]) else ema[s] + a * (lp - ema[s])

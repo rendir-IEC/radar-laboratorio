@@ -109,18 +109,20 @@ def main():
             filas['exposicion_media'] = round(float(np.abs(obj).sum(axis=1).mean()), 3)
         out['simulaciones'][nombre_r] = filas
     # el sistema del servidor entero (Hedge sobre sus expertos con historia), con y sin las candidatas del laboratorio
-    from .sistema import ETA, REPARTO, expertos_servidor, hedge
+    from .sistema import ETA, REPARTO, expertos_servidor, hedge, igualar_riesgo
     monedas_u = [monedas[c] for c in cols]
     extra = [dict(todas[i], id=i) for i in res.get('para_el_servidor', []) if i in todas]
     out['sistema'] = {}
     cache_rx = {}
-    for etiqueta, ex, eta in (('servidor', (), ETA), ('servidor_eta_1', (), 1.0), ('servidor_pesos_iguales', (), 0.0), ('servidor_con_laboratorio', extra, ETA)):
+    for etiqueta, ex, eta in (('servidor', (), ETA), ('servidor_eta_1', (), 1.0), ('servidor_pesos_iguales', (), 0.0), ('servidor_riesgo_igualado', (), ETA), ('servidor_con_laboratorio', extra, ETA)):
         if etiqueta == 'servidor_con_laboratorio' and not ex:
             continue
         clave = len(ex)
         if clave not in cache_rx:
             cache_rx[clave] = expertos_servidor(Mu, Ru, Fu, panel['Fpago'][:, cols], hora, monedas_u, coste, ex)
         nombres, Rx, act = cache_rx[clave]
+        if etiqueta == 'servidor_riesgo_igualado':
+            Rx = igualar_riesgo(Rx, 0.20 / math.sqrt(8760), 1.0)
         rs, wmed = hedge(Rx, act, eta, REPARTO)
         d, d0 = diario(rs, t)
         if d_ini is not None:
@@ -136,7 +138,8 @@ def main():
             'resumen': {k: round(v, 3) if isinstance(v, float) else v for k, v in res_s.items()},
             'por_ano_pct': {str(y): round((math.exp(np.log1p(np.maximum(np.array(v), -0.99)).sum()) - 1) * 100, 1) for y, v in anos.items()},
             'eta': eta,
-            'expertos': {n: {'peso_medio_pct': round(float(wmed[k] * 100), 1), 'sharpe_anual': round(float(resumen_serie(dx[k]).get('sharpe_anual', 0)), 2)} for k, n in enumerate(nombres)},
+            'expertos': {n: {'peso_medio_pct': round(float(wmed[k] * 100), 1), 'sharpe_anual': round(float(resumen_serie(dx[k]).get('sharpe_anual', 0)), 2),
+                             'rent_anual_pct': round(float(resumen_serie(dx[k]).get('rent_anual_pct', 0)), 2), 'caida_max_pct': round(float(resumen_serie(dx[k]).get('caida_max_pct', 0)), 1)} for k, n in enumerate(nombres)},
         }
     with open(os.path.join(a.resultados, 'diagnostico.json'), 'w') as f:
         json.dump(out, f, ensure_ascii=False, indent=1)
@@ -151,7 +154,7 @@ def main():
         r = v['resumen']
         if 'sharpe_anual' in r:
             l.append('\n**El sistema del servidor desde %s (%s)**: %.1f %% al año, Sharpe %.2f, caída máxima %.1f %%, semanas en positivo %.0f %%. Por año: %s.' % (
-                ini or 'el inicio', {'servidor': 'tal como está: expertos de precio y funding, sin carteras ni flujo, ETA 10', 'servidor_eta_1': 'igual pero con ETA 1', 'servidor_pesos_iguales': 'igual pero con pesos fijos e iguales', 'servidor_con_laboratorio': 'ETA 10 y con las candidatas del laboratorio'}[k],
+                ini or 'el inicio', {'servidor': 'tal como está: expertos de precio y funding, sin carteras ni flujo, ETA 10', 'servidor_eta_1': 'igual pero con ETA 1', 'servidor_pesos_iguales': 'igual pero con pesos fijos e iguales', 'servidor_riesgo_igualado': 'igual pero comparando a los expertos por unidad de riesgo (cada uno escalado a un 20 % de volatilidad, sin apalancar)', 'servidor_con_laboratorio': 'ETA 10 y con las candidatas del laboratorio'}[k],
                 r['rent_anual_pct'], r['sharpe_anual'], r['caida_max_pct'], r['semanas_positivas_pct'], ', '.join('%s %+.1f %%' % (y, x) for y, x in v['por_ano_pct'].items())))
     raros = [m for m, v in out['monedas'].items() if v.get('max_mov_horario_pct') and v['max_mov_horario_pct'] > 40]
     l.append('\nMonedas con algún movimiento horario de más del 40 %% (revisar empalmes): %s.\n' % (', '.join('%s (%+.0f %% el %s UTC)' % (m, out['monedas'][m]['max_mov_horario_pct'], out['monedas'][m]['max_mov_hora']) for m in raros) or 'ninguna'))

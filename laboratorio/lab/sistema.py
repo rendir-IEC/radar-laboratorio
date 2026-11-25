@@ -92,6 +92,27 @@ def hedge(Rx, activo, eta, reparto):
     return out, suma_w / max(T, 1)
 
 
+@njit(cache=True)
+def igualar_riesgo(Rx, objetivo_h, tope):
+    """Escala cada experto a la misma volatilidad (sin apalancar: como mucho x tope) con su varianza de la última
+    semana, calculada solo con horas pasadas. Así Hedge compara rentabilidad por unidad de riesgo."""
+    T, K = Rx.shape
+    out = np.zeros_like(Rx)
+    v = np.full(K, np.nan)
+    a = 2.0 / (168 + 1)
+    for t in range(T):
+        for k in range(K):
+            if not np.isnan(v[k]) and v[k] > 0:
+                out[t, k] = Rx[t, k] * min(tope, objetivo_h / math.sqrt(v[k]))
+            r = Rx[t, k]
+            if np.isnan(v[k]):
+                if r != 0.0:
+                    v[k] = r * r
+            else:
+                v[k] = v[k] + a * (r * r - v[k])
+    return out
+
+
 def expertos_servidor(Mu, Ru, Fu, Fpago_u, hora, monedas_u, coste, extra=()):
     """Rendimientos horarios de los expertos de precio y funding del servidor (y de los extra del laboratorio)."""
     from .senales import objetivo

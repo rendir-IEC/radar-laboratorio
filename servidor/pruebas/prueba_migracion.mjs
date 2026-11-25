@@ -59,7 +59,7 @@ const desp = JSON.parse(db.prepare("SELECT json FROM ap_estado WHERE id = 'princ
 const nuevas = Object.entries(desp.monedas).filter(([m]) => !antes.monedas[m]);
 check(nuevas.length === 10 && nuevas.every(([, c]) => c.n >= 720 && c.nf >= 168), 'los 10 mercados nuevos entran con memoria completa: ' + nuevas.map(([m, c]) => m + ' ' + c.n + 'h').join(', '));
 const al = (await herramienta('aprendizaje', { vista: 'alertas' })).rows.filter((a) => a.tipo === 'mercados');
-check(al.length >= 3, 'avisos de incorporación: ' + al.map((a) => a.texto).join(' | '));
+check(al.length >= 10, 'avisos de incorporación: ' + al.map((a) => a.texto).join(' | '));
 const exp = (await herramienta('aprendizaje', { vista: 'expertos' })).rows;
 check(exp.length === 22, '22 expertos tras el cambio');
 const flujo = exp.filter((x) => x.familia === 'flujo de órdenes');

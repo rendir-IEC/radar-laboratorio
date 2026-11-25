@@ -308,6 +308,8 @@ async function fundingDiario({ simbolos, dias } = {}) {
 // 3) reparte el peso entre expertos según lo que han ganado (pesos multiplicativos con reparto fijo),
 // 4) calcula las posiciones nuevas. Todo en papel: no mueve dinero.
 const AP = {
+  // XMR sí está en el dex principal de Hyperliquid (comprobado en producción el 25-11-2026: metaAndAssetCtxs sin dex,
+  // no retirado, 5x, 70 M$ abiertos). Si alguna moneda desapareciera, el repaso la tolera (ver apCiclo) y no se calienta.
   MONEDAS: ['BTC', 'ETH', 'SOL', 'XRP', 'DOGE', 'BNB', 'HYPE', 'LINK', 'AVAX', 'SUI', 'ZEC', 'NEAR', 'UNI', 'ENA', 'AAVE', 'ADA', 'ARB', 'WLD', 'XMR', 'kPEPE'],
   CARRY_BASE: ['BTC', 'ETH'],
   SPANS: [12, 24, 72, 168, 336, 720],
@@ -321,6 +323,9 @@ const AP = {
   MAX_ALERTAS: 30,
   BANDA: 0.25,
   HORAS_FLUJO: 4,
+  // Nº de pruebas para el Sharpe deflactado: como mínimo, las variantes que se miraron al diseñar los expertos (no solo
+  // los 22 que quedaron). Criterio de quien firma; cuando entren las estrategias del laboratorio, su nº real de pruebas.
+  PRUEBAS: 100,
 };
 
 // Expertos: cada uno da, para cada moneda, una señal entre -1 (vender) y +1 (comprar).
@@ -466,6 +471,7 @@ function apPaso(E, snap) {
   const horas = E.t == null ? 1 : Math.max(1, Math.round((snap.t - E.t) / 3600e3));
   if (E.t != null && snap.t <= E.t) return E;
   E._silencio = !!snap.historia;
+  if ((E.v || 1) < 2) { for (const X of Object.values(E.expertos)) X.ascendido = false; E.v = 2; } // los ascensos pasan a medirse solo en vivo
   const EXPERTOS = apListaExpertos(E);
   // 1) resultado de la hora que acaba para cada experto
   const ret = {};
@@ -474,7 +480,9 @@ function apPaso(E, snap) {
     const p = snap.px[m];
     ret[m] = c && c.px && p ? p / c.px - 1 : 0;
   }
-  const fHora = (m) => { const c = E.monedas[m]; return c ? c.f : 0; };
+  // funding de la hora que acaba: en el repaso, el liquidado al final de esa hora (snap.f); en vivo, el que daba
+  // Hyperliquid al empezarla (no hay otro sin pedir 20 historiales más)
+  const fHora = (m) => { if (snap.historia && snap.f && Number.isFinite(snap.f[m])) return snap.f[m]; const c = E.monedas[m]; return c ? c.f : 0; };
   let rSistema = 0, pesoTotal = 0;
   const pesos = apPesos(E);
   for (const ex of EXPERTOS) {
@@ -484,16 +492,27 @@ function apPaso(E, snap) {
     if (ex.tipo === 'carry') {
       for (const m of Object.keys(X.pos)) r += X.pos[m] * AP.PARTE_CARRY * fHora(m) * horas;
     } else if (ex.tipo !== 'cash') {
-      for (const m of Object.keys(X.pos)) r += X.pos[m] * (ret[m] - fHora(m) * horas);
+      for (const m of Object.keys(X.pos)) r += X.pos[m] * ((ret[m] || 0) - fHora(m) * horas);
     }
-    r -= X.coste || 0;
+    const coste = X.coste || 0;
+    r -= coste;
     X.coste = 0;
     apSuma(X.st, r);
+    if (!snap.historia) apSuma(X.vivo || (X.vivo = apStats()), r);
     X.ultima = r;
     const w = pesos[ex.id] || 0;
-    rSistema += w * r; pesoTotal += w;
+    // el sistema suma el resultado bruto de cada experto y paga aparte el coste de mover SU cartera combinada (abajo)
+    rSistema += w * (r + coste); pesoTotal += w;
   }
-  if (E.t != null && pesoTotal > 0) { apSuma(E.sistema, rSistema); E.btcLog += Math.log(1 + ret.BTC); }
+  rSistema -= E.costeSis || 0;
+  E.costeSis = 0;
+  if (E.t != null && pesoTotal > 0) {
+    apSuma(E.sistema, rSistema); E.btcLog += Math.log(1 + (ret.BTC || 0));
+    if (!snap.historia) {
+      if (E.inicioVivo == null) E.inicioVivo = E.t;
+      apSuma(E.vivo || (E.vivo = apStats()), rSistema); E.btcVivo = (E.btcVivo || 0) + Math.log(1 + (ret.BTC || 0));
+    }
+  }
   // 2) memoria del mercado
   for (const m of AP.MONEDAS) {
     const p = snap.px[m];
@@ -502,7 +521,7 @@ function apPaso(E, snap) {
     const lp = Math.log(p);
     // horas desde el último precio de ESTA moneda (si le faltó alguna hora, no se cuentan como una sola)
     const hm = c.t != null ? Math.max(1, Math.round((snap.t - c.t) / 3600e3)) : c.lp != null ? horas : 1;
-    if (c.lp != null) { const lr = (lp - c.lp) / Math.sqrt(hm); c.v2 = c.v2 == null ? lr * lr : c.v2 + (2 / 169) * (lr * lr - c.v2); }
+    if (c.lp != null) { const lr = (lp - c.lp) / Math.sqrt(hm); c.v2 = c.v2 == null ? lr * lr : c.v2 + (1 - Math.pow(1 - 2 / 169, hm)) * (lr * lr - c.v2); }
     for (const s of AP.SPANS) { const a = 1 - Math.pow(1 - 2 / (s + 1), hm); c.ema[s] = c.ema[s] == null ? lp : c.ema[s] + a * (lp - c.ema[s]); }
     c.lp = lp; c.px = p; c.n += hm;
     const f = snap.f ? snap.f[m] : null;
@@ -569,12 +588,12 @@ function apPaso(E, snap) {
     }
     // banda sin operar: si la posición solo cambia un poco (menos del 25 %), se deja como estaba y no se pagan comisiones
     if (ex.tipo === 'dir' || ex.tipo === 'copia' || ex.tipo === 'lab') {
+      const objetivo = { ...nueva };
       for (const m of Object.keys(nueva)) { const o = X.pos[m]; if (o && Math.sign(o) === Math.sign(nueva[m]) && Math.abs(nueva[m] - o) < AP.BANDA * Math.abs(o)) nueva[m] = o; }
+      // la banda no puede dejar la exposición bruta por encima del 100 % (p. ej. al entrar mercados nuevos)
+      if (Object.values(nueva).reduce((a, b) => a + Math.abs(b), 0) > 1 + 1e-9) Object.assign(nueva, objetivo);
     }
-    let giro = 0;
-    const todas = new Set([...Object.keys(X.pos), ...Object.keys(nueva)]);
-    for (const m of todas) giro += Math.abs((nueva[m] || 0) - (X.pos[m] || 0));
-    X.coste = ex.tipo === 'carry' ? giro * AP.PARTE_CARRY * AP.COSTE_CARRY / 2 : giro * AP.COMISION;
+    X.coste = ex.tipo === 'carry' ? apCosteCarry(apGiro(nueva, X.pos)) : apGiro(nueva, X.pos) * AP.COMISION;
     X.pos = nueva;
   }
   // posición combinada del sistema (para avisar y para el panel)
@@ -586,14 +605,20 @@ function apPaso(E, snap) {
     for (const [m, p] of Object.entries(X.pos)) comb[m] = (comb[m] || 0) + (w2[ex.id] || 0) * p;
   }
   let carry = 0;
-  for (const ex of EXPERTOS) if (ex.tipo === 'carry' && E.expertos[ex.id]) carry += (w2[ex.id] || 0) * Object.values(E.expertos[ex.id].pos).reduce((a, b) => a + b, 0);
+  const combC = {};
+  for (const ex of EXPERTOS) if (ex.tipo === 'carry' && E.expertos[ex.id]) for (const [m, p] of Object.entries(E.expertos[ex.id].pos)) { combC[m] = (combC[m] || 0) + (w2[ex.id] || 0) * p; carry += (w2[ex.id] || 0) * p; }
+  // coste de pasar de la cartera combinada anterior a esta (lo que pagaría quien la siguiera); se cobra en la hora siguiente.
+  // Incluye los cambios de peso entre expertos, que antes no se cobraban, y descuenta lo que se compensa entre ellos.
+  if (!E.carryPos) E.carryPos = combC;
+  E.costeSis = apGiro(comb, E.posSistema || {}) * AP.COMISION + apCosteCarry(apGiro(combC, E.carryPos));
+  E.carryPos = combC;
   // aviso solo al cruzar umbrales con histéresis: entra a partir del 5 % del dinero y sale por debajo del 1 %
   E.senal = E.senal || {};
   for (const m of AP.MONEDAS) {
     const v = comb[m] || 0;
     const antes = E.senal[m] || 0;
     const ahora = v >= 0.05 ? 1 : v <= -0.05 ? -1 : Math.abs(v) < 0.01 ? 0 : antes;
-    if (ahora !== antes && E.horas > 0) apAlerta(E, snap.t, 'senal', m, m + ': el sistema pasa a ' + (ahora > 0 ? 'comprar' : ahora < 0 ? 'vender' : 'no tener') + ' (' + (v * 100).toFixed(1) + ' % del dinero)');
+    if (ahora !== antes && E.horas > 0) apAlerta(E, snap.t, 'senal', m, m + ': la cartera en papel pasa a ' + (ahora > 0 ? 'comprar' : ahora < 0 ? 'vender' : 'no tener') + ' (' + (v * 100).toFixed(1) + ' % del dinero; no es una recomendación)');
     E.senal[m] = ahora;
   }
   E.posSistema = comb; E.carrySistema = carry;
@@ -604,7 +629,7 @@ function apPaso(E, snap) {
     if (!X) continue;
     const antes = X.ascendido || false;
     X.ascendido = r.estado === 'ascendida';
-    if (X.ascendido && !antes) apAlerta(E, snap.t, 'ascenso', r.id, 'Asciende: ' + r.nombre + ' (Sharpe deflactado ' + r.dsr.toFixed(2) + ')');
+    if (X.ascendido && !antes) apAlerta(E, snap.t, 'ascenso', r.id, 'Asciende en papel: ' + r.nombre + ' (Sharpe deflactado ' + r.dsr.toFixed(2) + ' con ' + r.horasVivo + ' h en vivo; no garantiza resultados futuros)');
     if (!X.ascendido && antes) apAlerta(E, snap.t, 'descenso', r.id, 'Pierde el ascenso: ' + r.nombre);
   }
   E.t = snap.t; E.horas += E.horas === 0 ? 1 : horas;
@@ -689,6 +714,10 @@ function apEscala(c, s, n) {
   const vol = c.v2 > 0 ? Math.sqrt(c.v2) : AP.VOL_OBJ_H;
   return (s * Math.min(1, AP.VOL_OBJ_H / vol)) / n;
 }
+// suma de |cambio| de posición entre dos carteras {moneda: fracción del dinero}
+function apGiro(a, b) { let g = 0; for (const m of new Set([...Object.keys(a), ...Object.keys(b)])) g += Math.abs((a[m] || 0) - (b[m] || 0)); return g; }
+// coste de girar el cobro del funding (dos patas: contado y perpetuo). Ver el criterio de COSTE_CARRY en AP.
+function apCosteCarry(giro) { return giro * AP.PARTE_CARRY * AP.COSTE_CARRY / 2; }
 
 function apAlerta(E, t, tipo, ref, texto) {
   if (E._silencio) return;
@@ -715,36 +744,47 @@ function apPhiInv(p) {
   return ((((((a[0] * r + a[1]) * r + a[2]) * r + a[3]) * r + a[4]) * r + a[5]) * q) / (((((b[0] * r + b[1]) * r + b[2]) * r + b[3]) * r + b[4]) * r + 1);
 }
 
-// Informe por experto: rentabilidad, Sharpe anual, caída máxima, Sharpe deflactado (corrige por el número de expertos probados).
+// Momentos de una serie de rentabilidades horarias: Sharpe horario, asimetría y curtosis (no exceso).
+function apMomentos(st) {
+  const n = st.n;
+  const m = n ? st.s1 / n : 0;
+  const v = n ? Math.max(st.s2 / n - m * m, 0) : 0;
+  const sd = Math.sqrt(v);
+  return { n, sr: sd > 0 ? m / sd : 0, sk: sd > 0 ? (st.s3 / n - 3 * m * st.s2 / n + 2 * m * m * m) / (sd * sd * sd) : 0,
+    ku: sd > 0 ? (st.s4 / n - 4 * m * st.s3 / n + 6 * m * m * st.s2 / n - 3 * m * m * m * m) / (v * v) : 3 };
+}
+// Informe por experto. Las columnas sin «Vivo» incluyen el repaso de la historia (simulación sobre los datos con los que se
+// diseñaron los expertos). El Sharpe deflactado y los ascensos usan SOLO horas en vivo, y compiten solo los expertos que
+// apuestan por el precio (tendencia, impulso, rebote, funding, flujo, copia): el cobro del funding, comprar y mantener y el
+// efectivo son referencias (el cobro del funding se modela sin riesgo de precio y su Sharpe disparaba el umbral de todos).
 function apInforme(E) {
   const pesos = apPesos(E);
+  const tipo = Object.fromEntries(apListaExpertos(E).map((ex) => [ex.id, ex.tipo]));
+  const compite = (id) => tipo[id] === 'dir' || tipo[id] === 'copia' || tipo[id] === 'lab';
   const filas = [];
   for (const ex of apListaExpertos(E)) {
     const X = E.expertos[ex.id];
-    if (!X) { filas.push({ id: ex.id, nombre: ex.nombre, familia: ex.familia, horas: 0, estado: 'esperando datos' }); continue; }
-    const st = X.st, n = st.n;
-    const m = n ? st.s1 / n : 0;
-    const v = n ? Math.max(st.s2 / n - m * m, 0) : 0;
-    const sd = Math.sqrt(v);
-    const sr = sd > 0 ? m / sd : 0;
-    const sk = sd > 0 ? (st.s3 / n - 3 * m * st.s2 / n + 2 * m * m * m) / (sd * sd * sd) : 0;
-    const ku = sd > 0 ? (st.s4 / n - 4 * m * st.s3 / n + 6 * m * m * st.s2 / n - 3 * m * m * m * m) / (v * v) : 3;
-    filas.push({ id: ex.id, nombre: ex.nombre, familia: ex.familia, horas: n, pesoPct: (pesos[ex.id] || 0) * 100, rentPct: (Math.exp(st.log) - 1) * 100,
-      rentAnualPct: n ? (Math.exp((st.log / n) * 8760) - 1) * 100 : null, sharpeAnual: sr * Math.sqrt(8760), caidaMaxPct: st.dd * 100, _sr: sr, _sk: sk, _ku: ku });
+    if (!X) { filas.push({ id: ex.id, nombre: ex.nombre, familia: ex.familia, horas: 0, horasVivo: 0, estado: 'esperando datos' }); continue; }
+    const st = X.st, sv = X.vivo || apStats();
+    const a = apMomentos(st), b = apMomentos(sv);
+    filas.push({ id: ex.id, nombre: ex.nombre, familia: ex.familia, horas: a.n, pesoPct: (pesos[ex.id] || 0) * 100, rentPct: (Math.exp(st.log) - 1) * 100,
+      rentAnualPct: a.n ? (Math.exp((st.log / a.n) * 8760) - 1) * 100 : null, sharpeAnual: a.sr * Math.sqrt(8760), caidaMaxPct: st.dd * 100,
+      horasVivo: b.n, rentVivoPct: (Math.exp(sv.log) - 1) * 100, sharpeVivoAnual: b.sr * Math.sqrt(8760), caidaMaxVivoPct: sv.dd * 100, _b: b });
   }
-  const conDatos = filas.filter((f) => f.horas > 24 && f.id !== 'efectivo');
-  const N = Math.max(conDatos.length, 2);
-  const srs = conDatos.map((f) => f._sr);
+  const conDatos = filas.filter((f) => f.horasVivo > 24 && compite(f.id));
+  const N = Math.max(conDatos.length, AP.PRUEBAS || 2, 2);
+  const srs = conDatos.map((f) => f._b.sr);
   const ms = srs.reduce((a, b) => a + b, 0) / Math.max(srs.length, 1);
   const V = srs.length > 1 ? srs.reduce((a, b) => a + (b - ms) * (b - ms), 0) / (srs.length - 1) : 0;
   const g = 0.5772156649;
   const sr0 = Math.sqrt(V) * ((1 - g) * apPhiInv(1 - 1 / N) + g * apPhiInv(1 - 1 / (N * Math.E)));
   for (const f of filas) {
-    if (!f.horas) continue;
-    const den = Math.sqrt(Math.max(1e-12, 1 - f._sk * f._sr + ((f._ku - 1) / 4) * f._sr * f._sr));
-    f.dsr = f.horas > 24 ? apPhi(((f._sr - sr0) * Math.sqrt(f.horas - 1)) / den) : 0;
-    f.estado = f.id === 'efectivo' ? 'referencia' : f.horas < AP.HORAS_MIN ? 'aprendiendo' : f.dsr > 0.95 && f._sr > 0 ? 'ascendida' : f._sr <= 0 ? 'descartada por ahora' : 'en observación';
-    delete f._sr; delete f._sk; delete f._ku;
+    if (!f.horas) { delete f._b; f.dsr = 0; f.estado = f.estado || (compite(f.id) ? 'aprendiendo' : 'referencia'); continue; }
+    const { n, sr, sk, ku } = f._b;
+    const den = Math.sqrt(Math.max(1e-12, 1 - sk * sr + ((ku - 1) / 4) * sr * sr));
+    f.dsr = n > 24 && compite(f.id) ? apPhi(((sr - sr0) * Math.sqrt(n - 1)) / den) : 0;
+    f.estado = !compite(f.id) ? 'referencia' : n < AP.HORAS_MIN ? 'aprendiendo' : f.dsr > 0.95 && sr > 0 ? 'ascendida' : sr <= 0 ? 'descartada por ahora' : 'en observación';
+    delete f._b;
   }
   return filas;
 }
@@ -802,13 +842,25 @@ async function apCiclo(env) {
   if (E.t == null || E.t < horaActual - H1) {
     const desde = E.t == null ? horaActual - AP_HORAS_HISTORIA * H1 : E.t + H1;
     const hasta = Math.min(desde + (AP_LOTE - 1) * H1, horaActual - H1);
-    const px = {}, fu = {};
+    const px = {}, fu = {}, fallidas = [];
+    // Una moneda que falla (o que Hyperliquid ya no tiene) no debe parar el repaso entero; BTC sí es imprescindible.
     await Promise.all(AP.MONEDAS.map(async (m) => {
-      const v = await hl({ type: 'candleSnapshot', req: { coin: m, interval: '1h', startTime: desde - H1, endTime: hasta - H1 } });
-      px[m] = new Map((Array.isArray(v) ? v : []).map((k) => [Number(k.t) + H1, num(k.c)]));
-      const f = await hl({ type: 'fundingHistory', coin: m, startTime: desde - H1, endTime: hasta + H1 - 1 });
-      fu[m] = new Map((Array.isArray(f) ? f : []).map((x) => [Math.round(Number(x.time) / H1) * H1, num(x.fundingRate)]));
+      px[m] = new Map(); fu[m] = new Map();
+      try {
+        const v = await hl({ type: 'candleSnapshot', req: { coin: m, interval: '1h', startTime: desde - H1, endTime: hasta - H1 } });
+        px[m] = new Map((Array.isArray(v) ? v : []).map((k) => [Number(k.t) + H1, num(k.c)]));
+        const f = await hl({ type: 'fundingHistory', coin: m, startTime: desde - H1, endTime: hasta + H1 - 1 });
+        fu[m] = new Map((Array.isArray(f) ? f : []).map((x) => [Math.round(Number(x.time) / H1) * H1, num(x.fundingRate)]));
+      } catch (e) { fallidas.push(m); }
     }));
+    if (fallidas.length) {
+      // ¿fallan porque ya no existen (se toleran) o por un error pasajero (se repite el lote entero al minuto siguiente)?
+      const meta = await hl({ type: 'meta' });
+      const hay = new Set(((meta && meta.universe) || []).filter((a) => !a.isDelisted).map((a) => a.name));
+      const pasajeras = fallidas.filter((m) => hay.has(m) || m === 'BTC');
+      if (pasajeras.length) throw new Error('repaso: fallan ' + pasajeras.join(','));
+      console.log('repaso: fuera del dex principal ' + fallidas.join(','));
+    }
     let hechas = 0;
     for (let t = desde; t <= hasta; t += H1) {
       const p = {}, f = {};
@@ -822,20 +874,24 @@ async function apCiclo(env) {
     await apGuardar(env, E, curva);
     return { ok: true, modo: 'repasando la historia', horas: hechas, hasta: iso(E.t), faltan: Math.round((horaActual - E.t) / H1) };
   }
-  // en vivo: primero, los mercados nuevos que aún no tienen memoria (3 por hora, por el límite de peticiones)
-  await apCalentar(E, 3);
+  // en vivo (el laboratorio se consulta como mucho cada 6 h: +1 petición)
   await apLab(E);
   const [meta, ctxs] = await hl({ type: 'metaAndAssetCtxs' });
-  const p = {}, f = {}, todos = {};
+  const p = {}, f = {}, todos = {}, enDex = new Set();
   (meta.universe || []).forEach((a, i) => {
     const c = ctxs[i];
     if (!c) return;
     const precio = num(c.markPx);
     if (precio > 0) todos[a.name] = precio;
+    if (a.isDelisted) return; // precio congelado: no se aprende de él
+    enDex.add(a.name);
     if (AP.MONEDAS.includes(a.name)) { if (precio > 0) p[a.name] = precio; const fr = num(c.funding); if (fr != null) f[a.name] = fr; }
   });
+  // los mercados nuevos se calientan en otros minutos (apCalentarMinuto), no en este, que ya es el más cargado
+  E.fueraDex = AP.MONEDAS.filter((m) => !enDex.has(m));
   const carteras = {};
-  const res = await Promise.allSettled(CARTERAS_SEGUIDAS.map((addr) => hl({ type: 'clearinghouseState', user: addr })));
+  // un solo intento por cartera: con 30 carteras y 3 intentos, un 429 de Hyperliquid agota el límite de 50 subpeticiones
+  const res = await Promise.allSettled(CARTERAS_SEGUIDAS.map((addr) => pedir(HL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ type: 'clearinghouseState', user: addr }) }, 1)));
   res.forEach((r, i) => {
     if (r.status !== 'fulfilled' || !r.value || !r.value.marginSummary) return;
     const pos = {};
@@ -851,11 +907,15 @@ async function apCiclo(env) {
 
 // Lo que ve el panel.
 // ---------- calentar mercados nuevos: cargan sus últimas 800 horas para entrar ya en el aprendizaje ----------
-async function apCalentar(E, limite) {
+async function apCalentar(E, limite, enDex) {
   if (E.t == null) return [];
-  const faltan = AP.MONEDAS.filter((m) => !E.monedas[m] || E.monedas[m].n < AP.HORAS_MIN).slice(0, limite);
+  // por turnos: una moneda que no puede calentarse (p. ej. con menos de 720 h de historia) no bloquea a las demás
+  const intentos = E.calentar || (E.calentar = {});
+  const faltan = AP.MONEDAS.filter((m) => (!E.monedas[m] || E.monedas[m].n < AP.HORAS_MIN) && (!enDex || enDex.has(m)))
+    .sort((a, b) => (intentos[a] || 0) - (intentos[b] || 0)).slice(0, limite);
   const hechos = [];
   for (const m of faltan) {
+    intentos[m] = E.t;
     try {
       const [v, fh] = await Promise.all([
         hl({ type: 'candleSnapshot', req: { coin: m, interval: '1h', startTime: E.t - 800 * H1, endTime: E.t } }),
@@ -874,11 +934,24 @@ async function apCalentar(E, limite) {
       const tasas = (Array.isArray(fh) ? fh : []).map((x) => [Number(x.time), num(x.fundingRate)]).filter((x) => x[1] != null).sort((a, b) => a[0] - b[0]);
       for (const [, r] of tasas) { c.f = r; c.nf++; c.fe24 = c.nf === 1 ? r : c.fe24 + (2 / 25) * (r - c.fe24); c.fe168 = c.nf === 1 ? r : c.fe168 + (2 / 169) * (r - c.fe168); }
       E.monedas[m] = c;
+      delete intentos[m];
       hechos.push(m);
     } catch (e) { /* se reintenta la hora siguiente */ }
   }
-  if (hechos.length) apAlerta(E, E.t, 'mercados', hechos.join(','), 'Se incorporan al aprendizaje: ' + hechos.join(', ') + ' (con sus últimas 800 horas de memoria)');
+  if (hechos.length) apAlerta(E, Math.floor(Date.now() / 60e3) * 60e3, 'mercados', hechos.join(','), 'Se incorporan al aprendizaje: ' + hechos.join(', ') + ' (con sus últimas 800 horas de memoria)');
   return hechos;
+}
+
+// Calienta 1 mercado en un minuto sin hora en vivo (CPU y peticiones aparte). Escribe solo si nadie ha guardado otra hora entretanto.
+async function apCalentarMinuto(env) {
+  const E = await apCargar(env);
+  if (E.t == null) return { ok: true, modo: 'nada que calentar' };
+  const fuera = new Set(E.fueraDex || []);
+  if (!AP.MONEDAS.some((m) => (!E.monedas[m] || E.monedas[m].n < AP.HORAS_MIN) && !fuera.has(m))) return { ok: true, modo: 'nada que calentar' };
+  const tAntes = E.t;
+  const hechos = await apCalentar(E, 1, { has: (m) => !fuera.has(m) });
+  await env.DB.prepare('UPDATE ap_estado SET json = ?1 WHERE id = ?2 AND t = ?3').bind(JSON.stringify(E), 'principal', tAntes).run();
+  return { ok: true, modo: 'calentar', hechos };
 }
 
 // ---------- flujo de órdenes: cada minuto, del libro de órdenes de Hyperliquid ----------
@@ -895,7 +968,7 @@ async function apMinuto(env) {
   if (!F.abierta || F.abierta.hora !== horaActual) { if (F.abierta) F.cerrada = F.abierta; F.abierta = { hora: horaActual, monedas: {} }; }
   const minuto = Math.floor((ahora - horaActual) / 60e3);
   const inicioCuarto = minuto % 15 < 2;
-  const libros = await Promise.allSettled(AP.MONEDAS.map((m) => hl({ type: 'l2Book', coin: m })));
+  const libros = await Promise.allSettled(AP.MONEDAS.map((m) => pedir(HL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ type: 'l2Book', coin: m }) }, 1)));
   libros.forEach((r, i) => {
     const m = AP.MONEDAS[i];
     const lv = r.status === 'fulfilled' && r.value && r.value.levels;
@@ -936,30 +1009,31 @@ async function aprendizaje({ vista } = {}, env) {
   const E = await apCargar(env);
   const v = vista || 'resumen';
   const pct = (log) => (Math.exp(log) - 1) * 100;
-  if (v === 'expertos') return { rows: apInforme(E), nota: 'Peso: cuánto confía hoy el sistema en cada experto. Sharpe deflactado: probabilidad de que su ventaja no sea suerte, corrigiendo por el número de expertos probados. Asciende con más de 0,95 y al menos 720 horas.' };
+  if (v === 'expertos') return { rows: apInforme(E), nota: 'Peso: cuánto confía hoy el sistema en cada experto. rentPct, sharpeAnual y caidaMaxPct incluyen el repaso de la historia, una simulación sobre los mismos datos con los que se diseñaron los expertos: no demuestran nada. Las columnas «Vivo» cuentan solo horas en vivo. Sharpe deflactado (solo en vivo): probabilidad estimada de que el Sharpe real sea positivo, corrigiendo por al menos ' + AP.PRUEBAS + ' pruebas; supone horas independientes. Asciende con más de 0,95 y al menos 720 horas en vivo («aprendiendo» hasta entonces). Cobro del funding, comprar y mantener y efectivo son referencias: el cobro del funding se modela sin riesgo de precio.' };
   if (v === 'posiciones') {
     const rows = AP.MONEDAS.map((m) => { const x = (E.posSistema || {})[m] || 0; const s = (E.senal || {})[m] || 0; return { moneda: m, posicionPct: x * 100, senal: s > 0 ? 'comprar' : s < 0 ? 'vender' : 'nada', precio: E.monedas[m] ? E.monedas[m].px : null }; });
     rows.push({ moneda: 'Cobro del funding', posicionPct: (E.carrySistema || 0) * 100, senal: (E.carrySistema || 0) > 0.05 ? 'mantener' : 'nada', precio: null });
-    return { rows, hora: E.t ? iso(E.t) : null, nota: 'Posición combinada del sistema en papel, en % del dinero. Positivo: comprado; negativo: vendido. Sin apalancamiento.' };
+    return { rows, hora: E.t ? iso(E.t) : null, nota: 'Posición combinada del sistema en papel, en % del dinero. Positivo: comprado; negativo: vendido. Exposición direccional como mucho del 100 % del dinero; el cobro del funding usa 2/3 en contado y un corto de perpetuo del mismo tamaño con 1/3 de margen (2x en esa pata). No es una recomendación de inversión.' };
   }
   if (v === 'curva') {
     const filas = await env.DB.prepare('SELECT t, s, b, n FROM ap_curva WHERE n > 0 AND (t % 86400000) = 0 ORDER BY t').all();
     const datos = filas.results || [];
-    const b0 = datos.length ? datos[0].b : 0;
-    return { rows: datos.map((r) => ({ fecha: fechaDe(r.t), sistemaPct: pct(r.s), btcPct: pct(r.b - b0) })), nota: 'Valor de 1 € en el sistema y en Bitcoin desde que el sistema empezó a operar en papel (00:00 UTC de cada día).' };
+    const s0 = datos.length ? datos[0].s : 0, b0 = datos.length ? datos[0].b : 0;
+    const tVivo = Math.min(...[E.inicioVivo, ...Object.values(E.carteras || {}).map((W) => W.desde)].filter((x) => x != null));
+    return { rows: datos.map((r) => ({ fecha: fechaDe(r.t), sistemaPct: pct(r.s - s0), btcPct: pct(r.b - b0), tramo: r.t > tVivo ? 'en vivo' : 'repaso de la historia' })), nota: 'Valor de 1 € en el sistema y en Bitcoin desde el primer día (00:00 UTC de cada día). El tramo «repaso de la historia» es una simulación sobre los datos con los que se diseñaron los expertos; solo el tramo «en vivo» es aprendizaje en papel de verdad. Costes: comisiones de 0,045 % y funding; sin diferencial ni deslizamiento.' };
   }
   if (v === 'carteras') {
     const hab = apHabilidades(E);
     const rows = Object.entries(E.carteras).map(([addr, W]) => ({ cartera: addr.slice(0, 6) + '…' + addr.slice(-4), direccion: addr, horas: W.st.n, rentPct: pct(W.st.log), t: hab[addr] ? hab[addr].t : 0, habilidadPct: hab[addr] ? hab[addr].habilidad * 100 : 0, posiciones: Object.keys(W.pos || {}).length }));
     rows.sort((a, b) => b.habilidadPct - a.habilidadPct || b.t - a.t);
-    return { rows, nota: 'Rentabilidad estimada hora a hora desde que se siguen. Habilidad: probabilidad de que su resultado no sea suerte (prueba t). Hacen falta al menos 24 horas.' };
+    return { rows, nota: 'Rentabilidad estimada hora a hora desde que se siguen (solo por el precio de sus posiciones, sin funding ni operaciones dentro de la hora). Habilidad: indicador de 0 a 100 basado en la prueba t de esa rentabilidad. No es la probabilidad de que no sea suerte: no corrige por haber elegido 30 carteras del ranking de ganadoras ni por la autocorrelación. Hacen falta al menos 24 horas.' };
   }
   if (v === 'alertas') return { rows: (E.alertas || []).map((a) => ({ hora: iso(a.t), tipo: a.tipo, texto: a.texto })) };
   if (v === 'laboratorio') {
     const L = E.lab;
     if (!L) return { rows: [], nota: 'Aún no ha llegado nada del laboratorio (se consulta cada 6 horas cuando el sistema está al día).' };
     const vivo = new Map(apInforme(E).filter((r) => r.familia === 'laboratorio').map((r) => [r.id, r]));
-    const rows = L.specs.map((x) => { const r = vivo.get(x.id) || {}; return { id: x.id, nombre: x.nombre, aprobadaEnLaboratorio: x.aprobada, sharpeLaboratorio: x.sharpeLab, deflactadoLaboratorio: x.dsrLab, horasEnVivo: r.horas || 0, pesoPct: r.pesoPct || 0, rentEnVivoPct: r.rentPct == null ? null : r.rentPct, estadoEnVivo: r.estado || 'esperando datos' }; });
+    const rows = L.specs.map((x) => { const r = vivo.get(x.id) || {}; return { id: x.id, nombre: x.nombre, aprobadaEnLaboratorio: x.aprobada, sharpeLaboratorio: x.sharpeLab, deflactadoLaboratorio: x.dsrLab, horasEnVivo: r.horasVivo || 0, pesoPct: r.pesoPct || 0, rentEnVivoPct: r.rentVivoPct == null ? null : r.rentVivoPct, estadoEnVivo: r.estado || 'esperando datos' }; });
     return { rows, laboratorio: { generado: L.generado, periodo: L.periodo, estrategiasProbadas: L.probadas, aprobadas: L.aprobadas, probabilidadSobreajuste: L.sobreajuste, sharpeQueDariaLaSuerte: L.suerte, fueraDeMuestraTop5: L.fueraDeMuestra, btcMismoPeriodo: L.btc, estado: L.estado },
       nota: 'Estrategias que el laboratorio propone tras probar miles en años de historia. En vivo compiten como un experto más y su peso lo deciden sus resultados reales. En papel.' };
   }
@@ -970,10 +1044,12 @@ async function aprendizaje({ vista } = {}, env) {
     rows: [{
       horasAprendidas: E.horas, hasta: E.t ? iso(E.t) : null, modo: E.t != null && E.t >= Math.floor(Date.now() / H1) * H1 - H1 ? 'en vivo' : 'repasando la historia',
       horasOperando: st.n, sistemaPct: pct(st.log), btcPct: pct(E.btcLog), caidaMaxPct: st.dd * 100,
+      horasEnVivo: E.vivo ? E.vivo.n : 0, sistemaVivoPct: E.vivo ? pct(E.vivo.log) : 0, btcVivoPct: pct(E.btcVivo || 0), caidaMaxVivoPct: E.vivo ? E.vivo.dd * 100 : 0,
+      enVivoDesde: E.inicioVivo != null ? iso(E.inicioVivo) : null,
       expertos: inf.filter((r) => r.horas).length, ascendidos: inf.filter((r) => r.estado === 'ascendida').length,
       mejorExperto: mejor ? mejor.nombre : null, pesoMejorPct: mejor ? mejor.pesoPct : null, carterasSeguidas: Object.keys(E.carteras).length,
     }],
-    nota: 'Todo en papel: el sistema no mueve dinero. Rentabilidad desde que empezó a operar, con comisiones de 0,045 % por compra o venta y funding.',
+    nota: 'Todo en papel: el sistema no mueve dinero. sistemaPct y btcPct incluyen el repaso de la historia (una simulación sobre los datos con los que se diseñaron los expertos, que no demuestra nada); lo que cuenta es sistemaVivoPct, solo horas en vivo. Costes: 0,045 % sobre cada cambio de la cartera combinada, y funding; sin diferencial ni deslizamiento. mejorExperto es el que más peso tiene hoy, no uno probado.',
   };
 }
 
@@ -1173,7 +1249,12 @@ export default {
     const token = (env && env.TOKEN) || '';
     const auth = (request.headers.get('Authorization') || '').trim();
     const bearer = auth.slice(0, 7).toLowerCase() === 'bearer ' ? auth.slice(7).trim() : '';
-    const vale = (t) => !!token && t === token;
+    const vale = (t) => { // comparación en tiempo constante (solo se filtra la longitud)
+      if (!token || typeof t !== 'string' || t.length !== token.length) return false;
+      let d = 0;
+      for (let i = 0; i < t.length; i++) d |= t.charCodeAt(i) ^ token.charCodeAt(i);
+      return d === 0;
+    };
 
     if (partes[0] === 'prueba') {
       if (!token) return new Response('Falta crear el secreto TOKEN en el Worker.', { status: 500 });
@@ -1196,9 +1277,14 @@ export default {
   },
   async scheduled(event, env, ctx) {
     ctx.waitUntil((async () => {
+      const minuto = new Date(Date.now()).getUTCMinutes();
       const r = await apCiclo(env).catch((e) => { console.log('ciclo de aprendizaje: ' + (e.message || e)); return null; });
-      // la hora en vivo ya usa 31 peticiones (precios y carteras); el flujo se mide en los otros 59 minutos
-      if (r && r.ok && r.modo === 'al día') await apMinuto(env).catch((e) => console.log('flujo de órdenes: ' + (e.message || e)));
+      // la hora en vivo usa 31 peticiones (precios y 30 carteras); el flujo se mide en los otros 59 minutos (19)
+      if (r && r.ok && r.modo === 'al día') {
+        await apMinuto(env).catch((e) => console.log('flujo de órdenes: ' + (e.message || e)));
+        // mercados nuevos: 1 cada 10 minutos (:05, :15… :55), lejos de la hora en vivo; +2 peticiones
+        if (minuto % 10 === 5) await apCalentarMinuto(env).catch((e) => console.log('calentar: ' + (e.message || e)));
+      }
     })());
   },
 };

@@ -54,7 +54,7 @@ while (AHORA < t0 + 8 * H) {
   AHORA += MIN;
   const r = await ejecutar(); maxVivo = Math.max(maxVivo, r.llamadas); cpuMin.push(r.ms);
 }
-check(maxVivo <= 50, 'peticiones externas por minuto en vivo: máximo ' + maxVivo + ' (la hora en vivo usa 31; el flujo, 20)');
+check(maxVivo <= 50, 'peticiones externas por minuto en vivo: máximo ' + maxVivo + ' (la hora en vivo usa 31; el flujo, 20; +2 al calentar)');
 const exp = (await herramienta('aprendizaje', { vista: 'expertos' })).rows;
 const flujo = exp.filter((x) => x.familia === 'flujo de órdenes');
 check(flujo.length === 4 && flujo.every((x) => x.horas > 0), 'los 4 expertos de flujo de órdenes aprenden en vivo: ' + flujo.map((x) => x.id + ' ' + x.horas + ' h').join(', '));
