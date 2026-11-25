@@ -16,7 +16,7 @@
 // y un disparador Cron cada minuto (* * * * *). Primero repasa unas 5000 horas de historia, 16 por minuto;
 // después aprende cada hora en vivo. Todo en papel: no mueve dinero.
 
-const VERSION = '2.5.0';
+const VERSION = '2.5.1';
 const HL = 'https://api.hyperliquid.xyz/info';
 const BINANCE = 'https://data-api.binance.vision/api/v3';
 const KRAKEN = 'https://api.kraken.com/0/public';
@@ -377,7 +377,11 @@ const TRADERS_MAX = 30;            // el minuto en vivo no admite más peticione
 const TRADERS_MAX_BYTES = 32768;
 const TRADERS_ENCOGE = 0.5;        // se eligieron las mejores entre cientos: su puntuación se encoge a la mitad (maldición del ganador)
 const TRADERS_HORAS_PREVIA = 336;  // la previa cuenta como dos semanas de horas en vivo; con más horas manda lo visto en vivo
-const TRADERS_DIAS_VALIDA = 14;    // si el laboratorio deja de publicar, se vuelve a la lista fija         // si el laboratorio deja de publicar, a los 3 días el experto se queda sin posición     // el archivo del laboratorio pesa ~16 KB; uno mucho mayor no se lee
+const TRADERS_DIAS_VALIDA = 14;
+// Dónde está la ventaja esta semana (laboratorio, cada día laborable a las 22:41 UTC): ~25 mercados ordenados por su
+// tendencia de 12 semanas ajustada a la volatilidad, con su historial. Se lee al pedir la vista (caché de 10 minutos).
+const SEMANA_URL = 'https://raw.githubusercontent.com/rendir-IEC/radar-laboratorio/main/resultados/semana/ranking.json';
+const SEMANA_MAX_BYTES = 65536;    // si el laboratorio deja de publicar, se vuelve a la lista fija         // si el laboratorio deja de publicar, a los 3 días el experto se queda sin posición     // el archivo del laboratorio pesa ~16 KB; uno mucho mayor no se lee
 function apListaExpertos(E) {
   const lab = (E && E.lab && E.lab.specs) || [];
   if (!lab.length) return AP_EXPERTOS;
@@ -1355,7 +1359,50 @@ async function botVista(env) {
   return { rows, eurUsd, nota: 'Bot de pruebas en papel: tres carteras (50, 200 y 1000 €) que siguen cada hora la posición del sistema en Kraken Futuros con sus reglas reales: múltiplos del tamaño mínimo de cada contrato, comisión de toma del ' + (BOT.COMISION * 100).toFixed(2) + ' %, la mitad del diferencial del momento y el funding de Kraken, sin apalancamiento. No incluye el cobro del funding del sistema (necesita contado). sistemaIdealPct es lo que hizo el sistema en el mismo tiempo sin mínimos ni diferencial. No mueve dinero ni es una recomendación.' };
 }
 
+// Lee y valida el ranking semanal del laboratorio: solo textos cortos y números finitos; nunca ejecuta nada de fuera.
+async function semanaLeer() {
+  let j;
+  try {
+    const r = await fetch(SEMANA_URL, { headers: { 'User-Agent': 'radar-mercados/' + VERSION }, cf: { cacheTtl: 600, cacheEverything: true } });
+    if (!r.ok) return { error: 'El laboratorio aún no ha publicado el ranking de la semana.' };
+    const txt = await r.text();
+    if (txt.length > SEMANA_MAX_BYTES) return { error: 'El ranking es demasiado grande: no se lee.' };
+    j = JSON.parse(txt);
+  } catch (e) { return { error: 'No se pudo leer el ranking de la semana.' }; }
+  if (!j || typeof j !== 'object' || j.version !== 1 || !Array.isArray(j.mercados)) return { error: 'El ranking no tiene el formato esperado.' };
+  const tx = (x, n) => (typeof x === 'string' ? x.slice(0, n) : null);
+  const nf = (x) => (typeof x === 'number' && Number.isFinite(x) ? x : null);
+  const st = (o) => (o && typeof o === 'object' ? { semanas: nf(o.semanas), positivasPct: nf(o.positivasPct), mediaSemanaPct: nf(o.mediaSemanaPct), t: nf(o.t), anualPct: nf(o.anualPct), caidaMaxPct: nf(o.caidaMaxPct) } : null);
+  const mercados = j.mercados.slice(0, 40).filter((m) => m && typeof m.simbolo === 'string' && /^[A-Z0-9]{2,16}$/.test(m.simbolo)).map((m) => {
+    const p = nf(m.puntuacion);
+    return {
+      puesto: nf(m.puesto), simbolo: m.simbolo, nombre: tx(m.nombre, 60), clase: tx(m.clase, 20), comoComprar: tx(m.comoComprar, 80), cierre: tx(m.cierre, 10),
+      rend12SemPct: nf(m.rend12SemPct), volSemanalPct: nf(m.volSemanalPct), puntuacion: p, direccion: p != null && p > 0 ? 'al alza' : 'a la baja',
+      fuerza: p == null ? null : p >= 1 ? 'fuerte' : p > 0 ? 'débil' : 'ninguna',
+      aciertoPct: nf(m.aciertoPct), mediaSemanaPct: nf(m.mediaSemanaPct), siguienteComoAhoraPct: nf(m.siguienteComoAhoraPct),
+      soloComprasAnualPct: nf(m.soloComprasAnualPct), soloComprasCaidaMaxPct: nf(m.soloComprasCaidaMaxPct), mantenerAnualPct: nf(m.mantenerAnualPct),
+      semanas: nf(m.semanas), desde: tx(m.desde, 10), enTop3: m.enTop3 === true,
+    };
+  });
+  const c = j.cartera && typeof j.cartera === 'object' ? j.cartera : {};
+  const g = j.global && typeof j.global === 'object' ? j.global : {};
+  const fuerza = (Array.isArray(g.porFuerza) ? g.porFuerza : []).slice(0, 12).map((f) => ({ desde: nf(f && f.desde), hasta: nf(f && f.hasta), casos: nf(f && f.casos), mediaSemanaSiguientePct: nf(f && f.mediaSemanaSiguientePct), subePct: nf(f && f.subePct), t: nf(f && f.t) }));
+  const resumen = [
+    ['Las 3 de mejor tendencia, cada semana', c.top3], ['Las 3 de mejor tendencia, últimos 2 años', c.top3UltimosDosAnos],
+    ['Todos los mercados a partes iguales', c.todosIgual], ['Solo Bitcoin', c.bitcoin],
+  ].map(([que, o]) => ({ que, desde: tx(c.desde, 10), ...(st(o) || {}) }));
+  return { generado: tx(j.generado, 32), mercados, resumen, fuerza };
+}
+const SEMANA_NOTA = 'Laboratorio: cada día laborable ordena unos 25 mercados (cripto, materias primas, índices, bonos y divisas) por su tendencia de 12 semanas dividida por su volatilidad (puntuación). Fuerza: fuerte desde 1, débil entre 0 y 1, ninguna por debajo de 0. Historial con cierres semanales públicos desde 2004 y un 0,10 % por operación. Investigación en papel; no es una recomendación.';
+
 async function aprendizaje({ vista } = {}, env) {
+  const vs = vista || 'resumen';
+  if (vs === 'semana' || vs === 'semana_resumen' || vs === 'semana_fuerza') {
+    const S = await semanaLeer();
+    if (S.error) return { rows: [], nota: S.error };
+    const rows = vs === 'semana' ? S.mercados : vs === 'semana_resumen' ? S.resumen : S.fuerza;
+    return { rows, generado: S.generado, nota: SEMANA_NOTA };
+  }
   if (!env || !env.DB) throw new Error('Falta conectar la base de datos D1 (variable DB) al Worker.');
   const E = await apCargar(env);
   const v = vista || 'resumen';
@@ -1570,7 +1617,7 @@ const HERRAMIENTAS = [
   { name: 'historico_diario', title: 'Historial diario largo', description: 'Velas diarias (UTC) de un activo desde una fecha: BTC desde 2015 y ETH desde 2016 vía Bitstamp; el resto, lo que haya en Kraken (hasta 720 días) o Hyperliquid. Una fila por día.', inputSchema: { type: 'object', properties: { simbolo: { type: 'string', description: 'p. ej. BTC, ETH, ORO, SP500' }, desde: { type: 'string', description: 'Fecha AAAA-MM-DD. Por defecto, la más antigua disponible.' } }, required: ['simbolo'], additionalProperties: false }, fn: historicoDiario },
   { name: 'derivados', title: 'Financiación y posiciones abiertas', description: 'Funding de los perpetuos cripto de Hyperliquid (ahora, media de 7 días y percentil de 30 días, anualizados), posiciones abiertas en dólares y prima frente al oráculo. Sirve para detectar exceso de apalancamiento.', inputSchema: { type: 'object', properties: { simbolos: S_SIMBOLOS }, additionalProperties: false }, fn: derivados },
   { name: 'funding_diario', title: 'Funding diario', description: 'Funding diario (suma de las 24 tasas horarias, UTC) de los perpetuos cripto de Hyperliquid en los últimos días cerrados (7 a 90). Una fila por símbolo y día. Sirve para el motor de cobro del funding.', inputSchema: { type: 'object', properties: { simbolos: S_SIMBOLOS, dias: { type: 'integer', minimum: 7, maximum: 90, description: 'Días cerrados hacia atrás (por defecto 60).' } }, additionalProperties: false }, fn: fundingDiario },
-  { name: 'aprendizaje', title: 'Sistema que aprende', description: 'Estado del sistema que aprende cada hora (en papel): resumen, expertos y sus pesos, posiciones combinadas, curva diaria frente a Bitcoin, carteras seguidas con su habilidad, avisos, lo que propone el laboratorio y el bot de pruebas (50, 200 y 1000 € en papel en Kraken Futuros).', inputSchema: { type: 'object', properties: { vista: { type: 'string', enum: ['resumen', 'expertos', 'posiciones', 'curva', 'carteras', 'alertas', 'laboratorio', 'bot', 'ml'], description: 'Qué parte ver. Por defecto, resumen. bot: carteras en papel de 50, 200 y 1000 € que siguen al sistema en Kraken Futuros con costes y mínimos reales. ml: la señal diaria del aprendizaje automático y cómo le va a su experto.' } }, additionalProperties: false }, fn: aprendizaje },
+  { name: 'aprendizaje', title: 'Sistema que aprende', description: 'Estado del sistema que aprende cada hora (en papel): resumen, expertos y sus pesos, posiciones combinadas, curva diaria frente a Bitcoin, carteras seguidas con su habilidad, avisos, lo que propone el laboratorio y el bot de pruebas (50, 200 y 1000 € en papel en Kraken Futuros).', inputSchema: { type: 'object', properties: { vista: { type: 'string', enum: ['resumen', 'expertos', 'posiciones', 'curva', 'carteras', 'alertas', 'laboratorio', 'bot', 'ml', 'semana', 'semana_resumen', 'semana_fuerza'], description: 'Qué parte ver. Por defecto, resumen. bot: carteras en papel de 50, 200 y 1000 € que siguen al sistema en Kraken Futuros con costes y mínimos reales. ml: la señal diaria del aprendizaje automático y cómo le va a su experto. semana: unos 25 mercados ordenados por su tendencia de 12 semanas, con su historial; semana_resumen: cómo le fue a comprar cada semana las 3 mejores; semana_fuerza: la semana siguiente según la fuerza de la señal.' } }, additionalProperties: false }, fn: aprendizaje },
   { name: 'mercados', title: 'Mercados disponibles', description: 'Lista de símbolos del radar, de dónde sale cada uno y qué otros mercados (acciones de EE. UU., etc.) hay disponibles.', inputSchema: { type: 'object', properties: {}, additionalProperties: false }, fn: mercados },
   { name: 'estado_fuentes', title: 'Estado de las fuentes', description: 'Comprueba si Hyperliquid, Kraken y Binance responden y cuánto tardan.', inputSchema: { type: 'object', properties: {}, additionalProperties: false }, fn: estadoFuentes },
 ];
