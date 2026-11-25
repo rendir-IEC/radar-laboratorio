@@ -1,0 +1,142 @@
+{
+ "dydx_mercados": {
+  "url": "https://indexer.dydx.trade/v4/perpetualMarkets?limit=2",
+  "estado": 200,
+  "bytes": 1171,
+  "claves": [
+   "markets"
+  ],
+  "muestra": "{\"markets\":{\"BTC-USD\":{\"clobPairId\":\"0\",\"ticker\":\"BTC-USD\",\"status\":\"ACTIVE\",\"oraclePrice\":\"58783.73467\",\"priceChange24H\":\"-609.01947\",\"volume24H\":\"13979932.0810\",\"trades24H\":2675,\"nextFundingRate\":\"0.00005543160377358491\",\"initialMarginFraction\":\"0.02\",\"maintenanceMarginFraction\":\"0.012\",\"openInterest\":\"309.8870\",\"atomicResolution\":-10,\"quantumConversionExponent\":-9,\"tickSize\":\"1\",\"stepSize\":\"0.0001\",\"stepBaseQuantums\":1000000,\"subticksPerTick\":100000,\"marketType\":\"CROSS\",\"openInterestLowerCap\":\"0\",\"openInterestUpperCap\":\"0\",\"baseOpenInterest\":\"782.0931\",\"defaultFundingRate1H\":\"0\"},\"ETH-USD\":{\"clobPairId\":\"1\",\"ticker\":\"ETH-USD\",\"status\":\"ACTIVE\",\"oraclePrice\":\"1642.569533\",\"priceChange24H\":\"-30.423783\",\"volume24H\":\"65454652.7654\",\"trades24H\":4582,\"nextFundingRate\":\"0.00000014150943396226\",\"initialMarginFraction\":\"0.02\",\"maintenanceMarginFraction\":\"0.012\",\"openInterest\":\"10204.593\",\"atom"
+ },
+ "dydx_leaderboard_pnl": {
+  "url": "https://indexer.dydx.trade/v4/leaderboard/pnl?period=PERIOD_30D&limit=5",
+  "estado": 404,
+  "bytes": 0,
+  "claves": null,
+  "muestra": ""
+ },
+ "dydx_leaderboard_pnl_b": {
+  "url": "https://indexer.dydx.trade/v4/leaderboard/pnl?period=PERIOD_ALL_TIME&limit=5",
+  "estado": 404,
+  "bytes": 0,
+  "claves": null,
+  "muestra": ""
+ },
+ "dydx_trades": {
+  "url": "https://indexer.dydx.trade/v4/trades/perpetualMarket/BTC-USD?limit=3",
+  "estado": 200,
+  "bytes": 503,
+  "claves": [
+   "trades"
+  ],
+  "muestra": "{\"trades\":[{\"id\":\"06df7d9f0000000200000002\",\"side\":\"BUY\",\"size\":\"0.0001\",\"price\":\"58841\",\"type\":\"LIMIT\",\"createdAt\":\"2026-11-25T10:52:48.761Z\",\"createdAtHeight\":\"115309983\"},{\"id\":\"06df7d3d0000000200000002\",\"side\":\"SELL\",\"size\":\"0.0036\",\"price\":\"58888\",\"type\":\"LIMIT\",\"createdAt\":\"2026-11-25T10:51:47.179Z\",\"createdAtHeight\":\"115309885\"},{\"id\":\"06df78b50000000200000002\",\"side\":\"SELL\",\"size\":\"0.0001\",\"price\":\"58931\",\"type\":\"LIMIT\",\"createdAt\":\"2026-11-25T10:40:03.984Z\",\"createdAtHeight\":\"115308725\"}]}"
+ },
+ "dydx_megavault": {
+  "url": "https://indexer.dydx.trade/v4/vault/v1/megavault/historicalPnl?resolution=day",
+  "estado": 200,
+  "bytes": 14385,
+  "claves": [
+   "megavaultPnl"
+  ],
+  "muestra": "{\"megavaultPnl\":[{\"equity\":\"2091541\",\"totalPnl\":\"4672884\",\"netTransfers\":\"0\",\"createdAt\":\"2026-08-28T00:18:40.000Z\",\"blockHeight\":\"103162875\",\"blockTime\":\"2026-08-28T00:18:39.000Z\"},{\"equity\":\"2292911\",\"totalPnl\":\"4673842\",\"netTransfers\":\"0\",\"createdAt\":\"2026-08-30T00:10:00.000Z\",\"blockHeight\":\"103408176\",\"blockTime\":\"2026-08-30T00:09:59.000Z\"},{\"equity\":\"1693091\",\"totalPnl\":\"4674026\",\"netTransfers\":\"0\",\"createdAt\":\"2026-08-31T00:09:45.000Z\",\"blockHeight\":\"103527900\",\"blockTime\":\"2026-08-31T00:09:43.000Z\"},{\"equity\":\"1693240\",\"totalPnl\":\"4674175\",\"netTransfers\":\"0\",\"createdAt\":\"2026-09-01T00:59:06.000Z\",\"blockHeight\":\"103656872\",\"blockTime\":\"2026-09-01T00:59:05.000Z\"},{\"equity\":\"1719040\",\"totalPnl\":\"4674456\",\"netTransfers\":\"0\",\"createdAt\":\"2026-09-02T00:48:04.000Z\",\"blockHeight\":\"103778216\",\"blockTime\":\"2026-09-02T00:48:03.000Z\"},{\"equity\":\"1722889\",\"totalPnl\":\"4674679\",\"netTransfers\":\"0"
+ },
+ "drift_markets": {
+  "url": "https://data.api.drift.trade/stats/markets",
+  "estado": 0,
+  "bytes": 0,
+  "claves": null,
+  "muestra": ""
+ },
+ "drift_leaderboard": {
+  "url": "https://data.api.drift.trade/stats/leaderboard",
+  "estado": 0,
+  "bytes": 0,
+  "claves": null,
+  "muestra": ""
+ },
+ "drift_leaderboard_b": {
+  "url": "https://data.api.drift.trade/leaderboard",
+  "estado": 0,
+  "bytes": 0,
+  "claves": null,
+  "muestra": ""
+ },
+ "drift_trades": {
+  "url": "https://data.api.drift.trade/trades?symbol=SOL-PERP&limit=3",
+  "estado": 0,
+  "bytes": 0,
+  "claves": null,
+  "muestra": ""
+ },
+ "lighter_info": {
+  "url": "https://mainnet.zklighter.elliot.ai/info",
+  "estado": 200,
+  "bytes": 65,
+  "claves": [
+   "contract_address"
+  ],
+  "muestra": "{\"contract_address\":\"0x3B4D794a66304F130a4Db8F2551B0070dfCf5ca7\"}"
+ },
+ "lighter_cuenta_1": {
+  "url": "https://mainnet.zklighter.elliot.ai/api/v1/account?by=index&value=1",
+  "estado": 200,
+  "bytes": 941,
+  "claves": [
+   "code",
+   "total",
+   "accounts"
+  ],
+  "muestra": "{\"code\":200,\"total\":1,\"accounts\":[{\"code\":0,\"account_type\":0,\"index\":1,\"l1_address\":\"0x0000000000000000000000000000000000000000\",\"cancel_all_time\":0,\"total_order_count\":0,\"total_isolated_order_count\":0,\"pending_order_count\":0,\"available_balance\":\"1.000000\",\"status\":0,\"collateral\":\"1.000000\",\"transaction_time\":1795190582834048,\"account_trading_mode\":0,\"account_index\":1,\"name\":\"\",\"description\":\"\",\"can_invite\":true,\"referral_points_percentage\":\"\",\"can_rfq\":true,\"can_rfq_market_ids\":[],\"agent_enabled\":false,\"created_at\":0,\"metadata\":{\"color\":\"\"},\"positions\":[],\"bo_positions\":[],\"assets\":[{\"symbol\":\"USDC\",\"asset_id\":3,\"balance\":\"10.000000\",\"locked_balance\":\"0.000000\",\"margin_mode\":\"disabled\",\"margin_balance\":\"1.000000\",\"multiplier\":\"1.000000000000000000\"}],\"total_asset_value\":\"1\",\"cross_asset_value\":\"1\",\"cross_initial_margin_requirement\":\"0.000000\",\"cross_maintenance_margin_requirement\":\"0.00"
+ },
+ "lighter_cuenta_1000": {
+  "url": "https://mainnet.zklighter.elliot.ai/api/v1/account?by=index&value=1000",
+  "estado": 200,
+  "bytes": 14207,
+  "claves": [
+   "code",
+   "total",
+   "accounts"
+  ],
+  "muestra": "{\"code\":200,\"total\":1,\"accounts\":[{\"code\":0,\"account_type\":0,\"index\":1000,\"l1_address\":\"0x948bD698358dE1c73de0526CA4F592d26986d589\",\"cancel_all_time\":0,\"total_order_count\":0,\"total_isolated_order_count\":0,\"pending_order_count\":0,\"available_balance\":\"0.608697\",\"status\":0,\"collateral\":\"0.608697\",\"transaction_time\":1767083894781492,\"account_trading_mode\":0,\"account_index\":1000,\"name\":\"\",\"description\":\"\",\"can_invite\":true,\"referral_points_percentage\":\"\",\"can_rfq\":true,\"can_rfq_market_ids\":[],\"agent_enabled\":false,\"created_at\":0,\"metadata\":{\"color\":\"\"},\"positions\":[{\"market_id\":0,\"symbol\":\"ETH\",\"initial_margin_fraction\":\"2.00\",\"open_order_count\":0,\"pending_order_count\":0,\"position_tied_order_count\":0,\"sign\":1,\"position\":\"0.0000\",\"avg_entry_price\":\"0.00\",\"position_value\":\"-0.000000\",\"unrealized_pnl\":\"0.000000\",\"realized_pnl\":\"0.000000\",\"liquidation_price\":\"0\",\"margin_mode\":0,\"margin_set_flag\":"
+ },
+ "lighter_pnl_1000": {
+  "url": "https://mainnet.zklighter.elliot.ai/api/v1/pnl?by=index&value=1000&resolution=1d&start_timestamp=1790419969&end_timestamp=1795603969&count_back=60",
+  "estado": 200,
+  "bytes": 20522,
+  "claves": [
+   "code",
+   "resolution",
+   "pnl"
+  ],
+  "muestra": "{\"code\":200,\"resolution\":\"1d\",\"pnl\":[{\"timestamp\":1790467200,\"trade_pnl\":-3030.185271,\"trade_spot_pnl\":104503.165287,\"inflow\":156508.908444,\"outflow\":153478.114476,\"spot_outflow\":104508.6,\"spot_inflow\":7.33,\"pool_pnl\":198.673968,\"pool_inflow\":21809.034476,\"pool_outflow\":22007.708444,\"staking_pnl\":0,\"staking_inflow\":0,\"staking_outflow\":0,\"pool_total_shares\":0,\"volume\":0},{\"timestamp\":1790553600,\"trade_pnl\":-3030.185271,\"trade_spot_pnl\":104503.159841,\"inflow\":156508.908444,\"outflow\":153478.114476,\"spot_outflow\":104508.6,\"spot_inflow\":7.33,\"pool_pnl\":198.673968,\"pool_inflow\":21809.034476,\"pool_outflow\":22007.708444,\"staking_pnl\":0,\"staking_inflow\":0,\"staking_outflow\":0,\"pool_total_shares\":0,\"volume\":0},{\"timestamp\":1790640000,\"trade_pnl\":-3030.185271,\"trade_spot_pnl\":104503.159897,\"inflow\":156508.908444,\"outflow\":153478.114476,\"spot_outflow\":104508.6,\"spot_inflow\":7.33,\"pool_pnl\":198.673968"
+ },
+ "lighter_leaderboard": {
+  "url": "https://mainnet.zklighter.elliot.ai/api/v1/leaderboard?type=weekly&l1_address=0x0000000000000000000000000000000000000000",
+  "estado": 200,
+  "bytes": 1002,
+  "claves": [
+   "entries"
+  ],
+  "muestra": "{\"entries\":[{\"l1_address\":\"0x82**************************************\",\"points\":78390,\"entry\":1,\"entryId\":1},{\"l1_address\":\"0x16**************************************\",\"points\":52260,\"entry\":2,\"entryId\":2},{\"l1_address\":\"0xfd**************************************\",\"points\":39073.31,\"entry\":3,\"entryId\":3},{\"l1_address\":\"0xc0**************************************\",\"points\":39073.31,\"entry\":3,\"entryId\":4},{\"l1_address\":\"0x7c**************************************\",\"points\":39073.31,\"entry\":3,\"entryId\":5},{\"l1_address\":\"0xdb**************************************\",\"points\":39073.31,\"entry\":3,\"entryId\":6},{\"l1_address\":\"0x30**************************************\",\"points\":39073.3,\"entry\":7,\"entryId\":7},{\"l1_address\":\"0xAC**************************************\",\"points\":23743.75,\"entry\":8,\"entryId\":8},{\"l1_address\":\"0xdC**************************************\",\"points\":22350,\"entry\":9,\"entryId\":9"
+ },
+ "lighter_trades": {
+  "url": "https://mainnet.zklighter.elliot.ai/api/v1/recentTrades?market_id=1&limit=3",
+  "estado": 200,
+  "bytes": 3061,
+  "claves": [
+   "code",
+   "trades"
+  ],
+  "muestra": "{\"code\":200,\"trades\":[{\"trade_id\":43006485997,\"trade_id_str\":\"43006485997\",\"tx_hash\":\"91d261cbd038dc1528102dd31ec60f0ffa1a44b4f0cc5a6d517db5cf71b26183daba711e9ade5dc7\",\"type\":\"trade\",\"market_id\":1,\"market_symbol\":\"BTC\",\"market_kind\":\"perps\",\"size\":\"0.00100\",\"price\":\"58829.3\",\"usd_amount\":\"58.829300\",\"ask_id\":562953996387901,\"ask_id_str\":\"562953996387901\",\"bid_id\":844420831118474,\"bid_id_str\":\"844420831118474\",\"ask_client_id\":19616,\"ask_client_id_str\":\"19616\",\"bid_client_id\":48481308083457,\"bid_client_id_str\":\"48481308083457\",\"ask_account_id\":750305,\"bid_account_id\":281474976529902,\"is_maker_ask\":false,\"block_height\":402220258,\"timestamp\":1795604003105,\"taker_position_size_before\":\"0.00092\",\"taker_entry_quote_before\":\"54.132248\",\"taker_initial_margin_fraction_before\":500,\"taker_position_sign_changed\":true,\"maker_fee\":28,\"maker_position_size_before\":\"-0.08442\",\"maker_entry_quote_before\":\"4"
+ },
+ "lighter_libros": {
+  "url": "https://mainnet.zklighter.elliot.ai/api/v1/orderBooks",
+  "estado": 200,
+  "bytes": 199541,
+  "claves": [
+   "code",
+   "order_books"
+  ],
+  "muestra": "{\"code\":200,\"order_books\":[{\"symbol\":\"EDGE\",\"market_id\":157,\"market_type\":\"perp\",\"base_asset_id\":0,\"quote_asset_id\":0,\"status\":\"inactive\",\"taker_fee\":\"0.0000\",\"is_taker_fee_enabled\":true,\"maker_fee\":\"0.0000\",\"is_maker_fee_enabled\":true,\"liquidation_fee\":\"1.0000\",\"min_base_amount\":\"8.5\",\"min_quote_amount\":\"10.000000\",\"order_quote_limit\":\"281474976.710655\",\"supported_size_decimals\":1,\"supported_price_decimals\":5,\"supported_quote_decimals\":6,\"created_at\":\"1774033966062\",\"multiplier\":\"1.000000000000000000\",\"start_timestamp\":0,\"end_timestamp\":0,\"open_interest\":\"0.000000\",\"open_interest_limit\":\"217302756447.3\",\"open_interest_usd\":\"0.000000\",\"outcome\":0,\"operator_account_index\":1,\"fee_collector_account_index\":0,\"settlement_cap\":0,\"settlement_type\":0,\"settlement_price\":0,\"default_price\":0,\"is_frozen\":false,\"market_deployer\":\"lighter\"},{\"symbol\":\"STRC\",\"market_id\":156,\"market_type\":\"perp\",\"base_a"
+ }
+}
