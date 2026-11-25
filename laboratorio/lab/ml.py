@@ -104,6 +104,8 @@ def preparar_dd(dd, miembros=None, btc='BTC'):
     for m, d in dd.items():
         X = indicadores(d, b)
         y = d['y'] if 'y' in d.columns else d['close'].shift(-1) / d['close'] - 1  # de hoy al cierre de mañana
+        if 'f' in d.columns:  # el funding de mañana lo paga el comprado (si es positivo) y lo cobra el vendido
+            y = y - d['f'].shift(-1).fillna(0.0)
         X['_y'] = y
         X['_y2'] = y.shift(-1)  # entrando un día más tarde: si la ventaja sigue, no es un efecto del precio de cierre
         X['_moneda'] = m

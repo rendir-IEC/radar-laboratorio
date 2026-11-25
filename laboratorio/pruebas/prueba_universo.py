@@ -10,7 +10,8 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from lab.comun import MONEDAS_SERVIDOR  # noqa: E402
 from lab.ml import _elegir, cartera, diario, evaluar_dd  # noqa: E402
 from lab.sintetico import panel_sintetico  # noqa: E402
-from lab.universo import _xml_lista, es_moneda, pertenencia, rendimiento_siguiente  # noqa: E402
+from lab.ml import preparar_dd  # noqa: E402
+from lab.universo import _xml_lista, es_moneda, fin_de_semana_quieto, no_cripto, pertenencia, rendimiento_siguiente  # noqa: E402
 
 
 def test_listado():
@@ -68,6 +69,28 @@ def test_pertenencia():
     print('OK    test_pertenencia')
 
 
+def test_no_cripto_y_funding():
+    idx = pd.date_range('2026-01-01', periods=150, freq='D', tz='UTC')
+    rng = np.random.default_rng(1)
+    r = rng.normal(0, 0.02, 150)
+    r[idx.dayofweek >= 5] *= 0.1  # como el oro o una acción: casi quieto en fin de semana
+    oro = pd.DataFrame({'close': 100 * np.exp(np.cumsum(r))}, index=idx)
+    cr = pd.DataFrame({'close': 100 * np.exp(np.cumsum(rng.normal(0, 0.03, 150)))}, index=idx)
+    assert fin_de_semana_quieto(oro) and not fin_de_semana_quieto(cr)
+    assert no_cripto({'XAUUSDT': cr, 'NVDAUSDT': cr, 'RAROUSDT': oro, 'BTCUSDT': cr, 'LITUSDT': cr}) == ['NVDAUSDT', 'RAROUSDT', 'XAUUSDT']
+    # el rendimiento que aprende el modelo descuenta el funding del día siguiente (lo paga el comprado)
+    dd = {}
+    for m, f in (('BTC', 0.0), ('AAA', 0.001), ('BBB', -0.002)):
+        c = 100 * np.exp(np.cumsum(rng.normal(0, 0.02, 150)))
+        dd[m] = pd.DataFrame({'open': c, 'high': c * 1.01, 'low': c * 0.99, 'close': c, 'vol': 1e6, 'tb': 5e5, 'f': f}, index=idx)
+    df, Xn, yn, feats = preparar_dd(dd)
+    for m, f in (('AAA', 0.001), ('BBB', -0.002)):
+        c = dd[m]['close']
+        bruto = (c.shift(-1) / c - 1).reindex(df.xs(m, level=1).index)
+        assert np.allclose(df.xs(m, level=1)['_y'].dropna(), (bruto - f).dropna()), m
+    print('OK    test_no_cripto_y_funding')
+
+
 def test_banda():
     assert _elegir(list('abcdefgh'), 3, None, set()) == ['a', 'b', 'c']
     assert _elegir(list('abcdefgh'), 3, 6, {'f', 'h'}) == ['f', 'a', 'b']  # f sigue entre las 6 primeras; h no
@@ -112,5 +135,6 @@ def test_punta_a_punta():
 if __name__ == '__main__':
     test_listado()
     test_pertenencia()
+    test_no_cripto_y_funding()
     test_banda()
     test_punta_a_punta()

@@ -19,7 +19,6 @@ import urllib.parse
 import numpy as np
 import pandas as pd
 
-from .comun import COMISION, DESLIZAMIENTO
 from .datos import _http, _leer_zip_csv, _meses, _ms, carpeta_datos
 
 S3 = 'https://s3-ap-northeast-1.amazonaws.com/data.binance.vision'
@@ -29,6 +28,14 @@ DIA = 86_400_000
 # no son monedas: estables, índices y similares
 EXCLUIR = {'USDCUSDT', 'BUSDUSDT', 'TUSDUSDT', 'FDUSDUSDT', 'USDPUSDT', 'DAIUSDT', 'EURUSDT', 'GBPUSDT', 'USDEUSDT',
            'USD1USDT', 'RLUSDUSDT', 'XUSDUSDT', 'PYUSDUSDT', 'BTCDOMUSDT', 'DEFIUSDT', 'BLUEBIRDUSDT', 'FOOTBALLUSDT'}
+# Binance lista desde 2026 perpetuos de oro, petróleo, acciones y fondos cotizados (TradFi): no son cripto y se mueven
+# por otras razones. Se quitan por nombre (comprobados en CoinGecko el 25-11-2026) y, para los que no estén en la lista,
+# porque su precio casi no se mueve en fin de semana (su mercado de referencia está cerrado).
+NO_CRIPTO = {'XAU', 'XAG', 'XPT', 'XPD', 'CL', 'BZ', 'NG', 'COPPER', 'TSLA', 'NVDA', 'MSTR', 'CRCL', 'INTC', 'MU', 'SNDK',
+             'SAMSUNG', 'SKHYNIX', 'SKHY', 'QQQ', 'SPY', 'SOXL', 'SOXS', 'KORU', 'DRAM', 'SNXX', 'SPCX', 'COIN', 'HOOD',
+             'AAPL', 'AMZN', 'GOOGL', 'META', 'MSFT', 'PLTR', 'AMD', 'AVGO', 'ORCL', 'NFLX', 'TSM', 'BABA', 'TQQQ', 'SQQQ',
+             'IWM', 'GLD', 'SLV', 'USO', 'EWY', 'EWJ'}
+COSTE_UNIVERSO = 0.0010  # por cada 100 % de giro: monedas medianas en Kraken Futuros cuestan 0,07–0,13 % por operación
 DIAS_MIN_MES = 20  # para entrar en el orden de un mes, al menos 20 días con datos el mes anterior
 
 
@@ -181,6 +188,22 @@ def cargar(simbolos_=None):
     return out
 
 
+def fin_de_semana_quieto(d, minimo=8):
+    """True si el precio se mueve en fin de semana menos de un tercio que entre semana (mercado de referencia cerrado)."""
+    r = np.log(d['close']).diff().abs().dropna()
+    if len(r) < 7 * minimo:
+        return False
+    finde = r[r.index.dayofweek >= 5]
+    semana = r[r.index.dayofweek < 5]
+    if len(finde) < 2 * minimo or semana.mean() <= 0:
+        return False
+    return bool(finde.mean() < semana.mean() / 3)
+
+
+def no_cripto(dd):
+    return sorted(s for s, d in dd.items() if s[:-4] in NO_CRIPTO or s[:-4].lstrip('0123456789') in NO_CRIPTO or fin_de_semana_quieto(d))
+
+
 def rendimiento_siguiente(d, fin):
     """Lo que se gana si se entra al cierre de hoy y se sale al de mañana. Si la moneda deja de cotizar para siempre
     antes de `fin`, su último día cuenta 0 (se cierra al último precio) en vez de desaparecer: así el modelo no puede
@@ -234,11 +257,13 @@ def main():
     if 'BTCUSDT' not in dd:
         raise SystemExit('Falta BTCUSDT')
     from .ml import evaluar_dd, informe
+    fuera = no_cripto(dd)
+    dd = {s: d for s, d in dd.items() if s not in fuera}
     fin = max(d.index[-1] for d in dd.values())
     for d in dd.values():
         d['y'] = rendimiento_siguiente(d, fin)
-    coste = COMISION + DESLIZAMIENTO
-    out = {'generado': dt.datetime.now(dt.timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ'), 'coste_por_giro_pct': round(coste * 100, 3),
+    coste = COSTE_UNIVERSO
+    out = {'fuera_no_cripto': fuera, 'generado': dt.datetime.now(dt.timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ'), 'coste_por_giro_pct': round(coste * 100, 3),
            'registro': registro, 'simbolos_con_datos': len(dd), 'universos': {}, 'resultados': []}
     for top in a.tops:
         miembros, orden_mes = pertenencia(dd, top)
@@ -251,8 +276,9 @@ def main():
     with open(os.path.join(a.salida, 'universo.json'), 'w') as f:
         json.dump(out, f, ensure_ascii=False, indent=1, default=str)
     texto = informe(out, titulo='Aprendizaje automático sobre el universo de cada momento (sin sesgo de supervivencia)',
-                    nota='Universo de cada momento: cada mes, los perpetuos USDT-M de Binance con más volumen el mes anterior, incluidos los que después se retiraron (su último día cuenta como cierre al último precio). Velas diarias de Binance. 8 variantes de cartera fijadas de antemano.')
-    u = ['\n## Universos\n', 'Símbolos USDT-M con datos (incluidos los retirados): %d.' % len(dd)]
+                    nota='Universo de cada momento: cada mes, los perpetuos USDT-M de Binance con más volumen el mes anterior, incluidos los que después se retiraron (su último día cuenta como cierre al último precio), sin oro, petróleo ni acciones. El rendimiento incluye el funding (el comprado paga si es positivo; el vendido cobra). Coste prudente de 0,10 %% por cada 100 %% de giro (lo que cuestan las monedas medianas en Kraken Futuros). Velas diarias de Binance. 8 variantes de cartera fijadas de antemano.')
+    u = ['\n## Universos\n', 'Símbolos USDT-M con datos (incluidos los retirados): %d. Fuera por no ser cripto (oro, petróleo, acciones, fondos): %d (%s).' % (
+        len(dd), len(fuera), ', '.join(x[:-4] for x in fuera[:40]))]
     for top, v in out['universos'].items():
         u.append('- Las %s de más volumen cada mes: pasan %d símbolos distintos; %d ya no cotizan (p. ej. %s).' % (
             top, v['distintos'], v['ya_no_cotizan'], ', '.join(v['ejemplos_retirados'][:10]) or '—'))
