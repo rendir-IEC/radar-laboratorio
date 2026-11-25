@@ -16,7 +16,7 @@
 // y un disparador Cron cada minuto (* * * * *). Primero repasa unas 5000 horas de historia, 16 por minuto;
 // después aprende cada hora en vivo. Todo en papel: no mueve dinero.
 
-const VERSION = '2.3.0';
+const VERSION = '2.4.0';
 const HL = 'https://api.hyperliquid.xyz/info';
 const BINANCE = 'https://data-api.binance.vision/api/v3';
 const KRAKEN = 'https://api.kraken.com/0/public';
@@ -350,6 +350,7 @@ const AP_EXPERTOS = [
   { id: 'carry_alt', nombre: 'Cobrar el funding rotando (funding > 10 %)', familia: 'funding', tipo: 'carry', umbral: 0.1 },
   { id: 'copiar_mejores', nombre: 'Copiar a las carteras con habilidad', familia: 'los mejores', tipo: 'copia', habilidad: true },
   { id: 'copiar_ranking', nombre: 'Copiar al ranking (sin filtrar suerte)', familia: 'los mejores', tipo: 'copia', habilidad: false },
+  { id: 'ml_qlib', nombre: 'Aprendizaje automático (compra las 5 mejores y vende las 5 peores)', familia: 'aprendizaje automático', tipo: 'ml' },
   { id: 'btc_hold', nombre: 'Comprar y mantener Bitcoin', familia: 'referencia', tipo: 'hold' },
   { id: 'efectivo', nombre: 'Quedarse en efectivo', familia: 'referencia', tipo: 'cash' },
 ];
@@ -360,7 +361,14 @@ const LAB_URL = 'https://raw.githubusercontent.com/rendir-IEC/radar-laboratorio/
 const LAB_MAX = 6;
 const LAB_CADA_H = 6;
 const LAB_PESO_PRUEBA = 0.1;      // candidata no aprobada: entra con el 10 % del peso medio y sin reparto fijo: solo sube si gana (0 = solo observar)
-const LAB_MAX_BYTES = 262144;     // el archivo del laboratorio pesa ~16 KB; uno mucho mayor no se lee
+const LAB_MAX_BYTES = 262144;
+// Señal diaria del aprendizaje automático (laboratorio, lab/senal.py): una cartera {moneda: peso} que el experto ml_qlib
+// copia tal cual. Entra como candidata (10 % del peso medio, sin reparto fijo): solo sube si gana en vivo.
+const ML_URL = 'https://raw.githubusercontent.com/rendir-IEC/radar-laboratorio/main/resultados/ml/senal.json';
+const ML_CADA_H = 3;              // la señal es diaria: se mira cada 3 horas, en el minuto :37
+const ML_MAX_BYTES = 65536;
+const ML_PESO_MAX = 0.2;          // como mucho un 20 % del dinero por moneda
+const ML_DIAS_VALIDA = 3;         // si el laboratorio deja de publicar, a los 3 días el experto se queda sin posición     // el archivo del laboratorio pesa ~16 KB; uno mucho mayor no se lee
 function apListaExpertos(E) {
   const lab = (E && E.lab && E.lab.specs) || [];
   if (!lab.length) return AP_EXPERTOS;
@@ -488,6 +496,39 @@ async function apLab(E) {
   return true;
 }
 
+// Cada 3 horas (en vivo, minuto :37) lee la señal diaria del aprendizaje automático. Usa 1 petición. Solo acepta monedas
+// del servidor y pesos acotados; nunca ejecuta nada que venga de fuera.
+async function apMl(E) {
+  E.mlIntento = Date.now();
+  let j;
+  try {
+    const r = await fetch(ML_URL, { headers: { 'User-Agent': 'radar-mercados/' + VERSION } });
+    if (!r.ok) return false;
+    if (Number(r.headers && r.headers.get && r.headers.get('content-length')) > ML_MAX_BYTES) return false;
+    const txt = await r.text();
+    if (txt.length > ML_MAX_BYTES) return false;
+    j = JSON.parse(txt);
+  } catch (e) { return false; }
+  if (!j || typeof j !== 'object' || !j.cartera || typeof j.cartera !== 'object' || Array.isArray(j.cartera)) return false;
+  const fecha = /^\d{4}-\d{2}-\d{2}$/.test(String(j.fecha)) ? String(j.fecha) : null;
+  if (!fecha || !Number.isFinite(Date.parse(fecha + 'T00:00:00Z'))) return false;
+  const gen = String(j.generado || '').slice(0, 64);
+  if (E.ml && E.ml.fecha === fecha && E.ml.gen === gen) return false;
+  const pos = {};
+  let bruta = 0;
+  for (const m of AP.MONEDAS) { // lista cerrada: solo monedas que el servidor conoce
+    const x = Number(j.cartera[m]);
+    if (!Number.isFinite(x) || x === 0 || Math.abs(x) > ML_PESO_MAX) continue;
+    pos[m] = x; bruta += Math.abs(x);
+  }
+  if (!Object.keys(pos).length || bruta > 1 + 1e-9) return false;
+  const antes = E.ml && E.ml.pos ? JSON.stringify(Object.entries(E.ml.pos).sort()) : '';
+  const compradas = Object.keys(pos).filter((m) => pos[m] > 0).sort(), vendidas = Object.keys(pos).filter((m) => pos[m] < 0).sort();
+  E.ml = { fecha, gen, pos, compradas, vendidas, leida: Date.now() };
+  if (JSON.stringify(Object.entries(pos).sort()) !== antes) apAlerta(E, E.t, 'ml', fecha, 'Aprendizaje automático (cierre del ' + fecha + '): compra ' + (compradas.join(', ') || 'nada') + '; vende ' + (vendidas.join(', ') || 'nada') + ' (en papel; no es una recomendación)');
+  return true;
+}
+
 function apEstadoNuevo() {
   return { v: 1, t: null, horas: 0, monedas: {}, carteras: {}, expertos: {}, lw: {}, sistema: apStats(), btcLog: 0, alertas: [], posSistema: {}, senal: {} };
 }
@@ -607,7 +648,7 @@ function apPaso(E, snap) {
     const w = apPesos(E);
     const M = activos.length;
     // las candidatas en prueba no reciben el reparto fijo (si no, se acercarían al peso medio sin ganar a nadie)
-    for (const ex of activos) E.lw[ex.id] = Math.log((1 - AP.REPARTO) * w[ex.id] + (ex.tipo === 'lab' && !ex.aprobadaLab ? 1e-12 : AP.REPARTO / M));
+    for (const ex of activos) E.lw[ex.id] = Math.log((1 - AP.REPARTO) * w[ex.id] + ((ex.tipo === 'lab' && !ex.aprobadaLab) || ex.tipo === 'ml' ? 1e-12 : AP.REPARTO / M));
     const maxLw = Math.max(...activos.map((ex) => E.lw[ex.id]));
     for (const ex of activos) E.lw[ex.id] -= maxLw;
   }
@@ -622,7 +663,7 @@ function apPaso(E, snap) {
       X = E.expertos[ex.id] = { activo: true, desde: snap.t, st: apStats(), pos: {}, coste: 0, ultima: 0 };
       const vals = Object.values(E.lw);
       E.lw[ex.id] = vals.length ? Math.log(vals.reduce((a, b) => a + Math.exp(b), 0) / vals.length) : 0;
-      if (ex.tipo === 'lab' && !ex.aprobadaLab) E.lw[ex.id] += Math.log(Math.max(LAB_PESO_PRUEBA, 1e-9));
+      if ((ex.tipo === 'lab' && !ex.aprobadaLab) || ex.tipo === 'ml') E.lw[ex.id] += Math.log(Math.max(LAB_PESO_PRUEBA, 1e-9));
       apAlerta(E, snap.t, 'nuevo', ex.id, 'Empieza a aprender: ' + ex.nombre);
     }
     // banda sin operar: si la posición solo cambia un poco (menos del 25 %), se deja como estaba y no se pagan comisiones
@@ -700,6 +741,15 @@ function apPosiciones(E, ex, listas, habilidad, t) {
   const pos = {};
   if (ex.tipo === 'cash') return pos;
   if (ex.tipo === 'lab') return listas.length ? apLabPosiciones(E, ex, listas, t) : null;
+  if (ex.tipo === 'ml') {
+    const M = E.ml;
+    if (!M || !M.pos) return null;
+    // fecha = día del cierre usado (el cierre es a las 00:00 UTC del día siguiente)
+    const edad = t - (Date.parse(M.fecha + 'T00:00:00Z') + 86400e3);
+    if (!(edad >= 0) || edad > ML_DIAS_VALIDA * 86400e3) return E.expertos[ex.id] ? {} : null; // caducada: sin posición
+    for (const m of listas) if (M.pos[m]) pos[m] = M.pos[m];
+    return pos;
+  }
   if (ex.tipo === 'hold') { if (!E.monedas.BTC || !E.monedas.BTC.px) return null; pos.BTC = 1; return pos; }
   if (ex.tipo === 'carry') {
     const cands = ex.base ? AP.CARRY_BASE : AP.MONEDAS;
@@ -799,7 +849,7 @@ function apMomentos(st) {
 function apInforme(E) {
   const pesos = apPesos(E);
   const tipo = Object.fromEntries(apListaExpertos(E).map((ex) => [ex.id, ex.tipo]));
-  const compite = (id) => tipo[id] === 'dir' || tipo[id] === 'copia' || tipo[id] === 'lab';
+  const compite = (id) => tipo[id] === 'dir' || tipo[id] === 'copia' || tipo[id] === 'lab' || tipo[id] === 'ml';
   const filas = [];
   for (const ex of apListaExpertos(E)) {
     const X = E.expertos[ex.id];
@@ -984,9 +1034,13 @@ async function apCalentar(E, limite, enDex) {
 // una hora nueva entretanto (mismo patrón que apCalentarMinuto). +1 petición.
 async function apLabMinuto(env) {
   const E = await apCargar(env);
-  if (E.t == null || (E.labIntento && Date.now() - E.labIntento < LAB_CADA_H * 3600e3)) return { ok: true, modo: 'nada que leer' };
+  const ahora = Date.now();
+  const tocaLab = !(E.labIntento && ahora - E.labIntento < LAB_CADA_H * 3600e3);
+  const tocaMl = !(E.mlIntento && ahora - E.mlIntento < ML_CADA_H * 3600e3);
+  if (E.t == null || (!tocaLab && !tocaMl)) return { ok: true, modo: 'nada que leer' };
   const tAntes = E.t;
-  const cambio = await apLab(E);
+  const cambio = tocaLab ? await apLab(E) : false;
+  if (tocaMl) await apMl(E);
   await env.DB.prepare('UPDATE ap_estado SET json = ?1 WHERE id = ?2 AND t = ?3').bind(JSON.stringify(E), 'principal', tAntes).run();
   return { ok: true, modo: 'laboratorio', cambio };
 }
@@ -1222,6 +1276,15 @@ async function aprendizaje({ vista } = {}, env) {
   const E = await apCargar(env);
   const v = vista || 'resumen';
   if (v === 'bot') return botVista(env);
+  if (v === 'ml') {
+    const M = E.ml;
+    const r = apInforme(E).find((x) => x.id === 'ml_qlib') || {};
+    if (!M) return { rows: [], nota: 'Aún no ha llegado la señal del aprendizaje automático (se mira cada ' + ML_CADA_H + ' horas, en el minuto :37).' };
+    return { rows: Object.entries(M.pos).sort((a, b) => b[1] - a[1]).map(([m, w]) => ({ moneda: m, lado: w > 0 ? 'comprar' : 'vender', pesoPct: w * 100 })),
+      senal: { cierre: M.fecha, leida: M.leida ? iso(M.leida) : null, caduca: iso(Date.parse(M.fecha + 'T00:00:00Z') + (1 + ML_DIAS_VALIDA) * 86400e3) },
+      experto: { pesoPct: r.pesoPct || 0, horasEnVivo: r.horasVivo || 0, rentEnVivoPct: r.rentVivoPct == null ? null : r.rentVivoPct, estado: r.estado || 'esperando datos' },
+      nota: 'Señal diaria del laboratorio: un modelo LightGBM (indicadores de Qlib) ordena las 20 monedas de más volumen y se compran las 5 mejores y se venden las 5 peores entre las del servidor (10 % del dinero cada una). En la prueba de 2022 a 2026: +21 % al año de media, caídas del 37 % y 2026 en negativo. Entra con el ' + Math.round(LAB_PESO_PRUEBA * 100) + ' % del peso medio y solo sube si gana en vivo. En papel; no es una recomendación.' };
+  }
   const pct = (log) => (Math.exp(log) - 1) * 100;
   if (v === 'expertos') return { rows: apInforme(E), nota: 'Peso: cuánto confía hoy el sistema en cada experto. rentPct, sharpeAnual y caidaMaxPct incluyen el repaso de la historia, una simulación sobre los mismos datos con los que se diseñaron los expertos: no demuestran nada. Las columnas «Vivo» cuentan solo horas en vivo. Sharpe deflactado (solo en vivo): probabilidad estimada de que el Sharpe real sea positivo, corrigiendo por al menos ' + AP.PRUEBAS + ' pruebas; supone horas independientes. Asciende con más de 0,95 y al menos 720 horas en vivo («aprendiendo» hasta entonces). Cobro del funding, comprar y mantener y efectivo son referencias: el cobro del funding se modela sin riesgo de precio.' };
   if (v === 'posiciones') {
@@ -1413,7 +1476,7 @@ const HERRAMIENTAS = [
   { name: 'historico_diario', title: 'Historial diario largo', description: 'Velas diarias (UTC) de un activo desde una fecha: BTC desde 2015 y ETH desde 2016 vía Bitstamp; el resto, lo que haya en Kraken (hasta 720 días) o Hyperliquid. Una fila por día.', inputSchema: { type: 'object', properties: { simbolo: { type: 'string', description: 'p. ej. BTC, ETH, ORO, SP500' }, desde: { type: 'string', description: 'Fecha AAAA-MM-DD. Por defecto, la más antigua disponible.' } }, required: ['simbolo'], additionalProperties: false }, fn: historicoDiario },
   { name: 'derivados', title: 'Financiación y posiciones abiertas', description: 'Funding de los perpetuos cripto de Hyperliquid (ahora, media de 7 días y percentil de 30 días, anualizados), posiciones abiertas en dólares y prima frente al oráculo. Sirve para detectar exceso de apalancamiento.', inputSchema: { type: 'object', properties: { simbolos: S_SIMBOLOS }, additionalProperties: false }, fn: derivados },
   { name: 'funding_diario', title: 'Funding diario', description: 'Funding diario (suma de las 24 tasas horarias, UTC) de los perpetuos cripto de Hyperliquid en los últimos días cerrados (7 a 90). Una fila por símbolo y día. Sirve para el motor de cobro del funding.', inputSchema: { type: 'object', properties: { simbolos: S_SIMBOLOS, dias: { type: 'integer', minimum: 7, maximum: 90, description: 'Días cerrados hacia atrás (por defecto 60).' } }, additionalProperties: false }, fn: fundingDiario },
-  { name: 'aprendizaje', title: 'Sistema que aprende', description: 'Estado del sistema que aprende cada hora (en papel): resumen, expertos y sus pesos, posiciones combinadas, curva diaria frente a Bitcoin, carteras seguidas con su habilidad, avisos, lo que propone el laboratorio y el bot de pruebas (50, 200 y 1000 € en papel en Kraken Futuros).', inputSchema: { type: 'object', properties: { vista: { type: 'string', enum: ['resumen', 'expertos', 'posiciones', 'curva', 'carteras', 'alertas', 'laboratorio', 'bot'], description: 'Qué parte ver. Por defecto, resumen. bot: carteras en papel de 50, 200 y 1000 € que siguen al sistema en Kraken Futuros con costes y mínimos reales.' } }, additionalProperties: false }, fn: aprendizaje },
+  { name: 'aprendizaje', title: 'Sistema que aprende', description: 'Estado del sistema que aprende cada hora (en papel): resumen, expertos y sus pesos, posiciones combinadas, curva diaria frente a Bitcoin, carteras seguidas con su habilidad, avisos, lo que propone el laboratorio y el bot de pruebas (50, 200 y 1000 € en papel en Kraken Futuros).', inputSchema: { type: 'object', properties: { vista: { type: 'string', enum: ['resumen', 'expertos', 'posiciones', 'curva', 'carteras', 'alertas', 'laboratorio', 'bot', 'ml'], description: 'Qué parte ver. Por defecto, resumen. bot: carteras en papel de 50, 200 y 1000 € que siguen al sistema en Kraken Futuros con costes y mínimos reales. ml: la señal diaria del aprendizaje automático y cómo le va a su experto.' } }, additionalProperties: false }, fn: aprendizaje },
   { name: 'mercados', title: 'Mercados disponibles', description: 'Lista de símbolos del radar, de dónde sale cada uno y qué otros mercados (acciones de EE. UU., etc.) hay disponibles.', inputSchema: { type: 'object', properties: {}, additionalProperties: false }, fn: mercados },
   { name: 'estado_fuentes', title: 'Estado de las fuentes', description: 'Comprueba si Hyperliquid, Kraken y Binance responden y cuánto tardan.', inputSchema: { type: 'object', properties: {}, additionalProperties: false }, fn: estadoFuentes },
 ];
@@ -1498,7 +1561,7 @@ export default {
         await apMinuto(env).catch((e) => console.log('flujo de órdenes: ' + (e.message || e)));
         // mercados nuevos: 1 cada 10 minutos (:05, :15… :55), lejos de la hora en vivo; +2 peticiones
         if (minuto % 10 === 5) await apCalentarMinuto(env).catch((e) => console.log('calentar: ' + (e.message || e)));
-        // laboratorio: +1 petición como mucho cada 6 h, en un minuto sin calentamiento
+        // laboratorio: +1 petición como mucho cada 6 h, y la señal del aprendizaje automático +1 cada 3 h, en un minuto sin calentamiento
         if (minuto === 37) await apLabMinuto(env).catch((e) => console.log('laboratorio: ' + (e.message || e)));
         // bot de pruebas: del minuto :07 al :12 hasta que haga la hora (+2 peticiones); fichas de Kraken a las :27 (+1, una vez al día)
         if (minuto >= BOT.MINUTO && minuto < BOT.MINUTO + 6) await botHora(env).catch((e) => console.log('bot: ' + (e.message || e)));

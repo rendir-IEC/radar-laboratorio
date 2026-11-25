@@ -38,6 +38,7 @@ let metaOriginal = null;
 globalThis.fetch = async (url, init = {}) => {
   llamadas++;
   const u = new URL(url);
+  if (u.host === 'raw.githubusercontent.com' && u.pathname.endsWith('/senal.json')) { porTipo.ml = (porTipo.ml || 0) + 1; return new Response('no', { status: 404 }); }
   if (u.host === 'raw.githubusercontent.com') { porTipo.lab = (porTipo.lab || 0) + 1; return resp(LAB_JSON); }
   if (u.host !== 'api.hyperliquid.xyz') throw new Error('Host no simulado ' + u.host);
   if (JSON.parse(init.body).type === 'metaAndAssetCtxs' && HUECO_ETH(AHORA)) { const r = await metaOriginal(url, init); const j = await r.json(); const i = j[0].universe.findIndex((a) => a.name === 'ETH'); j[1][i].markPx = ''; return resp(j); }
@@ -82,7 +83,7 @@ check(maxVivo <= 50, 'peticiones externas por minuto en vivo: máximo ' + maxViv
 const exp = (await herramienta('aprendizaje', { vista: 'expertos' })).rows;
 const flujo = exp.filter((x) => x.familia === 'flujo de órdenes');
 check(flujo.length === 4 && flujo.every((x) => x.horas > 0), 'los 4 expertos de flujo de órdenes aprenden en vivo: ' + flujo.map((x) => x.id + ' ' + x.horas + ' h').join(', '));
-check(exp.length === 25, 'hay 25 expertos: 22 fijos y 3 del laboratorio (rechaza uno inválido y otro que suplanta a un experto fijo): ' + exp.length);
+check(exp.length === 26, 'hay 26 expertos: 23 fijos (con el de aprendizaje automático, sin señal aquí) y 3 del laboratorio (rechaza uno inválido y otro que suplanta a un experto fijo): ' + exp.length);
 const lab = await herramienta('aprendizaje', { vista: 'laboratorio' });
 check(lab.rows.length === 3 && lab.rows.every((r) => r.horasEnVivo > 0), 'los 3 del laboratorio aprenden en vivo: ' + lab.rows.map((r) => r.id + ' ' + r.horasEnVivo + ' h').join(', '));
 check(lab.laboratorio.estrategiasProbadas === 2232 && lab.laboratorio.fueraDeMuestraTop5.sharpeAnual === 1, 'la vista laboratorio resume lo publicado');

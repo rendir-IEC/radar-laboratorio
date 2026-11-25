@@ -38,6 +38,7 @@ let metaOriginal = null;
 globalThis.fetch = async (url, init = {}) => {
   llamadas++;
   const u = new URL(url);
+  if (u.host === 'raw.githubusercontent.com' && u.pathname.endsWith('/resultados/ml/senal.json')) { porTipo.ml = (porTipo.ml || 0) + 1; return resp(SENAL()); }
   if (u.host === 'raw.githubusercontent.com') { porTipo.lab = (porTipo.lab || 0) + 1; return resp(LAB_JSON); }
   if (u.host === 'futures.kraken.com' || u.host === 'api.kraken.com') return kraken_simulado(u);
   if (u.host !== 'api.hyperliquid.xyz') throw new Error('Host no simulado ' + u.host);
@@ -52,6 +53,10 @@ globalThis.fetch = async (url, init = {}) => {
   throw new Error('tipo no simulado ' + b.type);
 };
 metaOriginal = async (url, init) => { const b = JSON.parse(init.body); const nombres = ['BTC', 'ETH', 'SOL', 'XRP', 'DOGE', 'BNB', 'HYPE', 'LINK', 'AVAX', 'SUI', 'ZEC', 'NEAR', 'UNI', 'ENA', 'AAVE', 'ADA', 'ARB', 'WLD', 'XMR', 'kPEPE', 'TRUMP']; return resp([{ universe: nombres.map((n) => ({ name: n, maxLeverage: 10 })) }, nombres.map((n) => ({ markPx: String(precio(n, AHORA)), funding: '0.0000125', openInterest: '1000', dayNtlVlm: '1e6' }))]); };
+// ---------- señal del aprendizaje automático simulada: cierre de ayer ----------
+let SENAL_VIEJA = false;
+const SENAL = () => ({ version: 1, generado: new Date(AHORA).toISOString().slice(0, 13), fecha: new Date(Math.floor(AHORA / 86400e3) * 86400e3 - (SENAL_VIEJA ? 6 : 1) * 86400e3).toISOString().slice(0, 10),
+  cartera: { BTC: 0.1, ETH: 0.1, SOL: 0.1, XRP: 0.1, DOGE: 0.1, BNB: -0.1, HYPE: -0.1, LINK: -0.1, AVAX: -0.1, SUI: -0.1, TRUMP: 0.1, ZEC: 5, ADA: 'x' } });
 // ---------- Kraken simulado ----------
 let KRAKEN_CAIDO = false;
 const KR_SIM = { BTC: ['PF_XBTUSD', 4], DOGE: ['PF_XDGUSD', 0] };
@@ -85,7 +90,7 @@ const herramienta = async (name, args = {}) => { const r = await worker.fetch(ne
   const fs = await import('node:fs');
   const os = await import('node:os');
   const path = await import('node:path');
-  const fuente = fs.readFileSync(new URL('../worker.js', import.meta.url), 'utf8') + '\nexport { botPaso, botMultiplo, krBase, hlBase, botCartera };\n';
+  const fuente = fs.readFileSync(new URL('../worker.js', import.meta.url), 'utf8') + '\nexport { botPaso, botMultiplo, krBase, hlBase, botCartera, apPosiciones, AP_EXPERTOS };\n';
   const tmp = path.join(os.tmpdir(), 'worker_bot_' + process.pid + '.mjs');
   fs.writeFileSync(tmp, fuente);
   const W = await import(tmp);
@@ -124,6 +129,17 @@ const herramienta = async (name, args = {}) => { const r = await worker.fetch(ne
   // sin precio de una moneda: no se toca su posición
   W.botPaso(L, { ETH: { mark: 10, bid: 10, ask: 10, rel: 0 } }, { BTC: 0, ETH: -0.5 }, fichas, 7200e3, 1);
   check(L.pos.BTC === 4.9 || L.pos.BTC > 0, 'sin precio de BTC se mantiene su posición: ' + L.pos.BTC);
+  // experto de aprendizaje automático: copia la señal mientras no caduque (3 días después del cierre siguiente)
+  const exMl = W.AP_EXPERTOS.find((x) => x.id === 'ml_qlib');
+  const Em = { ml: { fecha: '2026-11-20', pos: { BTC: 0.1, ETH: -0.1, SOL: 0.1 } }, expertos: {} };
+  const t21 = Date.parse('2026-11-21T00:00:00Z');
+  const p1 = W.apPosiciones(Em, exMl, ['BTC', 'ETH'], {}, t21 + 3600e3);
+  check(JSON.stringify(p1) === JSON.stringify({ BTC: 0.1, ETH: -0.1 }), 'experto ML: copia la señal en las monedas listas (SOL sin memoria se queda fuera): ' + JSON.stringify(p1));
+  check(W.apPosiciones(Em, exMl, ['BTC'], {}, t21 - 3600e3) === null, 'experto ML: no usa una señal antes de su cierre');
+  check(W.apPosiciones(Em, exMl, ['BTC'], {}, t21 + 3 * 86400e3 + 3600e3) === null, 'experto ML: caducada y aún sin crear, no entra');
+  Em.expertos.ml_qlib = {};
+  check(JSON.stringify(W.apPosiciones(Em, exMl, ['BTC'], {}, t21 + 3 * 86400e3 + 3600e3)) === '{}', 'experto ML: caducada, se queda sin posición');
+  check(W.apPosiciones({ expertos: {} }, exMl, ['BTC'], {}, t21) === null, 'experto ML: sin señal, espera');
   // quiebra: no opera con valor ≤ 0
   const Q = W.botCartera(10, 1, 0);
   W.botPaso(Q, { BTC: { mark: 100, bid: 100, ask: 100, rel: 0 } }, { BTC: -1 }, { BTC: { prec: 2 } }, 3600e3, 0);
@@ -178,6 +194,14 @@ const estB = db.prepare("SELECT length(json) AS b FROM ap_estado WHERE id = 'bot
 check(estB.b < 60000, 'estado del bot pequeño: ' + estB.b + ' bytes');
 msBot.sort((a, b) => a - b); msOtros.sort((a, b) => a - b);
 console.log('     tiempo en el minuto :07 (bot): mediana ' + msBot[Math.floor(msBot.length / 2)].toFixed(1) + ' ms, máx ' + msBot[msBot.length - 1].toFixed(1) + ' ms; resto: mediana ' + msOtros[Math.floor(msOtros.length / 2)].toFixed(1) + ' ms');
+const ml = await herramienta('aprendizaje', { vista: 'ml' });
+check(ml.rows.length === 10 && ml.rows.filter((r) => r.lado === 'comprar').length === 5 && !ml.rows.some((r) => ['TRUMP', 'ZEC', 'ADA'].includes(r.moneda)), 'señal ML leída: 5 compradas y 5 vendidas; descarta monedas desconocidas, pesos excesivos y valores no numéricos');
+const expMl = (await herramienta('aprendizaje', { vista: 'expertos' })).rows.find((x) => x.id === 'ml_qlib');
+const pesosIni = (await herramienta('aprendizaje', { vista: 'expertos' })).rows.filter((x) => x.horas > 0);
+check(expMl && expMl.horas > 0 && expMl.pesoPct > 0 && expMl.pesoPct < 100 / pesosIni.length, 'experto ML aprende en vivo con poco peso: ' + (expMl && expMl.horas) + ' h, ' + (expMl && expMl.pesoPct.toFixed(2)) + ' % (media ' + (100 / pesosIni.length).toFixed(2) + ' %)');
+check((porTipo.ml || 0) >= 8 && (porTipo.ml || 0) <= 12, 'la señal se mira cada 3 horas: ' + porTipo.ml + ' veces en 30 h');
+const alML = (await herramienta('aprendizaje', { vista: 'alertas' })).rows.filter((a) => a.tipo === 'ml');
+check(alML.length >= 1 && alML.length <= 3, 'avisa cuando cambia la cartera del aprendizaje automático (no en cada lectura): ' + alML.length);
 const pr = await herramienta('aprendizaje', { vista: 'resumen' });
 check(pr.rows[0].modo === 'en vivo', 'el sistema sigue en vivo con el bot funcionando');
 Date.now = realNow;

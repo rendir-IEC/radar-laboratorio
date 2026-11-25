@@ -58,7 +58,7 @@ check(maxVivo <= 50, 'peticiones externas por minuto en vivo: máximo ' + maxViv
 const exp = (await herramienta('aprendizaje', { vista: 'expertos' })).rows;
 const flujo = exp.filter((x) => x.familia === 'flujo de órdenes');
 check(flujo.length === 4 && flujo.every((x) => x.horas > 0), 'los 4 expertos de flujo de órdenes aprenden en vivo: ' + flujo.map((x) => x.id + ' ' + x.horas + ' h').join(', '));
-check(exp.length === 22, 'hay 22 expertos en total: ' + exp.length);
+check(exp.length === 23, 'hay 23 expertos en total (con el de aprendizaje automático, sin señal): ' + exp.length);
 const pos = (await herramienta('aprendizaje', { vista: 'posiciones' })).rows;
 check(pos.length === 21, '20 mercados más el cobro del funding en las posiciones: ' + pos.length);
 const res1 = (await herramienta('aprendizaje', { vista: 'resumen' })).rows[0];
