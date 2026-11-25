@@ -1,0 +1,331 @@
+{
+ "generado": "2026-11-25T13:03:05.783Z",
+ "datos": {
+  "fuente": "Bitstamp BTC/USD diario",
+  "desde": "2015-01-01",
+  "hasta": "2026-11-24",
+  "dias": 4346,
+  "huecos": 0
+ },
+ "reglas": {
+  "plan": {
+   "CAPITAL": 962,
+   "SEMANAS_BASE": 12,
+   "COSTE_COMPRA": 0.005,
+   "INTERES_CAJA": 0.02,
+   "MEDIA": 200,
+   "TRAMOS": [
+    [
+     0.8,
+     2
+    ],
+    [
+     1,
+     1.5
+    ],
+    [
+     1.5,
+     1
+    ],
+    [
+     2.4,
+     0.5
+    ],
+    [
+     null,
+     0
+    ]
+   ]
+  },
+  "reto": {
+   "CAPITAL": 962,
+   "GANAR": 100,
+   "PERDER": 50,
+   "APALANCAMIENTO": 3,
+   "MEDIA": 140,
+   "COSTE_SEMANA": 0.0015,
+   "INICIO_VIVO": "2026-11-30"
+  }
+ },
+ "plan": [
+  {
+   "forma": "Todo el primer día",
+   "entradas": 488,
+   "desde": "2015-07-27",
+   "ganaA1AnoPct": 78.07377049180327,
+   "medianaA1Ano": 1.9158015167670805,
+   "peorA1Ano": 0.16766797340790376,
+   "ganaA2AnosPct": 80.5327868852459,
+   "medianaA2Anos": 3.0297311911014986,
+   "peorA2Anos": 0.3735294992877117,
+   "mejorA2Anos": 42.61362814660822,
+   "peorMomentoMediana": 0.8419743204439618,
+   "peorMomento": 0.16766797340790376
+  },
+  {
+   "forma": "Por tramos iguales (12 semanas)",
+   "entradas": 488,
+   "desde": "2015-07-27",
+   "ganaA1AnoPct": 76.02459016393442,
+   "medianaA1Ano": 1.7917365336372428,
+   "peorA1Ano": 0.2765673874418992,
+   "ganaA2AnosPct": 80.94262295081968,
+   "medianaA2Anos": 2.935537299530495,
+   "peorA2Anos": 0.3896169064625944,
+   "mejorA2Anos": 45.89714152238737,
+   "peorMomentoMediana": 0.871618427963615,
+   "peorMomento": 0.26741896807702104
+  },
+  {
+   "forma": "Con reglas (más cuando está barato)",
+   "entradas": 488,
+   "desde": "2015-07-27",
+   "ganaA1AnoPct": 75.40983606557377,
+   "medianaA1Ano": 1.749908884276282,
+   "peorA1Ano": 0.33084337493135274,
+   "ganaA2AnosPct": 80.94262295081968,
+   "medianaA2Anos": 2.789464682382133,
+   "peorA2Anos": 0.3809950208039713,
+   "mejorA2Anos": 46.12613891496912,
+   "peorMomentoMediana": 0.8601967873650488,
+   "peorMomento": 0.2903441001185509
+  }
+ ],
+ "planHoy": {
+  "fecha": "2026-11-24",
+  "precio": 59743.5,
+  "media200": 72129.70084999996,
+  "multiploMayer": 0.8282787713793773,
+  "distanciaMediaPct": -17.172122862062267,
+  "veces": 1.5,
+  "baseEur": 80.16666666666667,
+  "compraEur": 120.25
+ },
+ "reto": [
+  {
+   "que": "Con la regla, desde 2015",
+   "semanas": 600,
+   "objetivoPct": 30.5,
+   "stopPct": 67.33333333333333,
+   "ganadorasPct": 32,
+   "totalEur": -1631.815522140545,
+   "mediaSemanaEur": -2.7196925369009084,
+   "peorRachaSemanas": 15,
+   "peorCaidaEur": -3123.3795873738713
+  },
+  {
+   "que": "Con la regla, últimos 2 años",
+   "semanas": 104,
+   "objetivoPct": 23.076923076923077,
+   "stopPct": 75.96153846153845,
+   "ganadorasPct": 23.076923076923077,
+   "totalEur": -1555.5800620589202,
+   "mediaSemanaEur": -14.957500596720386,
+   "peorRachaSemanas": 15,
+   "peorCaidaEur": -1655.5800620589202
+  },
+  {
+   "que": "Siempre al alza, desde 2015",
+   "semanas": 600,
+   "objetivoPct": 30.833333333333336,
+   "stopPct": 66.66666666666666,
+   "ganadorasPct": 32.5,
+   "totalEur": -1088.1271644184967,
+   "mediaSemanaEur": -1.8135452740308278,
+   "peorRachaSemanas": 13,
+   "peorCaidaEur": -2961.2334264370156
+  },
+  {
+   "que": "Con la regla, en vivo (desde el 30-nov-2026)",
+   "semanas": 0
+  }
+ ],
+ "retoHoy": {
+  "fecha": "2026-11-24",
+  "direccion": "a la baja",
+  "precio": 59743.5,
+  "media140": 73702.88271428573,
+  "distanciaMediaPct": -18.940076968766927,
+  "nocionalEur": 2886,
+  "apalancamiento": 3,
+  "ganarEur": 100,
+  "perderEur": 50,
+  "precioObjetivo": 57583.770404885654,
+  "precioStop": 60688.94192255718,
+  "movimientoObjetivoPct": 3.615003465003465,
+  "movimientoStopPct": 1.5825017325017325,
+  "costeEur": 4.329
+ },
+ "retoPorAno": [
+  {
+   "ano": "2015",
+   "semanas": 32,
+   "totalEur": -291,
+   "ganadorasPct": 28
+  },
+  {
+   "ano": "2016",
+   "semanas": 52,
+   "totalEur": 275,
+   "ganadorasPct": 40
+  },
+  {
+   "ano": "2017",
+   "semanas": 52,
+   "totalEur": 1150,
+   "ganadorasPct": 48
+  },
+  {
+   "ano": "2018",
+   "semanas": 53,
+   "totalEur": -258,
+   "ganadorasPct": 30
+  },
+  {
+   "ano": "2019",
+   "semanas": 52,
+   "totalEur": 15,
+   "ganadorasPct": 35
+  },
+  {
+   "ano": "2020",
+   "semanas": 52,
+   "totalEur": 400,
+   "ganadorasPct": 38
+  },
+  {
+   "ano": "2021",
+   "semanas": 52,
+   "totalEur": -350,
+   "ganadorasPct": 29
+  },
+  {
+   "ano": "2022",
+   "semanas": 52,
+   "totalEur": -268,
+   "ganadorasPct": 31
+  },
+  {
+   "ano": "2023",
+   "semanas": 52,
+   "totalEur": -1250,
+   "ganadorasPct": 17
+  },
+  {
+   "ano": "2024",
+   "semanas": 53,
+   "totalEur": 350,
+   "ganadorasPct": 38
+  },
+  {
+   "ano": "2025",
+   "semanas": 52,
+   "totalEur": -756,
+   "ganadorasPct": 23
+  },
+  {
+   "ano": "2026",
+   "semanas": 46,
+   "totalEur": -650,
+   "ganadorasPct": 24
+  }
+ ],
+ "ultimas12": [
+  {
+   "semana": "2026-08-31",
+   "direccion": "al alza",
+   "entrada": 77701.7,
+   "resultadoEur": -50,
+   "cierre": "stop",
+   "dia": 2
+  },
+  {
+   "semana": "2026-09-07",
+   "direccion": "al alza",
+   "entrada": 80338.98,
+   "resultadoEur": -50,
+   "cierre": "stop",
+   "dia": 1
+  },
+  {
+   "semana": "2026-09-14",
+   "direccion": "al alza",
+   "entrada": 76808.69,
+   "resultadoEur": -50,
+   "cierre": "stop",
+   "dia": 2
+  },
+  {
+   "semana": "2026-09-21",
+   "direccion": "al alza",
+   "entrada": 81151.65,
+   "resultadoEur": 100,
+   "cierre": "objetivo",
+   "dia": 1
+  },
+  {
+   "semana": "2026-09-28",
+   "direccion": "al alza",
+   "entrada": 84457.2,
+   "resultadoEur": -50,
+   "cierre": "stop",
+   "dia": 1
+  },
+  {
+   "semana": "2026-10-05",
+   "direccion": "al alza",
+   "entrada": 86510.16,
+   "resultadoEur": -50,
+   "cierre": "stop",
+   "dia": 1
+  },
+  {
+   "semana": "2026-10-12",
+   "direccion": "al alza",
+   "entrada": 83679.01,
+   "resultadoEur": -50,
+   "cierre": "stop",
+   "dia": 1
+  },
+  {
+   "semana": "2026-10-19",
+   "direccion": "al alza",
+   "entrada": 82001.58,
+   "resultadoEur": -50,
+   "cierre": "stop",
+   "dia": 5
+  },
+  {
+   "semana": "2026-10-26",
+   "direccion": "al alza",
+   "entrada": 80048.21,
+   "resultadoEur": -50,
+   "cierre": "stop",
+   "dia": 4
+  },
+  {
+   "semana": "2026-11-02",
+   "direccion": "al alza",
+   "entrada": 78233.25,
+   "resultadoEur": -50,
+   "cierre": "stop",
+   "dia": 1
+  },
+  {
+   "semana": "2026-11-09",
+   "direccion": "al alza",
+   "entrada": 74742.52,
+   "resultadoEur": -50,
+   "cierre": "stop",
+   "dia": 2
+  },
+  {
+   "semana": "2026-11-16",
+   "direccion": "a la baja",
+   "entrada": 65312.48,
+   "resultadoEur": 100,
+   "cierre": "objetivo",
+   "dia": 3
+  }
+ ]
+}
