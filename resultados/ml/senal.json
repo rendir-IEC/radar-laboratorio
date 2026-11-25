@@ -1,0 +1,212 @@
+{
+ "version": 1,
+ "generado": "2026-11-25T10:50:59Z",
+ "fecha": "2026-11-24",
+ "valida_hasta": "2026-11-27",
+ "modelo": "LightGBM, 101 indicadores (Alpha158 de Qlib + funding, compras agresivas y beta con BTC)",
+ "regla": "lenta largo-corto: compra las 5 mejores y vende las 5 peores entre las monedas del servidor; se mantienen mientras sigan entre las 15 mejores (o peores); 10 % del dinero en cada una",
+ "universo_mes": "2026-11",
+ "universo": [
+  "BTCUSDT",
+  "ETHUSDT",
+  "ZECUSDT",
+  "SOLUSDT",
+  "NEARUSDT",
+  "XRPUSDT",
+  "HYPEUSDT",
+  "BNBUSDT",
+  "DOGEUSDT",
+  "1000PEPEUSDT",
+  "WLDUSDT",
+  "ENAUSDT",
+  "SUIUSDT",
+  "QUSDT",
+  "PUMPUSDT",
+  "UNIUSDT",
+  "STRKUSDT",
+  "QNTUSDT",
+  "BTWUSDT",
+  "ADAUSDT"
+ ],
+ "dias_de_entrenamiento": 2459,
+ "filas_de_entrenamiento": 46691,
+ "ranking": [
+  {
+   "simbolo": "BTCUSDT",
+   "moneda": "BTC",
+   "operable": true,
+   "puntuacion": 0.07712
+  },
+  {
+   "simbolo": "BNBUSDT",
+   "moneda": "BNB",
+   "operable": true,
+   "puntuacion": 0.07231
+  },
+  {
+   "simbolo": "BTWUSDT",
+   "moneda": "BTW",
+   "operable": false,
+   "puntuacion": 0.06541
+  },
+  {
+   "simbolo": "ENAUSDT",
+   "moneda": "ENA",
+   "operable": true,
+   "puntuacion": 0.06409
+  },
+  {
+   "simbolo": "ADAUSDT",
+   "moneda": "ADA",
+   "operable": true,
+   "puntuacion": 0.06223
+  },
+  {
+   "simbolo": "ETHUSDT",
+   "moneda": "ETH",
+   "operable": true,
+   "puntuacion": 0.05915
+  },
+  {
+   "simbolo": "DOGEUSDT",
+   "moneda": "DOGE",
+   "operable": true,
+   "puntuacion": 0.05591
+  },
+  {
+   "simbolo": "SUIUSDT",
+   "moneda": "SUI",
+   "operable": true,
+   "puntuacion": 0.05421
+  },
+  {
+   "simbolo": "SOLUSDT",
+   "moneda": "SOL",
+   "operable": true,
+   "puntuacion": 0.05352
+  },
+  {
+   "simbolo": "XRPUSDT",
+   "moneda": "XRP",
+   "operable": true,
+   "puntuacion": 0.05125
+  },
+  {
+   "simbolo": "QUSDT",
+   "moneda": "Q",
+   "operable": false,
+   "puntuacion": 0.03898
+  },
+  {
+   "simbolo": "PUMPUSDT",
+   "moneda": "PUMP",
+   "operable": false,
+   "puntuacion": 0.03157
+  },
+  {
+   "simbolo": "HYPEUSDT",
+   "moneda": "HYPE",
+   "operable": true,
+   "puntuacion": 0.026
+  },
+  {
+   "simbolo": "WLDUSDT",
+   "moneda": "WLD",
+   "operable": true,
+   "puntuacion": 0.02526
+  },
+  {
+   "simbolo": "NEARUSDT",
+   "moneda": "NEAR",
+   "operable": true,
+   "puntuacion": 0.01571
+  },
+  {
+   "simbolo": "QNTUSDT",
+   "moneda": "QNT",
+   "operable": false,
+   "puntuacion": 0.00704
+  },
+  {
+   "simbolo": "STRKUSDT",
+   "moneda": "STRK",
+   "operable": false,
+   "puntuacion": 0.00386
+  },
+  {
+   "simbolo": "UNIUSDT",
+   "moneda": "UNI",
+   "operable": true,
+   "puntuacion": -0.00185
+  },
+  {
+   "simbolo": "1000PEPEUSDT",
+   "moneda": "kPEPE",
+   "operable": true,
+   "puntuacion": -0.00343
+  },
+  {
+   "simbolo": "ZECUSDT",
+   "moneda": "ZEC",
+   "operable": true,
+   "puntuacion": -0.02588
+  }
+ ],
+ "cartera": {
+  "BTC": 0.1,
+  "BNB": 0.1,
+  "ENA": 0.1,
+  "ADA": 0.1,
+  "ETH": 0.1,
+  "ZEC": -0.1,
+  "kPEPE": -0.1,
+  "UNI": -0.1,
+  "NEAR": -0.1,
+  "WLD": -0.1
+ },
+ "anterior": null,
+ "fuera_no_cripto": 164,
+ "aviso": "Investigación en papel. En la prueba de 2022 a 2026: +21 % al año de media con caídas del 37 %, y 2026 en negativo. No es una recomendación.",
+ "registro": {
+  "simbolos": 918,
+  "listado_s": 5.4,
+  "descargas_pendientes": 72,
+  "descargas": {
+   "0": 72
+  },
+  "descarga_s": 100.0,
+  "ultimo_mes": "2026-10",
+  "diarios": {
+   "pedidos": 720,
+   "estados": {
+    "200": 720
+   }
+  },
+  "funding_hyperliquid": [
+   "AAVE",
+   "ADA",
+   "AVAX",
+   "BNB",
+   "BTC",
+   "DOGE",
+   "ENA",
+   "ETH",
+   "FIL",
+   "HYPE",
+   "LINK",
+   "NEAR",
+   "PUMP",
+   "SAND",
+   "SOL",
+   "STRK",
+   "SUI",
+   "TAO",
+   "UNI",
+   "WLD",
+   "XRP",
+   "ZEC",
+   "kPEPE"
+  ]
+ },
+ "segundos": 754.5
+}
