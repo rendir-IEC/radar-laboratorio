@@ -28,7 +28,7 @@ Cada 91 días se eligen las 5 mejores con la historia de ese momento y se mantie
 | Tendencia 12 h / 2 semanas (si BTC sube) | no | 1.27 | 0.34 | 27.0 % | 19.9 % | 1.33 | 1.22 | 0.81 | 1.25 |
 | Impulso de 3 días (solo compras, si BTC sube, graduada, reajuste diario) | no | 1.18 | 0.24 | 5.5 % | 7.6 % | 1.02 | 1.32 | 1.10 | 1.06 |
 | Tendencia 1 día / 2 semanas (si BTC sube, graduada, reajuste diario) | no | 1.12 | 0.21 | 5.1 % | 4.0 % | 1.50 | 0.77 | 0.29 | 1.04 |
-| Impulso de 1 mes (solo compras, graduada, reajuste diario) | no | 1.11 | 0.21 | 17.1 % | 21.4 % | 1.29 | 0.93 | 0.72 | 0.94 |
+| Impulso de 1 mes (solo compras, graduada, reajuste diario) | no | 1.11 | 0.21 | 17.1 % | 21.4 % | 1.29 | 0.93 | 0.72 | 0.93 |
 | Tendencia 1 día / 1 mes (si BTC sube) | no | 1.09 | 0.20 | 21.6 % | 22.4 % | 1.27 | 0.92 | 0.40 | 1.09 |
 | Tendencia 1 día / 1 mes (relativa entre monedas, graduada, reajuste diario) | no | 1.10 | 0.20 | 6.4 % | 8.2 % | 0.27 | 1.81 | 1.35 | 0.16 |
 | Tendencia 12 h / 2 semanas | no | 1.10 | 0.20 | 33.5 % | 29.5 % | 1.33 | 0.86 | 0.66 | 1.00 |
