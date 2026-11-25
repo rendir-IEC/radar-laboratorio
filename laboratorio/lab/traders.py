@@ -226,11 +226,12 @@ def informe(r):
         l.append('No hubo suficientes cuentas con historial para validar ningún mes.')
     l.append('\n## Las %d que sigue el servidor desde hoy\n' % len(r['carteras']))
     l.append('Candidatas activas con puntuación positiva: %d.\n' % r['candidatas'])
-    l.append('| Cuenta | Tipo | Puntuación (t) | Quincenas | En positivo | Al año | Valor |')
+    l.append('| Cuenta | Tipo | Puntuación (t) | Quincenas | En positivo | Media por quincena | Valor |')
     l.append('|---|---|---|---|---|---|---|')
     for c in r['carteras']:
-        nombre = (' «%s»' % c['nombre']) if c.get('nombre') else ''
-        l.append('| %s…%s%s | %s | %.2f | %d | %.0f %% | %+.0f %% | %s $ |' % (c['direccion'][:6], c['direccion'][-4:], nombre, c['tipo'], c['t'], c['quincenas'], c['quincenas_positivas_pct'], c['rent_anual_pct'], format(int(c['valor']), ',').replace(',', '.')))
+        nombre = (' «%s»' % c['nombre'].replace('|', '/')) if c.get('nombre') else ''
+        l.append('| %s…%s%s | %s | %.2f | %d | %.0f %% | %+.1f %% | %s $ |' % (c['direccion'][:6], c['direccion'][-4:], nombre, c['tipo'], c['t'], c['quincenas'], c['quincenas_positivas_pct'], c['media_quincena_pct'], format(int(c['valor']), ',').replace(',', '.')))
+    l.append('\nLa media por quincena es sobre el valor de la cuenta al empezar cada quincena; con depósitos y retiradas grandes puede exagerarse. Cuidado: el grupo se elige por el volumen acumulado hasta hoy, así que favorece algo a las cuentas que siguieron operando.')
     return '\n'.join(l) + '\n'
 
 
