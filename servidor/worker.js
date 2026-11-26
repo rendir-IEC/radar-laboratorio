@@ -16,7 +16,7 @@
 // y un disparador Cron cada minuto (* * * * *). Primero repasa unas 5000 horas de historia, 16 por minuto;
 // después aprende cada hora en vivo. Todo en papel: no mueve dinero.
 
-const VERSION = '2.6.0';
+const VERSION = '2.6.1';
 const HL = 'https://api.hyperliquid.xyz/info';
 const BINANCE = 'https://data-api.binance.vision/api/v3';
 const KRAKEN = 'https://api.kraken.com/0/public';
@@ -432,7 +432,7 @@ function apLabNombre(sp) {
   if (sp.modo === 'seccion') extra.push('relativa entre monedas');
   if (sp.lado !== 'ambos') extra.push('solo ' + (sp.lado === 'largos' ? 'compras' : 'ventas'));
   if (sp.filtro !== 'ninguno') extra.push(sp.filtro === 'btc_alcista' ? 'si BTC sube' : 'si BTC baja');
-  if (sp.forma !== 'signo') extra.push('graduada');
+  if (sp.forma !== 'signo') extra.push('proporcional');
   if (sp.cada === 24) extra.push('reajuste diario');
   return base + (extra.length ? ' (' + extra.join(', ') + ')' : '');
 }
@@ -1609,14 +1609,21 @@ async function avisosVista(env, prueba) {
   };
 }
 
-// ---------- zona de prácticas (v2.6.0) ----------
+// ---------- zona de prácticas (v2.6.0; grupo de arriesgados desde la v2.6.1) ----------
 // Cada estrategia del sistema tiene alumnos que practican en papel, cada uno con su propio dinero de prácticas: variantes
 // de sus parámetros y de su riesgo (×1, ×2 y ×3 la exposición). Arriesgan, pierden y se retiran; los mejores tienen hijos
 // con un cambio; la curiosidad prueba ideas nuevas lejos de lo ya probado. Solo se gradúa (y entra a competir en el sistema,
 // con poco peso y solo sube si gana) quien gana en vivo al menos un mes con un Sharpe deflactado que cuenta TODAS las
 // pruebas hechas: probar mucho sube el listón. Nada de esto mueve dinero.
+// v2.6.1, a petición de la usuaria: un grupo propio de 12 alumnos arriesgados, con apalancamiento ×5 o ×10 o con todo el
+// dinero en 1 o 3 monedas (sin ajustar por volatilidad), que compiten entre ellos. La zona mide si arriesgar más da más o solo
+// quiebra antes.
 const PR = {
-  ALUMNOS: 24,
+  ALUMNOS: 24,               // grupo normal
+  ARRIESGADOS: 12,           // grupo arriesgado
+  RIESGOS: [1, 2, 3],
+  RIESGOS_ALTOS: [3, 5, 10], // en el grupo arriesgado, ×3 solo si concentra en 1 o 3 monedas
+  CONC: [1, 3],
   RONDA_H: 72,               // cada 3 días: se retiran los peores y nacen nuevos
   JUZGAR_H: 72,              // horas mínimas para juzgar a un alumno
   RETIRA: 0.25,              // parte de los juzgados que se retira en cada ronda (los de peor t)
@@ -1650,8 +1657,21 @@ function prLimpia(sp) {
   if (sp.forma === 'continua') o.k = sp.k;
   return o;
 }
-const prClave = (sp, r) => apLabIdent(sp) + '_x' + r;
-const prNombre = (A) => apLabNombre(A.spec) + ' ×' + A.riesgo;
+const prClave = (sp, r, c) => apLabIdent(sp) + '_x' + r + (c ? '_c' + c : '');
+const prNombre = (A) => apLabNombre(A.spec) + (A.conc === 1 ? ', todo en 1 moneda' : A.conc ? ', en ' + A.conc + ' monedas' : '') + ' ×' + A.riesgo;
+const prGrupo = (A) => A.grupo || 'normal';
+const prCupo = (g) => (g === 'arriesgado' ? PR.ARRIESGADOS : PR.ALUMNOS);
+function prValido(sp, riesgo, conc, grupo) {
+  if (!apLabValida(sp)) return false;
+  if (grupo === 'arriesgado') return PR.RIESGOS_ALTOS.includes(riesgo) && (conc == null || PR.CONC.includes(conc)) && (riesgo >= 5 || conc != null);
+  return PR.RIESGOS.includes(riesgo) && conc == null;
+}
+// riesgo y concentración al azar para el grupo arriesgado
+function prRiesgoAlto(P) {
+  const conc = prElige(P, [null, null, 3, 1]);
+  const riesgo = conc ? prElige(P, PR.RIESGOS_ALTOS) : prElige(P, [5, 10]);
+  return [riesgo, conc];
+}
 const prVecindario = (sp) => [sp.senal, sp.a, sp.b || '', sp.lado, sp.filtro].join('_');
 function prT(A) { const m = apMomentos(A.st); return m.sr * Math.sqrt(m.n); }
 function prAzar(P) {
@@ -1681,56 +1701,74 @@ function prMuta(P, sp0) { // un solo cambio respecto al padre
   else if (d === 'cada') sp.cada = sp.cada === 1 ? 24 : 1;
   return prLimpia(sp);
 }
-function prNace(P, spec, riesgo, t, padre, origen) {
+function prNace(P, spec, riesgo, t, padre, origen, grupo = 'normal', conc = null) {
   const sp = prLimpia(spec);
-  const A = { id: 'p' + (++P.serie), spec: sp, riesgo, nace: t, padre: padre ? padre.id : null, padreNombre: padre ? prNombre(padre) : null,
+  const A = { id: 'p' + (++P.serie), spec: sp, riesgo, conc, grupo, nace: t, padre: padre ? padre.id : null, padreNombre: padre ? prNombre(padre) : null,
     gen: padre ? (padre.gen || 1) + 1 : 1, origen, st: apStats(), pos: {}, coste: 0, tUlt: null };
   P.alumnos.push(A); P.probadas++;
   const v = prVecindario(sp); P.mapa[v] = (P.mapa[v] || 0) + 1;
   return A;
 }
-// una plaza libre: hijo de uno de los mejores (con un cambio o con otro riesgo) o una idea nueva lejos de lo ya probado
-function prUnoNuevo(P, t, maestros) {
-  const vivas = new Set(P.alumnos.map((A) => prClave(A.spec, A.riesgo)));
-  for (let intento = 0; intento < 30; intento++) {
+// una plaza libre de un grupo: hijo de uno de sus mejores (con un cambio, u otro riesgo o concentración) o una idea nueva
+// lejos de lo ya probado
+function prUnoNuevo(P, t, maestros, grupo = 'normal') {
+  const vivas = new Set(P.alumnos.map((A) => prClave(A.spec, A.riesgo, A.conc)));
+  const alto = grupo === 'arriesgado';
+  for (let intento = 0; intento < 40; intento++) {
     if (maestros.length && prRng(P) >= PR.CURIOSIDAD) {
       const padre = prElige(P, maestros);
-      const riesgo = prRng(P) < 0.25 ? prElige(P, [1, 2, 3].filter((r) => r !== padre.riesgo)) : padre.riesgo;
-      const sp = riesgo !== padre.riesgo && prRng(P) < 0.5 ? padre.spec : prMuta(P, padre.spec);
-      if (!apLabValida(sp) || vivas.has(prClave(sp, riesgo))) continue;
-      return prNace(P, sp, riesgo, t, padre, 'hijo');
+      let riesgo = padre.riesgo, conc = padre.conc == null ? null : padre.conc;
+      if (prRng(P) < 0.25) { if (alto) [riesgo, conc] = prRiesgoAlto(P); else riesgo = prElige(P, PR.RIESGOS.filter((r) => r !== padre.riesgo)); }
+      const cambiaRiesgo = riesgo !== padre.riesgo || conc !== (padre.conc == null ? null : padre.conc);
+      const sp = cambiaRiesgo && prRng(P) < 0.5 ? padre.spec : prMuta(P, padre.spec);
+      if (!prValido(sp, riesgo, conc, grupo) || vivas.has(prClave(sp, riesgo, conc))) continue;
+      return prNace(P, sp, riesgo, t, padre, 'hijo', grupo, conc);
     }
     let mejor = null, menos = Infinity; // curiosidad: de 12 ideas al azar, la del vecindario menos probado
     for (let k = 0; k < 12; k++) {
-      const sp = prAzar(P), r = prElige(P, [1, 2, 3]);
-      if (!apLabValida(sp) || vivas.has(prClave(sp, r))) continue;
+      const sp = prAzar(P);
+      const [r, c] = alto ? prRiesgoAlto(P) : [prElige(P, PR.RIESGOS), null];
+      if (!prValido(sp, r, c, grupo) || vivas.has(prClave(sp, r, c))) continue;
       const n = (P.mapa[prVecindario(sp)] || 0) + prRng(P) * 0.5;
-      if (n < menos) { menos = n; mejor = [sp, r]; }
+      if (n < menos) { menos = n; mejor = [sp, r, c]; }
     }
-    if (mejor) return prNace(P, mejor[0], mejor[1], t, null, 'curiosidad');
+    if (mejor) return prNace(P, mejor[0], mejor[1], t, null, 'curiosidad', grupo, mejor[2]);
   }
   return null;
 }
+// primeros arriesgados: las estrategias del sistema con ×5 o ×10, o concentradas, y algunas ideas nuevas
+function prSembrarArriesgados(P, t) {
+  const ya = () => new Set(P.alumnos.map((A) => prClave(A.spec, A.riesgo, A.conc)));
+  for (let i = 0, intentos = 0; i < Math.round(PR.ARRIESGADOS * 2 / 3) && intentos < 60; intentos++) {
+    const b = prElige(P, PR_BASES), [r, c] = prRiesgoAlto(P);
+    if (!prValido(b, r, c, 'arriesgado') || ya().has(prClave(prLimpia(b), r, c))) continue;
+    prNace(P, b, r, t, null, 'arriesgado', 'arriesgado', c); i++;
+  }
+  while (P.alumnos.filter((A) => prGrupo(A) === 'arriesgado').length < PR.ARRIESGADOS) if (!prUnoNuevo(P, t, [], 'arriesgado')) break;
+}
 function prNuevo(t) {
-  const P = { v: 1, creado: t, semilla: (t / H1) >>> 0, serie: 0, probadas: 0, rondas: 0, ronda: t, t: null, alumnos: [], retirados: [],
+  const P = { v: 2, creado: t, semilla: (t / H1) >>> 0, serie: 0, probadas: 0, rondas: 0, ronda: t, t: null, alumnos: [], retirados: [],
     cuenta: { retirados: 0, quiebras: 0 }, lecciones: {}, mapa: {}, graduados: [] };
   for (const b of PR_BASES) prNace(P, b, 1, t, null, 'base');
   const bases = P.alumnos.slice();
   for (let i = 0; i < 6; i++) { // las mismas estrategias, arriesgando más
     const b = prElige(P, bases), r = prElige(P, [2, 3]);
-    if (!P.alumnos.some((A) => prClave(A.spec, A.riesgo) === prClave(b.spec, r))) prNace(P, b.spec, r, t, b, 'más riesgo');
+    if (!P.alumnos.some((A) => prClave(A.spec, A.riesgo, A.conc) === prClave(b.spec, r, null))) prNace(P, b.spec, r, t, b, 'más riesgo');
   }
   while (P.alumnos.length < PR.ALUMNOS) if (!prUnoNuevo(P, t, [])) break;
+  prSembrarArriesgados(P, t);
   return P;
 }
 const PR_ASPECTOS = {
-  riesgo: ['Riesgo', (A) => A.riesgo, { 1: '×1 (prudente)', 2: '×2', 3: '×3 (arriesgado)' }],
+  grupo: ['Grupo', (A) => prGrupo(A), { normal: 'Normales', arriesgado: 'Arriesgados' }],
+  riesgo: ['Riesgo', (A) => A.riesgo, { 1: '×1 (prudente)', 2: '×2', 3: '×3', 5: '×5', 10: '×10 (muy arriesgado)' }],
+  conc: ['Concentración', (A) => A.conc || 'no', { no: 'Repartido entre monedas', 3: 'En 3 monedas', 1: 'Todo en 1 moneda' }],
   senal: ['Idea', (A) => A.spec.senal, { cruce: 'Cruce de medias', impulso: 'Impulso', rebote: 'Rebote', funding_contra: 'Contra el funding', funding_sigue: 'A favor del funding', tendencia_mixta: 'Tendencia mixta' }],
   plazo: ['Plazo', (A) => A.spec.a, { 12: '12 h', 24: '1 día', 72: '3 días', 168: '1 semana', 336: '2 semanas', 720: '1 mes' }],
   lado: ['Lado', (A) => A.spec.lado, { ambos: 'Compra y vende', largos: 'Solo compras', cortos: 'Solo ventas' }],
   filtro: ['Filtro', (A) => A.spec.filtro, { ninguno: 'Siempre', btc_alcista: 'Solo si BTC sube', btc_bajista: 'Solo si BTC baja' }],
   modo: ['Modo', (A) => A.spec.modo, { serie: 'Cada moneda por su cuenta', seccion: 'Relativa entre monedas' }],
-  forma: ['Forma', (A) => A.spec.forma, { signo: 'Todo o nada', continua: 'Graduada' }],
+  forma: ['Forma', (A) => A.spec.forma, { signo: 'Todo o nada', continua: 'Proporcional' }],
   cada: ['Reajuste', (A) => A.spec.cada, { 1: 'Cada hora', 24: 'Una vez al día' }],
 };
 function prAnota(L, A, quiebra) { // lo que deja cada alumno juzgado al retirarse
@@ -1743,7 +1781,7 @@ function prAnota(L, A, quiebra) { // lo que deja cada alumno juzgado al retirars
 }
 function prFicha(A, t) {
   const m = apMomentos(A.st);
-  return { id: A.id, alumno: prNombre(A), riesgo: A.riesgo, origen: A.origen, generacion: A.gen || 1, padre: A.padreNombre || null, nace: iso(A.nace), fin: t != null ? iso(t) : null,
+  return { id: A.id, alumno: prNombre(A), grupo: prGrupo(A) === 'arriesgado' ? 'arriesgado' : 'normal', riesgo: A.riesgo, concentracion: A.conc || null, origen: A.origen, generacion: A.gen || 1, padre: A.padreNombre || null, nace: iso(A.nace), fin: t != null ? iso(t) : null,
     horas: m.n, rentPct: (Math.exp(A.st.log) - 1) * 100, tStat: m.sr * Math.sqrt(m.n), caidaMaxPct: A.st.dd * 100 };
 }
 function prRetira(P, A, t, motivo) {
@@ -1753,21 +1791,27 @@ function prRetira(P, A, t, motivo) {
   P.retirados.push({ ...prFicha(A, t), spec: A.spec, motivo });
   if (P.retirados.length > PR.MAX_RETIRADOS) P.retirados.splice(0, P.retirados.length - PR.MAX_RETIRADOS);
   P.cuenta.retirados++; if (quiebra) P.cuenta.quiebras++;
+  const g = (P.cuenta.grupos = P.cuenta.grupos || {})[prGrupo(A)] || (P.cuenta.grupos[prGrupo(A)] = { retirados: 0, quiebras: 0 });
+  g.retirados++; if (quiebra) g.quiebras++;
 }
-function prMaestros(P) {
-  const j = P.alumnos.filter((A) => A.st.n >= PR.JUZGAR_H).sort((a, b) => prT(b) - prT(a));
-  if (!j.length) return P.alumnos.slice();
+function prMaestros(P, grupo = 'normal') {
+  const vivos = P.alumnos.filter((A) => prGrupo(A) === grupo);
+  const j = vivos.filter((A) => A.st.n >= PR.JUZGAR_H).sort((a, b) => prT(b) - prT(a));
+  if (!j.length) return vivos;
   const top = j.slice(0, Math.max(1, Math.ceil(j.length / 4)));
   return top.some((A) => prT(A) > 0) ? top.filter((A) => prT(A) > 0) : top;
 }
 function prRellena(P, t) {
-  const maestros = prMaestros(P);
-  while (P.alumnos.length < PR.ALUMNOS) if (!prUnoNuevo(P, t, maestros)) break;
+  for (const g of ['normal', 'arriesgado']) {
+    const maestros = prMaestros(P, g);
+    while (P.alumnos.filter((A) => prGrupo(A) === g).length < prCupo(g)) if (!prUnoNuevo(P, t, maestros, g)) break;
+  }
 }
-function prRonda(P, t) {
-  const juzgados = P.alumnos.filter((A) => A.st.n >= PR.JUZGAR_H).sort((a, b) => prT(a) - prT(b));
+function prRonda(P, t) { // cada grupo compite por separado
   let fuera = 0;
-  if (juzgados.length >= 4) {
+  for (const g of ['normal', 'arriesgado']) {
+    const juzgados = P.alumnos.filter((A) => prGrupo(A) === g && A.st.n >= PR.JUZGAR_H).sort((a, b) => prT(a) - prT(b));
+    if (juzgados.length < 4) continue;
     const n = Math.max(1, Math.floor(juzgados.length * PR.RETIRA));
     for (const A of juzgados.slice(0, n)) if (prT(A) < PR.SALVA_T && !A.graduado) { prRetira(P, A, t, 'ronda'); fuera++; }
   }
@@ -1800,7 +1844,7 @@ function prGraduar(E, P, t) {
     P.graduados.push({ id, alumno: prNombre(A), t: iso(t), dsr, horas: n });
     E.graduados = E.graduados || [];
     const ocupado = AP_EXPERTOS.some((ex) => ex.id === id) || E.graduados.some((x) => x.id === id) || ((E.lab && E.lab.specs) || []).some((x) => x.spec && apLabIdent(x.spec) === apLabIdent(A.spec));
-    if (!ocupado && E.graduados.length < PR.MAX_GRADUADOS) {
+    if (!ocupado && !A.conc && E.graduados.length < PR.MAX_GRADUADOS) { // el sistema no sabe concentrar: esos se estudian aparte
       E.graduados.push({ id, nombre: apLabNombre(A.spec), spec: A.spec, t });
       apAlerta(E, t, 'graduado', id, 'Se gradúa en la zona de prácticas y entra a competir con poco peso: ' + prNombre(A) + ' (Sharpe deflactado ' + dsr.toFixed(2) + ' con ' + n + ' h; ' + P.probadas + ' alumnos probados)');
     }
@@ -1814,8 +1858,26 @@ function prFoto(E) {
   return { t: E.t, px, f };
 }
 // Una hora en vivo, después de apPaso. antes = precios y funding con los que empezó la hora (prFoto antes de apPaso).
+// Arriesgado concentrado: las 'conc' monedas de señal más fuerte entre las que la estrategia operaría, con todo el riesgo
+// repartido entre ellas y sin ajustar por volatilidad.
+function prConcentra(E, A, base) {
+  const ms = Object.keys(base).filter((m) => base[m]);
+  if (!ms.length) return {};
+  const x = {};
+  for (const m of ms) { const v = apLabBruto(A.spec, E.monedas[m]); x[m] = Number.isFinite(v) ? v : 0; }
+  if (A.spec.modo === 'seccion') { const media = ms.reduce((a, m) => a + x[m], 0) / ms.length; for (const m of ms) x[m] -= media; }
+  const elegidas = ms.sort((a, b) => Math.abs(x[b]) - Math.abs(x[a]) || (a < b ? -1 : 1)).slice(0, A.conc);
+  const pos = {};
+  for (const m of elegidas) pos[m] = Math.sign(base[m]) * A.riesgo / elegidas.length;
+  return pos;
+}
 function prPaso(E, P, snap, antes) {
   const t = snap.t;
+  if ((P.v || 1) < 2) { // v2.6.1: los alumnos de antes son el grupo normal y nace el grupo arriesgado
+    for (const A of P.alumnos) { A.grupo = A.grupo || 'normal'; if (A.conc === undefined) A.conc = null; }
+    P.v = 2;
+    prSembrarArriesgados(P, t);
+  }
   const horas = antes.t == null ? 1 : Math.max(1, Math.round((t - antes.t) / H1));
   const out = { quiebras: [], graduados: [], retirados: 0 };
   for (const A of P.alumnos) { // 1) cobrar o pagar la hora que acaba
@@ -1836,7 +1898,8 @@ function prPaso(E, P, snap, antes) {
     else {
       const base = apLabPosiciones(E, { id: '__practicas', spec: sp }, listas, t) || {};
       nueva = {};
-      for (const [m, q] of Object.entries(base)) nueva[m] = q * A.riesgo;
+      if (A.conc) nueva = prConcentra(E, A, base);
+      else for (const [m, q] of Object.entries(base)) nueva[m] = q * A.riesgo;
       const objetivo = { ...nueva };
       for (const m of Object.keys(nueva)) { const o = A.pos[m]; if (o && Math.sign(o) === Math.sign(nueva[m]) && Math.abs(nueva[m] - o) < AP.BANDA * Math.abs(o)) nueva[m] = o; }
       if (Object.values(nueva).reduce((a, b) => a + Math.abs(b), 0) > A.riesgo + 1e-9) Object.assign(nueva, objetivo);
@@ -1884,12 +1947,13 @@ async function prVista(env, v) {
   await apTablas(env);
   const P = await prCargar(env);
   if (!P) return { rows: [], nota: 'La zona de prácticas abre en la próxima hora en vivo.' };
-  const nota = 'Zona de prácticas, en papel: ' + PR.ALUMNOS + ' alumnos (variantes de las estrategias del sistema, con riesgo ×1, ×2 o ×3) practican cada hora con su propio dinero de prácticas, con comisiones y funding. Cada ' + PR.RONDA_H + ' h se retira la cuarta parte peor de los que llevan ' + PR.JUZGAR_H + ' h (salvo los que van con t ≥ ' + PR.SALVA_T + '); quien pierde la mitad, quiebra. Las plazas libres son para hijos de los mejores (un cambio) o para ideas nuevas lejos de lo ya probado. Se gradúa quien gana un mes en vivo con un Sharpe deflactado de más de ' + PR.GRADUA_DSR + ' contando todos los alumnos que han existido; entonces entra en el sistema con poco peso. tStat: t de su rentabilidad hora a hora (por encima de 2, poco probable que sea suerte). No mueve dinero ni es una recomendación.';
+  const nota = 'Zona de prácticas, en papel: ' + PR.ALUMNOS + ' alumnos normales (variantes de las estrategias del sistema, con riesgo ×1, ×2 o ×3) y ' + PR.ARRIESGADOS + ' arriesgados (×5 o ×10, o todo en 1 o 3 monedas sin ajustar por volatilidad; cada grupo compite por separado) practican cada hora con su propio dinero de prácticas, con comisiones y funding. Cada ' + PR.RONDA_H + ' h se retira la cuarta parte peor de los que llevan ' + PR.JUZGAR_H + ' h (salvo los que van con t ≥ ' + PR.SALVA_T + '); quien pierde la mitad, quiebra. Las plazas libres son para hijos de los mejores (un cambio) o para ideas nuevas lejos de lo ya probado. Se gradúa quien gana un mes en vivo con un Sharpe deflactado de más de ' + PR.GRADUA_DSR + ' contando todos los alumnos que han existido; entonces entra en el sistema con poco peso. tStat: t de su rentabilidad hora a hora (por encima de 2, poco probable que sea suerte). No mueve dinero ni es una recomendación.';
   if (v === 'practicas_retirados') return { rows: P.retirados.slice().reverse().map((r) => ({ ...r, motivo: PR_MOTIVOS[r.motivo] || r.motivo, spec: undefined })), nota };
   if (v === 'practicas_lecciones') { const L = prLecciones(P); return { rows: L.rows, frases: L.frases, nota: 'Lo que dejan los alumnos juzgados (al menos ' + PR.JUZGAR_H + ' h), vivos y retirados, agrupado por cada decisión. Con pocos alumnos o pocas horas, las diferencias pueden ser suerte.' }; }
   const filas = P.alumnos.map((A) => ({ ...prFicha(A, null), estado: prEstado(A), dsr: A.dsr == null ? null : A.dsr })).sort((a, b) => (b.horas >= PR.JUZGAR_H) - (a.horas >= PR.JUZGAR_H) || b.tStat - a.tStat);
   const proxima = P.ronda + PR.RONDA_H * H1;
-  return { rows: filas, resumen: { alumnos: P.alumnos.length, probadas: P.probadas, rondas: P.rondas, proximaRonda: iso(proxima), retirados: P.cuenta.retirados, quiebras: P.cuenta.quiebras, graduados: P.graduados, abierta: iso(P.creado), hasta: P.t ? iso(P.t) : null }, nota };
+  const gr = (P.cuenta.grupos || {}).arriesgado || { retirados: 0, quiebras: 0 };
+  return { rows: filas, resumen: { alumnos: P.alumnos.length, arriesgados: P.alumnos.filter((A) => prGrupo(A) === 'arriesgado').length, retiradosArriesgados: gr.retirados, quiebrasArriesgados: gr.quiebras, probadas: P.probadas, rondas: P.rondas, proximaRonda: iso(proxima), retirados: P.cuenta.retirados, quiebras: P.cuenta.quiebras, graduados: P.graduados, abierta: iso(P.creado), hasta: P.t ? iso(P.t) : null }, nota };
 }
 
 async function aprendizaje({ vista } = {}, env) {

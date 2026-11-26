@@ -14,21 +14,26 @@ fs.writeFileSync(tmp, fuente);
 const W = await import(tmp);
 fs.unlinkSync(tmp);
 const { PR, AP, H1 } = W;
+const TOTAL = PR.ALUMNOS + PR.ARRIESGADOS;
+const bruto = (A) => Object.values(A.pos).reduce((a, b) => a + Math.abs(b), 0);
 
 // azar con semilla para que la prueba sea reproducible
 let semilla = 12345;
 const azar = () => { semilla = (semilla + 0x6D2B79F5) | 0; let t = Math.imul(semilla ^ (semilla >>> 15), 1 | semilla); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
 const normal = () => { const u = Math.max(azar(), 1e-12), v = azar(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v); };
 
-check(/^2\.6\./.test(W.VERSION), 'versión ' + W.VERSION);
+check(/^2\.6\.[1-9]/.test(W.VERSION), 'versión ' + W.VERSION);
 
 // 1) nacimiento de la zona
 const T0 = Date.UTC(2026, 10, 26, 13);
 const P0 = W.prNuevo(T0);
-check(P0.alumnos.length === PR.ALUMNOS, 'nacen ' + P0.alumnos.length + ' alumnos');
-check(P0.alumnos.every((A) => W.apLabValida(A.spec) && [1, 2, 3].includes(A.riesgo)), 'todos con una estrategia válida y riesgo ×1, ×2 o ×3');
-check(new Set(P0.alumnos.map((A) => W.prClave(A.spec, A.riesgo))).size === PR.ALUMNOS, 'ninguno repetido');
-const origenes = P0.alumnos.reduce((o, A) => ((o[A.origen] = (o[A.origen] || 0) + 1), o), {});
+const normales0 = P0.alumnos.filter((A) => A.grupo === 'normal'), arriesgados0 = P0.alumnos.filter((A) => A.grupo === 'arriesgado');
+check(P0.alumnos.length === TOTAL && normales0.length === 24 && arriesgados0.length === 12, 'nacen ' + normales0.length + ' normales y ' + arriesgados0.length + ' arriesgados');
+check(normales0.every((A) => W.apLabValida(A.spec) && [1, 2, 3].includes(A.riesgo) && A.conc == null), 'normales: estrategia válida, riesgo ×1, ×2 o ×3, repartidos');
+check(arriesgados0.every((A) => W.apLabValida(A.spec) && [3, 5, 10].includes(A.riesgo) && (A.riesgo >= 5 || A.conc)), 'arriesgados: ×5 o ×10, o ×3 con todo en 1 o 3 monedas: ' + arriesgados0.map((A) => '×' + A.riesgo + (A.conc ? '/' + A.conc : '')).join(' '));
+check(arriesgados0.some((A) => A.conc === 1) && arriesgados0.some((A) => A.riesgo === 10), 'hay alguno con todo en 1 moneda y alguno a ×10');
+check(new Set(P0.alumnos.map((A) => W.prClave(A.spec, A.riesgo, A.conc))).size === TOTAL, 'ninguno repetido');
+const origenes = normales0.reduce((o, A) => ((o[A.origen] = (o[A.origen] || 0) + 1), o), {});
 check(origenes.base === 13 && origenes['más riesgo'] >= 4 && origenes.curiosidad >= 3, 'origen: ' + JSON.stringify(origenes));
 check(JSON.stringify(W.prNuevo(T0)) === JSON.stringify(P0), 'misma hora, mismos alumnos (reproducible)');
 
@@ -47,7 +52,7 @@ const vivir = (E, P, paso, horas) => {
     W.apPaso(E, s);
     const o = W.prPaso(E, P, s, antes);
     quiebras += o.quiebras.length; retirados += o.retirados; graduados = graduados.concat(o.graduados);
-    if (P.alumnos.length !== PR.ALUMNOS) throw new Error('alumnos: ' + P.alumnos.length);
+    if (P.alumnos.length !== TOTAL || P.alumnos.filter((A) => A.grupo === 'arriesgado').length !== PR.ARRIESGADOS) throw new Error('alumnos: ' + P.alumnos.length);
   }
   return { quiebras, retirados, graduados };
 };
@@ -58,14 +63,18 @@ let E = preparar(sinVentaja, 800, T0 - 800 * H1);
 let P = W.prNuevo(E.t + H1);
 let r = vivir(E, P, sinVentaja, 1000);
 check(P.rondas === Math.floor(1000 / PR.RONDA_H) - (1000 % PR.RONDA_H === 0 ? 1 : 0) || P.rondas === Math.floor(999 / PR.RONDA_H), 'rondas cada 72 h: ' + P.rondas + ' en 1.000 h');
-check(P.alumnos.length === PR.ALUMNOS && P.probadas === PR.ALUMNOS + P.cuenta.retirados, 'siempre 24 alumnos; probados = 24 + retirados (' + P.probadas + ')');
+check(P.alumnos.length === TOTAL && P.probadas === TOTAL + P.cuenta.retirados, 'siempre 24 + 12 alumnos; probados = 36 + retirados (' + P.probadas + ')');
+const ga = P.cuenta.grupos.arriesgado || {};
+check(ga.retirados > 0 && P.alumnos.filter((A) => A.grupo === 'arriesgado').every((A) => [3, 5, 10].includes(A.riesgo) && (A.riesgo >= 5 || A.conc)), 'los arriesgados compiten aparte y siguen siendo arriesgados: ' + ga.retirados + ' retirados (' + (ga.quiebras || 0) + ' quiebras)');
 check(P.cuenta.retirados >= 20, 'se retiran los peores en cada ronda: ' + P.cuenta.retirados + ' retirados (' + P.cuenta.quiebras + ' quiebras)');
 check(P.alumnos.some((A) => A.origen === 'hijo') && P.alumnos.some((A) => A.origen === 'curiosidad'), 'nacen hijos de los mejores y alumnos por curiosidad');
 check(Math.max(...P.alumnos.map((A) => A.gen)) >= 2, 'hay generaciones: hasta la ' + Math.max(...P.alumnos.map((A) => A.gen)));
 check(!r.graduados.length && !(E.graduados || []).length, 'sin ventaja en el mercado, nadie se gradúa');
 const bytes = JSON.stringify(P).length;
 check(bytes < 120000, 'tamaño del estado: ' + Math.round(bytes / 1024) + ' KB');
-check(P.alumnos.every((A) => Object.values(A.pos).reduce((a, b) => a + Math.abs(b), 0) <= A.riesgo + 1e-9), 'nadie pasa de su riesgo (exposición ≤ ×1, ×2 o ×3)');
+check(P.alumnos.every((A) => bruto(A) <= A.riesgo + 1e-9), 'nadie pasa de su riesgo (exposición ≤ su ×)');
+const conc = P.alumnos.filter((A) => A.conc && Object.keys(A.pos).length);
+check(conc.length > 0 && conc.every((A) => Object.keys(A.pos).length <= A.conc && Math.abs(bruto(A) - A.riesgo) < 1e-9), 'concentrados: como mucho ' + '1 o 3 monedas, con todo su riesgo (' + conc.map((A) => Object.keys(A.pos).length + '×' + A.riesgo).join(' ') + ')');
 const L = W.prLecciones(P);
 check(L.rows.length >= 10 && L.rows.every((x) => Number.isFinite(x.tMedia) && x.alumnos > 0) && L.frases.every((f) => typeof f === 'string' && !/NaN|undefined/.test(f)), 'lecciones: ' + L.rows.length + ' filas; ' + (L.frases[0] || 'sin frases todavía'));
 
@@ -91,8 +100,9 @@ check(L.rows.length >= 10 && L.rows.every((x) => Number.isFinite(x.tMedia) && x.
   const x3 = P2.alumnos.filter((A) => A.riesgo >= 2 && Object.values(A.pos).reduce((a, b) => a + b, 0) > 1).length;
   alza.deriva = () => -0.03;
   const r2 = vivir(E2, P2, alza, 30); // caída del ~60 % en 30 horas
-  check(x3 > 0 && r2.quiebras > 0 && P2.retirados.some((x) => x.motivo === 'quiebra' && x.riesgo >= 2), 'caída fuerte: quiebran ' + r2.quiebras + ' (había ' + x3 + ' comprados con ×2 o ×3)');
-  check(P2.alumnos.length === PR.ALUMNOS, 'las plazas de los quebrados se vuelven a ocupar');
+  check(x3 > 0 && r2.quiebras > 0 && P2.retirados.some((x) => x.motivo === 'quiebra' && x.riesgo >= 2), 'caída fuerte: quiebran ' + r2.quiebras + ' (había ' + x3 + ' comprados con ×2 o más)');
+  check(P2.retirados.some((x) => x.motivo === 'quiebra' && x.grupo === 'arriesgado'), 'quiebran arriesgados: ' + P2.retirados.filter((x) => x.motivo === 'quiebra' && x.grupo === 'arriesgado').map((x) => x.alumno).slice(0, 3).join(' | '));
+  check(P2.alumnos.length === TOTAL, 'las plazas de los quebrados se vuelven a ocupar');
   const L2 = W.prLecciones(P2);
   check(L2.rows.some((x) => x.aspecto === 'Riesgo' && x.quiebras > 0), 'la lección queda: quiebras por nivel de riesgo');
 }
@@ -133,6 +143,17 @@ const conStats = (P, f) => { for (const A of P.alumnos) { A.st = W.apStats(); fo
   check(E7.expertos[E7.graduados[0].id] && E7.expertos[E7.graduados[0].id].activo, 'el graduado aprende en el sistema como un experto más');
 }
 
+// 7b) paso de la v2.6.0 (24 alumnos sin grupo) a la v2.6.1: nace el grupo arriesgado sin tocar a los de antes
+{
+  const E8 = preparar(sinVentaja, 800, T0 - 800 * H1);
+  const P8 = W.prNuevo(E8.t + H1);
+  P8.alumnos = P8.alumnos.filter((A) => A.grupo === 'normal').map((A) => { const B = { ...A }; delete B.grupo; delete B.conc; return B; });
+  P8.v = 1; P8.probadas = 24;
+  const antes8 = P8.alumnos.map((A) => A.id).join();
+  vivir(E8, P8, sinVentaja, 3);
+  check(P8.v === 2 && P8.alumnos.filter((A) => A.grupo === 'normal').map((A) => A.id).join() === antes8 && P8.alumnos.filter((A) => A.grupo === 'arriesgado').length === 12 && P8.probadas === 36, 'migración: los 24 de antes siguen igual y nacen 12 arriesgados');
+}
+
 // 8) vistas, con la base de datos
 const db = new DatabaseSync(':memory:');
 const stmt = (sql, args = []) => ({ bind: (...a) => stmt(sql, a), first: async () => db.prepare(sql).get(...args) ?? null, all: async () => ({ results: db.prepare(sql).all(...args) }), run: async () => { db.prepare(sql).run(...args); return { success: true }; }, _run: () => db.prepare(sql).run(...args) });
@@ -141,8 +162,8 @@ let v = await W.aprendizaje({ vista: 'practicas' }, ENV);
 check(v.rows.length === 0 && /próxima hora/.test(v.nota), 'antes de abrir: la vista lo explica');
 db.prepare("INSERT INTO ap_estado (id, json, t) VALUES ('practicas', ?, ?)").run(JSON.stringify(P), P.t);
 v = await W.aprendizaje({ vista: 'practicas' }, ENV);
-check(v.rows.length === PR.ALUMNOS && v.rows.every((x) => typeof x.alumno === 'string' && /×[123]$/.test(x.alumno) && Number.isFinite(x.rentPct) && Number.isFinite(x.tStat) && x.estado), 'vista practicas: ' + v.rows[0].alumno + ', ' + v.rows[0].horas + ' h, t ' + v.rows[0].tStat.toFixed(2) + ' (' + v.rows[0].estado + ')');
-check(v.resumen.probadas === P.probadas && v.resumen.rondas === P.rondas && /^\d{4}-/.test(v.resumen.proximaRonda), 'resumen: ' + JSON.stringify({ probadas: v.resumen.probadas, rondas: v.resumen.rondas, retirados: v.resumen.retirados, quiebras: v.resumen.quiebras }));
+check(v.rows.length === TOTAL && v.rows.every((x) => typeof x.alumno === 'string' && /×(1|2|3|5|10)$/.test(x.alumno) && ['normal', 'arriesgado'].includes(x.grupo) && Number.isFinite(x.rentPct) && Number.isFinite(x.tStat) && x.estado), 'vista practicas: ' + v.rows[0].alumno + ', ' + v.rows[0].horas + ' h, t ' + v.rows[0].tStat.toFixed(2) + ' (' + v.rows[0].estado + ')');
+check(v.resumen.arriesgados === 12 && v.resumen.probadas === P.probadas && v.resumen.rondas === P.rondas && /^\d{4}-/.test(v.resumen.proximaRonda), 'resumen: ' + JSON.stringify({ probadas: v.resumen.probadas, rondas: v.resumen.rondas, retirados: v.resumen.retirados, quiebras: v.resumen.quiebras }));
 const vr = await W.aprendizaje({ vista: 'practicas_retirados' }, ENV);
 check(vr.rows.length > 0 && vr.rows.every((x) => /^(Quebró|Retirado)/.test(x.motivo) && x.spec === undefined), 'vista practicas_retirados: ' + vr.rows[0].alumno + ' — ' + vr.rows[0].motivo);
 const vl = await W.aprendizaje({ vista: 'practicas_lecciones' }, ENV);
