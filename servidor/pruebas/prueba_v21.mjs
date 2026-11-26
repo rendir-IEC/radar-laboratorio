@@ -58,7 +58,7 @@ check(maxVivo <= 50, 'peticiones externas por minuto en vivo: máximo ' + maxViv
 const exp = (await herramienta('aprendizaje', { vista: 'expertos' })).rows;
 const flujo = exp.filter((x) => x.familia === 'flujo de órdenes');
 check(flujo.length === 4 && flujo.every((x) => x.horas > 0), 'los 4 expertos de flujo de órdenes aprenden en vivo: ' + flujo.map((x) => x.id + ' ' + x.horas + ' h').join(', '));
-check(exp.length === 23, 'hay 23 expertos en total (con el de aprendizaje automático, sin señal): ' + exp.length);
+check(exp.length === 24, 'hay 24 expertos en total (con el de aprendizaje automático y el equipo de la zona de prácticas): ' + exp.length);
 const pos = (await herramienta('aprendizaje', { vista: 'posiciones' })).rows;
 check(pos.length === 30 && pos.some((x) => x.moneda === 'ORO') && pos.some((x) => x.moneda === 'SP500'), '20 cripto, 9 de trade.xyz (oro, petróleo, índices, divisas…) y el cobro del funding en las posiciones: ' + pos.length);
 const res1 = (await herramienta('aprendizaje', { vista: 'resumen' })).rows[0];

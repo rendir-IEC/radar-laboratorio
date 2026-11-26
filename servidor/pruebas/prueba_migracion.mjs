@@ -61,7 +61,7 @@ check(nuevas.length === 10 && nuevas.every(([, c]) => c.n >= 720 && c.nf >= 168)
 const al = (await herramienta('aprendizaje', { vista: 'alertas' })).rows.filter((a) => a.tipo === 'mercados');
 check(al.length >= 10, 'avisos de incorporación: ' + al.map((a) => a.texto).join(' | '));
 const exp = (await herramienta('aprendizaje', { vista: 'expertos' })).rows;
-check(exp.length === 23, '23 expertos tras el cambio (con el de aprendizaje automático)');
+check(exp.length === 24, '24 expertos tras el cambio (con el de aprendizaje automático y el equipo de la zona de prácticas)');
 const flujo = exp.filter((x) => x.familia === 'flujo de órdenes');
 check(flujo.every((x) => x.horas > 0), 'los expertos de flujo de órdenes ya aprenden: ' + flujo.map((x) => x.id + ' ' + x.horas + ' h').join(', '));
 const viejos = exp.filter((x) => x.id === 'tend_24_168')[0];

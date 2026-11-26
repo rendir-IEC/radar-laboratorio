@@ -8,7 +8,7 @@ import { DatabaseSync } from 'node:sqlite';
 let fallos = 0;
 const check = (ok, msg) => { console.log((ok ? 'OK    ' : 'FALLO ') + msg); if (!ok) fallos++; };
 const fuente = fs.readFileSync(new URL('../worker.js', import.meta.url), 'utf8') +
-  '\nexport { aprendizaje, apEstadoNuevo, apPaso, apStats, apSuma, apListaExpertos, apLabValida, prNuevo, prPaso, prFoto, prGraduar, prRonda, prRellena, prLecciones, prT, prClave, PR, AP, H1, VERSION };\n';
+  '\nexport { aprendizaje, apEstadoNuevo, apPaso, apStats, apSuma, apListaExpertos, apLabValida, prEquipoPesos, prNuevo, prPaso, prFoto, prGraduar, prRonda, prRellena, prLecciones, prT, prClave, PR, AP, H1, VERSION };\n';
 const tmp = path.join(os.tmpdir(), 'worker_v26_' + process.pid + '.mjs');
 fs.writeFileSync(tmp, fuente);
 const W = await import(tmp);
@@ -75,6 +75,19 @@ check(bytes < 120000, 'tamaño del estado: ' + Math.round(bytes / 1024) + ' KB')
 check(P.alumnos.every((A) => bruto(A) <= A.riesgo + 1e-9), 'nadie pasa de su riesgo (exposición ≤ su ×)');
 const conc = P.alumnos.filter((A) => A.conc && Object.keys(A.pos).length);
 check(conc.length > 0 && conc.every((A) => Object.keys(A.pos).length <= A.conc && Math.abs(bruto(A) - A.riesgo) < 1e-9), 'concentrados: como mucho ' + '1 o 3 monedas, con todo su riesgo (' + conc.map((A) => Object.keys(A.pos).length + '×' + A.riesgo).join(' ') + ')');
+// trabajo en equipo
+{
+  const Q = P.equipo, w = W.prEquipoPesos(Q, P.alumnos.map((A) => A.id));
+  const suma = Object.values(w).reduce((a, b) => a + b, 0);
+  check(Q && Math.abs(suma - 1) < 1e-9 && Object.keys(w).length === TOTAL && Q.st.n >= 990, 'el equipo: los 36 votan con pesos que suman 1; ' + Q.st.n + ' horas de cartera común');
+  const esperada = {};
+  for (const A of P.alumnos) for (const [m, q] of Object.entries(A.pos)) esperada[m] = (esperada[m] || 0) + (w[A.id] || 0) * q / A.riesgo;
+  const dif = Object.keys({ ...esperada, ...Q.pos }).reduce((a, m) => Math.max(a, Math.abs((esperada[m] || 0) - (Q.pos[m] || 0))), 0);
+  check(dif < 1e-6 && bruto({ pos: Q.pos }) <= 1 + 1e-9, 'la cartera del equipo es la media ponderada de todos por unidad de riesgo, como mucho el 100 % (' + (bruto({ pos: Q.pos }) * 100).toFixed(0) + ' %)');
+  check(E.equipo && E.equipo.t === P.t && E.expertos.equipo_practicas && E.expertos.equipo_practicas.activo, 'el equipo entra en el sistema principal como un experto más');
+  const comp = P.alumnos.filter((A) => A.origen === 'compañero').concat(P.retirados.filter((x) => x.origen === 'compañero'));
+  check(comp.length > 0 && P.alumnos.filter((A) => A.origen === 'compañero').every((A) => A.grupo === 'arriesgado' ? (A.riesgo >= 5 || A.conc) : A.riesgo <= 2 && !A.conc), 'se pasan ideas entre grupos, con el riesgo de cada grupo: ' + comp.length + ' alumnos por idea de un compañero');
+}
 const L = W.prLecciones(P);
 check(L.rows.length >= 10 && L.rows.every((x) => Number.isFinite(x.tMedia) && x.alumnos > 0) && L.frases.every((f) => typeof f === 'string' && !/NaN|undefined/.test(f)), 'lecciones: ' + L.rows.length + ' filas; ' + (L.frases[0] || 'sin frases todavía'));
 
@@ -105,6 +118,19 @@ check(L.rows.length >= 10 && L.rows.every((x) => Number.isFinite(x.tMedia) && x.
   check(P2.alumnos.length === TOTAL, 'las plazas de los quebrados se vuelven a ocupar');
   const L2 = W.prLecciones(P2);
   check(L2.rows.some((x) => x.aspecto === 'Riesgo' && x.quiebras > 0), 'la lección queda: quiebras por nivel de riesgo');
+}
+
+// 5b) el equipo aprende a quién hacer caso: en un mercado con tendencia, pesan más los que ganan
+{
+  const alza2 = mercado(() => 0.0006, 0.002);
+  const E9 = preparar(alza2, 800, T0 - 800 * H1);
+  const P9 = W.prNuevo(E9.t + H1);
+  vivir(E9, P9, alza2, 60);
+  const w = W.prEquipoPesos(P9.equipo, P9.alumnos.map((A) => A.id));
+  const ganan = P9.alumnos.filter((A) => A.st.n >= 50 && A.st.log / A.riesgo > 0.02), pierden = P9.alumnos.filter((A) => A.st.n >= 50 && A.st.log / A.riesgo < -0.02);
+  const pw = (xs) => xs.reduce((a, A) => a + (w[A.id] || 0), 0) / Math.max(1, xs.length);
+  check(ganan.length && pierden.length && pw(ganan) > 1.5 * pw(pierden), 'tras 60 h de subida, el equipo escucha más a los que ganan: peso medio ' + (pw(ganan) * 100).toFixed(2) + ' % frente a ' + (pw(pierden) * 100).toFixed(2) + ' %');
+  check(Math.exp(P9.equipo.st.log) > 1, 'y la cartera del equipo gana: ' + ((Math.exp(P9.equipo.st.log) - 1) * 100).toFixed(1) + ' %');
 }
 
 // 6) graduación: solo con ventaja real y contando todas las pruebas
@@ -163,6 +189,7 @@ check(v.rows.length === 0 && /próxima hora/.test(v.nota), 'antes de abrir: la v
 db.prepare("INSERT INTO ap_estado (id, json, t) VALUES ('practicas', ?, ?)").run(JSON.stringify(P), P.t);
 v = await W.aprendizaje({ vista: 'practicas' }, ENV);
 check(v.rows.length === TOTAL && v.rows.every((x) => typeof x.alumno === 'string' && /×(1|2|3|5|10)$/.test(x.alumno) && ['normal', 'arriesgado'].includes(x.grupo) && Number.isFinite(x.rentPct) && Number.isFinite(x.tStat) && x.estado), 'vista practicas: ' + v.rows[0].alumno + ', ' + v.rows[0].horas + ' h, t ' + v.rows[0].tStat.toFixed(2) + ' (' + v.rows[0].estado + ')');
+check(v.equipo && v.equipo.quienesPesan.length === 3 && Math.abs(v.rows.reduce((a, x) => a + x.pesoEquipoPct, 0) - 100) < 1e-6 && Number.isFinite(v.equipo.rentPct), 'vista: el equipo va ' + v.equipo.rentPct.toFixed(2) + ' % en ' + v.equipo.horas + ' h; pesan más ' + v.equipo.quienesPesan.map((x) => x.pesoPct.toFixed(1) + ' %').join(', '));
 check(v.resumen.arriesgados === 12 && v.resumen.probadas === P.probadas && v.resumen.rondas === P.rondas && /^\d{4}-/.test(v.resumen.proximaRonda), 'resumen: ' + JSON.stringify({ probadas: v.resumen.probadas, rondas: v.resumen.rondas, retirados: v.resumen.retirados, quiebras: v.resumen.quiebras }));
 const vr = await W.aprendizaje({ vista: 'practicas_retirados' }, ENV);
 check(vr.rows.length > 0 && vr.rows.every((x) => /^(Quebró|Retirado)/.test(x.motivo) && x.spec === undefined), 'vista practicas_retirados: ' + vr.rows[0].alumno + ' — ' + vr.rows[0].motivo);

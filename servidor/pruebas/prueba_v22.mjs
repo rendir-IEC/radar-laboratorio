@@ -91,6 +91,9 @@ check(maxVivo <= 50, 'peticiones externas por minuto en vivo: máximo ' + maxViv
   check(conXyz >= 5 && Object.keys(E.posSistema).some((m) => m.startsWith('xyz:')), 'los expertos operan también esos mercados: ' + conXyz + ' expertos con alguno');
   check(!Object.keys(E.expertos.carry_alt.pos || {}).some((m) => m.startsWith('xyz:')) && !Object.keys(E.monedas).includes('xyz:TSLA'), 'el cobro del funding sigue solo en cripto y no entra lo que no está en la lista (TSLA)');
   check((porTipo.xyz || 0) >= 7 && (porTipo.xyz || 0) <= 10, 'precios de trade.xyz: 1 petición por hora en vivo (' + porTipo.xyz + ' en 8 h)'); }
+{ const E = estado(); const fp = db.prepare("SELECT json FROM ap_estado WHERE id = 'practicas'").get(); const P1 = JSON.parse(fp.json);
+  const X = E.expertos.equipo_practicas;
+  check(P1.equipo && P1.equipo.st.n >= 6 && E.equipo && X && X.activo && X.st.n >= 5 && Object.keys(X.pos).length > 0, 'el equipo de alumnos vota cada hora y compite en el sistema: ' + P1.equipo.st.n + ' h de equipo, ' + X.st.n + ' h como experto, ' + Object.keys(X.pos).length + ' posiciones'); }
 { const fp = db.prepare("SELECT json FROM ap_estado WHERE id = 'practicas'").get(); const P0 = fp ? JSON.parse(fp.json) : null;
   check(P0 && P0.alumnos.some((A) => Object.keys(A.pos).some((m) => m.startsWith('xyz:'))), 'los alumnos de la zona de prácticas también operan oro, petróleo, índices o divisas'); }
 { const fp = db.prepare("SELECT json FROM ap_estado WHERE id = 'practicas'").get(); const P = fp ? JSON.parse(fp.json) : null;
@@ -98,7 +101,7 @@ check(maxVivo <= 50, 'peticiones externas por minuto en vivo: máximo ' + maxViv
 const exp = (await herramienta('aprendizaje', { vista: 'expertos' })).rows;
 const flujo = exp.filter((x) => x.familia === 'flujo de órdenes');
 check(flujo.length === 4 && flujo.every((x) => x.horas > 0), 'los 4 expertos de flujo de órdenes aprenden en vivo: ' + flujo.map((x) => x.id + ' ' + x.horas + ' h').join(', '));
-check(exp.length === 26, 'hay 26 expertos: 23 fijos (con el de aprendizaje automático, sin señal aquí) y 3 del laboratorio (rechaza uno inválido y otro que suplanta a un experto fijo): ' + exp.length);
+check(exp.length === 27, 'hay 27 expertos: 24 fijos (con el de aprendizaje automático, sin señal aquí) y 3 del laboratorio (rechaza uno inválido y otro que suplanta a un experto fijo): ' + exp.length);
 const lab = await herramienta('aprendizaje', { vista: 'laboratorio' });
 check(lab.rows.length === 3 && lab.rows.every((r) => r.horasEnVivo > 0), 'los 3 del laboratorio aprenden en vivo: ' + lab.rows.map((r) => r.id + ' ' + r.horasEnVivo + ' h').join(', '));
 check(lab.laboratorio.estrategiasProbadas === 2232 && lab.laboratorio.fueraDeMuestraTop5.sharpeAnual === 1, 'la vista laboratorio resume lo publicado');

@@ -16,7 +16,7 @@
 // y un disparador Cron cada minuto (* * * * *). Primero repasa unas 5000 horas de historia, 16 por minuto;
 // después aprende cada hora en vivo. Todo en papel: no mueve dinero.
 
-const VERSION = '2.7.0';
+const VERSION = '2.8.0';
 const HL = 'https://api.hyperliquid.xyz/info';
 const BINANCE = 'https://data-api.binance.vision/api/v3';
 const KRAKEN = 'https://api.kraken.com/0/public';
@@ -358,6 +358,7 @@ const AP_EXPERTOS = [
   { id: 'copiar_mejores', nombre: 'Copiar a las carteras con habilidad', familia: 'los mejores', tipo: 'copia', habilidad: true },
   { id: 'copiar_ranking', nombre: 'Copiar al ranking (sin filtrar suerte)', familia: 'los mejores', tipo: 'copia', habilidad: false },
   { id: 'ml_qlib', nombre: 'Aprendizaje automático (compra las 5 mejores y vende las 5 peores)', familia: 'aprendizaje automático', tipo: 'ml' },
+  { id: 'equipo_practicas', nombre: 'Equipo de la zona de prácticas (votan todos los alumnos)', familia: 'zona de prácticas', tipo: 'equipo' },
   { id: 'btc_hold', nombre: 'Comprar y mantener Bitcoin', familia: 'referencia', tipo: 'hold' },
   { id: 'efectivo', nombre: 'Quedarse en efectivo', familia: 'referencia', tipo: 'cash' },
 ];
@@ -690,7 +691,7 @@ function apPaso(E, snap) {
     const w = apPesos(E);
     const M = activos.length;
     // las candidatas en prueba no reciben el reparto fijo (si no, se acercarían al peso medio sin ganar a nadie)
-    for (const ex of activos) E.lw[ex.id] = Math.log((1 - AP.REPARTO) * w[ex.id] + ((ex.tipo === 'lab' && !ex.aprobadaLab) || ex.tipo === 'ml' ? 1e-12 : AP.REPARTO / M));
+    for (const ex of activos) E.lw[ex.id] = Math.log((1 - AP.REPARTO) * w[ex.id] + ((ex.tipo === 'lab' && !ex.aprobadaLab) || ex.tipo === 'ml' || ex.tipo === 'equipo' ? 1e-12 : AP.REPARTO / M));
     const maxLw = Math.max(...activos.map((ex) => E.lw[ex.id]));
     for (const ex of activos) E.lw[ex.id] -= maxLw;
   }
@@ -705,11 +706,11 @@ function apPaso(E, snap) {
       X = E.expertos[ex.id] = { activo: true, desde: snap.t, st: apStats(), pos: {}, coste: 0, ultima: 0 };
       const vals = Object.values(E.lw);
       E.lw[ex.id] = vals.length ? Math.log(vals.reduce((a, b) => a + Math.exp(b), 0) / vals.length) : 0;
-      if ((ex.tipo === 'lab' && !ex.aprobadaLab) || ex.tipo === 'ml') E.lw[ex.id] += Math.log(Math.max(LAB_PESO_PRUEBA, 1e-9));
+      if ((ex.tipo === 'lab' && !ex.aprobadaLab) || ex.tipo === 'ml' || ex.tipo === 'equipo') E.lw[ex.id] += Math.log(Math.max(LAB_PESO_PRUEBA, 1e-9));
       apAlerta(E, snap.t, 'nuevo', ex.id, 'Empieza a aprender: ' + ex.nombre);
     }
     // banda sin operar: si la posición solo cambia un poco (menos del 25 %), se deja como estaba y no se pagan comisiones
-    if (ex.tipo === 'dir' || ex.tipo === 'copia' || ex.tipo === 'lab') {
+    if (ex.tipo === 'dir' || ex.tipo === 'copia' || ex.tipo === 'lab' || ex.tipo === 'equipo') {
       const objetivo = { ...nueva };
       for (const m of Object.keys(nueva)) { const o = X.pos[m]; if (o && Math.sign(o) === Math.sign(nueva[m]) && Math.abs(nueva[m] - o) < AP.BANDA * Math.abs(o)) nueva[m] = o; }
       // la banda no puede dejar la exposición bruta por encima del 100 % (p. ej. al entrar mercados nuevos)
@@ -798,6 +799,11 @@ function apPosiciones(E, ex, listas, habilidad, t) {
   const pos = {};
   if (ex.tipo === 'cash') return pos;
   if (ex.tipo === 'lab') return listas.length ? apLabPosiciones(E, ex, listas, t) : null;
+  if (ex.tipo === 'equipo') { // lo que votó el equipo de alumnos la hora anterior (zona de prácticas, v2.8.0)
+    if (!E.equipo || !E.equipo.pos || t - E.equipo.t > 3 * H1) return E.expertos[ex.id] ? {} : null;
+    for (const m of listas) if (E.equipo.pos[m]) pos[m] = E.equipo.pos[m];
+    return pos;
+  }
   if (ex.tipo === 'ml') {
     const M = E.ml;
     if (!M || !M.pos) return null;
@@ -907,7 +913,7 @@ function apMomentos(st) {
 function apInforme(E) {
   const pesos = apPesos(E);
   const tipo = Object.fromEntries(apListaExpertos(E).map((ex) => [ex.id, ex.tipo]));
-  const compite = (id) => tipo[id] === 'dir' || tipo[id] === 'copia' || tipo[id] === 'lab' || tipo[id] === 'ml';
+  const compite = (id) => tipo[id] === 'dir' || tipo[id] === 'copia' || tipo[id] === 'lab' || tipo[id] === 'ml' || tipo[id] === 'equipo';
   const filas = [];
   for (const ex of apListaExpertos(E)) {
     const X = E.expertos[ex.id];
@@ -1655,6 +1661,10 @@ const PR = {
   GRADUA_DSR: 0.95,
   MAX_GRADUADOS: 4,
   MAX_RETIRADOS: 80,
+  // v2.8.0: trabajo en equipo
+  EQUIPO_ETA: 10,            // cuánto se mueve el peso de cada alumno en el equipo según lo que gana o pierde cada hora
+  EQUIPO_REPARTO: 0.001,     // reparto fijo: nadie se queda en cero, para poder volver a confiar en él
+  MENTOR: 0.25,              // de los hijos, cuántos toman la idea de un buen alumno del otro grupo (con el riesgo de su grupo)
 };
 // las estrategias del sistema en la gramática común (la del laboratorio): de ahí parten los primeros alumnos
 const PR_BASES = [
@@ -1737,7 +1747,14 @@ function prUnoNuevo(P, t, maestros, grupo = 'normal') {
   const alto = grupo === 'arriesgado';
   for (let intento = 0; intento < 40; intento++) {
     if (maestros.length && prRng(P) >= PR.CURIOSIDAD) {
-      const padre = prElige(P, maestros);
+      const otro = maestros.filter((A) => prGrupo(A) !== grupo), mios = maestros.filter((A) => prGrupo(A) === grupo);
+      if (otro.length && (!mios.length || prRng(P) < PR.MENTOR)) { // se pasan ideas: la misma idea, con el riesgo de este grupo
+        const padre = prElige(P, otro);
+        const [riesgo, conc] = alto ? prRiesgoAlto(P) : [prElige(P, [1, 2]), null];
+        if (!prValido(padre.spec, riesgo, conc, grupo) || vivas.has(prClave(padre.spec, riesgo, conc))) continue;
+        return prNace(P, padre.spec, riesgo, t, padre, 'compañero', grupo, conc);
+      }
+      const padre = prElige(P, mios.length ? mios : maestros);
       let riesgo = padre.riesgo, conc = padre.conc == null ? null : padre.conc;
       if (prRng(P) < 0.25) { if (alto) [riesgo, conc] = prRiesgoAlto(P); else riesgo = prElige(P, PR.RIESGOS.filter((r) => r !== padre.riesgo)); }
       const cambiaRiesgo = riesgo !== padre.riesgo || conc !== (padre.conc == null ? null : padre.conc);
@@ -1824,7 +1841,10 @@ function prMaestros(P, grupo = 'normal') {
 }
 function prRellena(P, t) {
   for (const g of ['normal', 'arriesgado']) {
-    const maestros = prMaestros(P, g);
+    // sus mejores y, como mentores, los dos mejores juzgados del otro grupo que ganan
+    const otro = g === 'normal' ? 'arriesgado' : 'normal';
+    const mentores = P.alumnos.filter((A) => prGrupo(A) === otro && A.st.n >= PR.JUZGAR_H && prT(A) > 0).sort((a, b) => prT(b) - prT(a)).slice(0, 2);
+    const maestros = prMaestros(P, g).concat(mentores);
     while (P.alumnos.filter((A) => prGrupo(A) === g).length < prCupo(g)) if (!prUnoNuevo(P, t, maestros, g)) break;
   }
 }
@@ -1879,6 +1899,39 @@ function prFoto(E) {
   return { t: E.t, px, f };
 }
 // Una hora en vivo, después de apPaso. antes = precios y funding con los que empezó la hora (prFoto antes de apPaso).
+// ---- el equipo (v2.8.0): todos los alumnos votan una cartera común; pesa más quien más acierta ----
+// Pesos multiplicativos sobre lo que gana cada alumno por unidad de riesgo (su resultado / su ×), con un reparto fijo.
+// La cartera del equipo es la media ponderada de las posiciones de los alumnos divididas por su ×: como mucho el 100 %.
+function prEquipoNuevo(t) { return { lw: {}, st: apStats(), pos: {}, coste: 0, tUlt: null, desde: t }; }
+function prEquipoPesos(Q, ids) {
+  const v = ids.filter((id) => Q.lw[id] != null);
+  const s = v.reduce((a, id) => a + Math.exp(Q.lw[id]), 0);
+  const w = {};
+  for (const id of v) w[id] = s > 0 ? Math.exp(Q.lw[id]) / s : 0;
+  return w;
+}
+function prEquipoAprende(P, r) { // r: {id: resultado de la hora por unidad de riesgo}
+  const Q = P.equipo, ids = P.alumnos.map((A) => A.id);
+  for (const id of Object.keys(Q.lw)) if (!ids.includes(id)) delete Q.lw[id]; // los que se fueron
+  const conPeso = ids.filter((id) => Q.lw[id] != null);
+  const media = conPeso.length ? Math.log(conPeso.reduce((a, id) => a + Math.exp(Q.lw[id]), 0) / conPeso.length) : 0;
+  for (const id of ids) if (Q.lw[id] == null) Q.lw[id] = media; // los nuevos entran con el peso medio
+  for (const id of ids) if (r[id] != null) Q.lw[id] += PR.EQUIPO_ETA * Math.log(1 + Math.max(r[id], -0.99));
+  const w = prEquipoPesos(Q, ids), N = ids.length;
+  for (const id of ids) Q.lw[id] = Math.log((1 - PR.EQUIPO_REPARTO) * w[id] + PR.EQUIPO_REPARTO / N);
+  const mx = Math.max(...ids.map((id) => Q.lw[id]));
+  for (const id of ids) Q.lw[id] -= mx;
+}
+function prEquipoVota(P) {
+  const Q = P.equipo, w = prEquipoPesos(Q, P.alumnos.map((A) => A.id));
+  const pos = {};
+  for (const A of P.alumnos) { const k = (w[A.id] || 0) / A.riesgo; if (!k) continue; for (const [m, q] of Object.entries(A.pos)) pos[m] = (pos[m] || 0) + k * q; }
+  for (const m of Object.keys(pos)) if (Math.abs(pos[m]) < 1e-6) delete pos[m];
+  Q.coste = apGiro(pos, Q.pos) * AP.COMISION;
+  Q.pos = pos;
+  return w;
+}
+
 // Arriesgado concentrado: las 'conc' monedas de señal más fuerte entre las que la estrategia operaría, con todo el riesgo
 // repartido entre ellas y sin ajustar por volatilidad.
 function prConcentra(E, A, base) {
@@ -1899,15 +1952,21 @@ function prPaso(E, P, snap, antes) {
     P.v = 2;
     prSembrarArriesgados(P, t);
   }
+  if (!P.equipo) P.equipo = prEquipoNuevo(t); // v2.8.0
   const horas = antes.t == null ? 1 : Math.max(1, Math.round((t - antes.t) / H1));
   const out = { quiebras: [], graduados: [], retirados: 0 };
+  const porRiesgo = {};
+  const resultado = (pos) => { let r = 0; for (const [m, q] of Object.entries(pos)) { const a = antes.px[m], b = snap.px[m]; if (a > 0 && b > 0) r += q * (b / a - 1 - (antes.f[m] || 0) * horas); } return r; };
   for (const A of P.alumnos) { // 1) cobrar o pagar la hora que acaba
     if (A.tUlt == null) continue;
-    let r = 0;
-    for (const [m, q] of Object.entries(A.pos)) { const a = antes.px[m], b = snap.px[m]; if (a > 0 && b > 0) r += q * (b / a - 1 - (antes.f[m] || 0) * horas); }
+    let r = resultado(A.pos);
     r -= A.coste || 0; A.coste = 0;
     apSuma(A.st, Math.max(-0.99, r));
+    porRiesgo[A.id] = r / A.riesgo;
   }
+  const Q = P.equipo;
+  if (Q.tUlt != null) { apSuma(Q.st, Math.max(-0.99, resultado(Q.pos) - (Q.coste || 0))); Q.coste = 0; } // el equipo cobra su hora
+  prEquipoAprende(P, porRiesgo);
   for (const A of P.alumnos.slice()) if (A.st.log <= PR.QUIEBRA) { out.quiebras.push(prNombre(A)); prRetira(P, A, t, 'quiebra'); } // 2) quiebras
   if (t - P.ronda >= PR.RONDA_H * H1) out.retirados = prRonda(P, t); // 3) ronda
   prRellena(P, t);
@@ -1928,6 +1987,9 @@ function prPaso(E, P, snap, antes) {
     A.coste = apGiro(nueva, A.pos) * AP.COMISION;
     A.pos = nueva; A.tUlt = t;
   }
+  prEquipoAprende(P, {}); // los que acaban de entrar, con el peso medio
+  prEquipoVota(P); Q.tUlt = t; // el equipo vota su cartera
+  E.equipo = { t, pos: { ...Q.pos } }; // y la ofrece al sistema principal (experto «equipo_practicas»)
   out.graduados = prGraduar(E, P, t); // 5) graduación
   P.t = t;
   return out;
@@ -1968,13 +2030,22 @@ async function prVista(env, v) {
   await apTablas(env);
   const P = await prCargar(env);
   if (!P) return { rows: [], nota: 'La zona de prácticas abre en la próxima hora en vivo.' };
-  const nota = 'Zona de prácticas, en papel: ' + PR.ALUMNOS + ' alumnos normales (variantes de las estrategias del sistema, con riesgo ×1, ×2 o ×3) y ' + PR.ARRIESGADOS + ' arriesgados (×5 o ×10, o todo en 1 o 3 monedas sin ajustar por volatilidad; cada grupo compite por separado) practican cada hora con su propio dinero de prácticas, con comisiones y funding. Cada ' + PR.RONDA_H + ' h se retira la cuarta parte peor de los que llevan ' + PR.JUZGAR_H + ' h (salvo los que van con t ≥ ' + PR.SALVA_T + '); quien pierde la mitad, quiebra. Las plazas libres son para hijos de los mejores (un cambio) o para ideas nuevas lejos de lo ya probado. Se gradúa quien gana un mes en vivo con un Sharpe deflactado de más de ' + PR.GRADUA_DSR + ' contando todos los alumnos que han existido; entonces entra en el sistema con poco peso. tStat: t de su rentabilidad hora a hora (por encima de 2, poco probable que sea suerte). No mueve dinero ni es una recomendación.';
+  const nota = 'Zona de prácticas, en papel: ' + PR.ALUMNOS + ' alumnos normales (variantes de las estrategias del sistema, con riesgo ×1, ×2 o ×3) y ' + PR.ARRIESGADOS + ' arriesgados (×5 o ×10, o todo en 1 o 3 monedas sin ajustar por volatilidad; cada grupo compite por separado) practican cada hora con su propio dinero de prácticas, con comisiones y funding. Cada ' + PR.RONDA_H + ' h se retira la cuarta parte peor de los que llevan ' + PR.JUZGAR_H + ' h (salvo los que van con t ≥ ' + PR.SALVA_T + '); quien pierde la mitad, quiebra. Las plazas libres son para hijos de los mejores (un cambio), para ideas que funcionan en el otro grupo (con el riesgo de este) o para ideas nuevas lejos de lo ya probado. Trabajan en equipo: todos votan una cartera común en la que pesa más quien más acierta por unidad de riesgo; esa cartera compite también en el sistema principal. Se gradúa quien gana un mes en vivo con un Sharpe deflactado de más de ' + PR.GRADUA_DSR + ' contando todos los alumnos que han existido; entonces entra en el sistema con poco peso. tStat: t de su rentabilidad hora a hora (por encima de 2, poco probable que sea suerte). No mueve dinero ni es una recomendación.';
   if (v === 'practicas_retirados') return { rows: P.retirados.slice().reverse().map((r) => ({ ...r, motivo: PR_MOTIVOS[r.motivo] || r.motivo, spec: undefined })), nota };
   if (v === 'practicas_lecciones') { const L = prLecciones(P); return { rows: L.rows, frases: L.frases, nota: 'Lo que dejan los alumnos juzgados (al menos ' + PR.JUZGAR_H + ' h), vivos y retirados, agrupado por cada decisión. Con pocos alumnos o pocas horas, las diferencias pueden ser suerte.' }; }
-  const filas = P.alumnos.map((A) => ({ ...prFicha(A, null), estado: prEstado(A), dsr: A.dsr == null ? null : A.dsr })).sort((a, b) => (b.horas >= PR.JUZGAR_H) - (a.horas >= PR.JUZGAR_H) || b.tStat - a.tStat);
+  const wEq = P.equipo ? prEquipoPesos(P.equipo, P.alumnos.map((A) => A.id)) : {};
+  const filas = P.alumnos.map((A) => ({ ...prFicha(A, null), estado: prEstado(A), dsr: A.dsr == null ? null : A.dsr, pesoEquipoPct: (wEq[A.id] || 0) * 100 })).sort((a, b) => (b.horas >= PR.JUZGAR_H) - (a.horas >= PR.JUZGAR_H) || b.tStat - a.tStat);
   const proxima = P.ronda + PR.RONDA_H * H1;
   const gr = (P.cuenta.grupos || {}).arriesgado || { retirados: 0, quiebras: 0 };
-  return { rows: filas, resumen: { alumnos: P.alumnos.length, arriesgados: P.alumnos.filter((A) => prGrupo(A) === 'arriesgado').length, retiradosArriesgados: gr.retirados, quiebrasArriesgados: gr.quiebras, probadas: P.probadas, rondas: P.rondas, proximaRonda: iso(proxima), retirados: P.cuenta.retirados, quiebras: P.cuenta.quiebras, graduados: P.graduados, abierta: iso(P.creado), hasta: P.t ? iso(P.t) : null }, nota };
+  let equipo = null;
+  if (P.equipo) {
+    const Q = P.equipo, mq = apMomentos(Q.st);
+    const pesan = P.alumnos.map((A) => ({ alumno: prNombre(A), id: A.id, pesoPct: (wEq[A.id] || 0) * 100 })).sort((a, b) => b.pesoPct - a.pesoPct).slice(0, 3);
+    const juz = P.alumnos.filter((A) => A.st.n > 0);
+    const mediaAlumnos = juz.length ? juz.reduce((a, A) => a + (Math.exp(A.st.log) - 1) * 100 / A.riesgo, 0) / juz.length : null;
+    equipo = { desde: iso(Q.desde), horas: mq.n, rentPct: (Math.exp(Q.st.log) - 1) * 100, tStat: mq.sr * Math.sqrt(mq.n), caidaMaxPct: Q.st.dd * 100, exposicionPct: Object.values(Q.pos).reduce((a, b) => a + Math.abs(b), 0) * 100, mediaAlumnosPorRiesgoPct: mediaAlumnos, quienesPesan: pesan };
+  }
+  return { rows: filas, equipo, resumen: { alumnos: P.alumnos.length, arriesgados: P.alumnos.filter((A) => prGrupo(A) === 'arriesgado').length, retiradosArriesgados: gr.retirados, quiebrasArriesgados: gr.quiebras, probadas: P.probadas, rondas: P.rondas, proximaRonda: iso(proxima), retirados: P.cuenta.retirados, quiebras: P.cuenta.quiebras, graduados: P.graduados, abierta: iso(P.creado), hasta: P.t ? iso(P.t) : null }, nota };
 }
 
 async function aprendizaje({ vista } = {}, env) {
