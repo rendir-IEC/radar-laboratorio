@@ -2,7 +2,7 @@
 
 > Investigación en papel con cierres diarios públicos; no es una recomendación.
 
-- Generado: 2026-11-25T15:04:18Z. Mercados con datos: 25 de 25.
+- Generado: 2026-11-26T04:23:04Z. Mercados con datos: 25 de 25.
 - Regla (fijada antes de mirar): tendencia de 12 semanas dividida por la volatilidad; se mantiene una semana. Coste 0,10 % por operación.
 
 ## ¿Funciona?
@@ -35,30 +35,30 @@ Todos los mercados juntos (cada mercado-semana una vez): siguiendo la señal al 
 
 | Puesto | Mercado | Señal | Puntuación | 12 semanas | Acierto histórico | Siguiendo la señal, por semana | Cuando estaba así, la semana siguiente | Desde |
 |---|---|---|---|---|---|---|---|---|
-| 1 ★ | Dólar / yen | al alza | 0.69 | +2.3 % | 50.6 % | 0.019 % | 0.073 % | 1997-05-02 |
-| 2 ★ | Petróleo Brent | al alza | 0.22 | +5.3 % | 50.1 % | 0.02 % | 0.217 % | 2010-12-03 |
-| 3 ★ | Bonos de EE. UU. a 20 años | al alza | 0.20 | +1.0 % | 48.4 % | 0.022 % | 0.108 % | 2003-01-31 |
-| 4 | Petróleo WTI | a la baja | -0.08 | -1.9 % | 51.3 % | 0.15 % | -0.162 % | 2006-10-13 |
-| 5 | Gas natural | a la baja | -0.20 | -3.1 % | 49.4 % | -0.063 % | -0.286 % | 2007-10-19 |
-| 6 | Avalanche | a la baja | -0.38 | -13.3 % | 51.9 % | 0.375 % | 0.155 % | 2021-03-26 |
-| 7 | DAX alemán | a la baja | -0.59 | -4.8 % | 51.7 % | -0.001 % | 0.247 % | 1988-07-01 |
-| 8 | Litecoin | a la baja | -0.71 | -20.1 % | 48.9 % | 1.028 % | 0.327 % | 2015-03-20 |
-| 9 | Nikkei 225 | a la baja | -0.72 | -9.8 % | 52.5 % | 0.09 % | 0.023 % | 1970-07-10 |
-| 10 | Chainlink | a la baja | -0.90 | -25.2 % | 51.0 % | 0.324 % | 1.456 % | 2018-05-11 |
-| 11 | Cardano | a la baja | -0.93 | -34.0 % | 53.0 % | 1.418 % | -0.589 % | 2018-05-11 |
-| 12 | Euro Stoxx 50 | a la baja | -1.01 | -7.2 % | 48.5 % | -0.232 % | 0.331 % | 2007-09-28 |
-| 13 | S&P 500 | a la baja | -1.06 | -8.4 % | 54.3 % | 0.034 % | 0.3 % | 1993-07-30 |
-| 14 | Ethereum | a la baja | -1.18 | -32.5 % | 49.0 % | 0.437 % | 0.378 % | 2018-05-11 |
-| 15 | Nasdaq 100 | a la baja | -1.22 | -13.9 % | 55.2 % | 0.128 % | 0.124 % | 1999-09-10 |
-| 16 | Bitcoin | a la baja | -1.23 | -26.7 % | 53.5 % | 1.148 % | 0.16 % | 2015-03-20 |
-| 17 | XRP | a la baja | -1.23 | -35.1 % | 44.3 % | -1.166 % | 1.955 % | 2018-05-11 |
-| 18 | Solana | a la baja | -1.25 | -33.6 % | 50.8 % | 1.147 % | 1.072 % | 2020-10-09 |
-| 19 | Libra / dólar | a la baja | -1.25 | -3.5 % | 49.5 % | -0.024 % | -0.027 % | 2004-06-04 |
-| 20 | Dogecoin | a la baja | -1.48 | -36.8 % | 48.5 % | 2.048 % | 0.711 % | 2018-05-11 |
-| 21 | BNB | a la baja | -1.52 | -25.4 % | 49.0 % | 0.762 % | 0.87 % | 2018-05-11 |
-| 22 | Oro | a la baja | -2.05 | -21.8 % | 50.7 % | 0.043 % | 0.191 % | 2005-05-20 |
-| 23 | Cobre | a la baja | -2.29 | -20.5 % | 45.7 % | -0.121 % | 0.195 % | 2012-05-18 |
-| 24 | Plata | a la baja | -2.54 | -41.0 % | 48.5 % | -0.095 % | 0.308 % | 2006-10-27 |
-| 25 | Euro / dólar | a la baja | -2.58 | -5.9 % | 51.4 % | -0.008 % | -0.009 % | 2004-06-04 |
+| 1 ★ | Dólar / yen | al alza | 0.66 | +2.2 % | 50.6 % | 0.019 % | 0.073 % | 1997-05-02 |
+| 2 ★ | Petróleo Brent | al alza | 0.25 | +5.9 % | 50.1 % | 0.02 % | 0.217 % | 2010-12-03 |
+| 3 ★ | Bonos de EE. UU. a 20 años | al alza | 0.17 | +0.9 % | 48.4 % | 0.022 % | 0.108 % | 2003-01-31 |
+| 4 | Petróleo WTI | a la baja | -0.06 | -1.5 % | 51.3 % | 0.15 % | -0.162 % | 2006-10-13 |
+| 5 | Gas natural | a la baja | -0.16 | -2.5 % | 49.4 % | -0.063 % | -0.286 % | 2007-10-19 |
+| 6 | Avalanche | a la baja | -0.27 | -9.5 % | 51.9 % | 0.375 % | 0.155 % | 2021-03-26 |
+| 7 | Litecoin | a la baja | -0.45 | -13.6 % | 48.9 % | 1.028 % | 0.327 % | 2015-03-20 |
+| 8 | DAX alemán | a la baja | -0.64 | -5.2 % | 51.7 % | -0.001 % | 0.247 % | 1988-07-01 |
+| 9 | Chainlink | a la baja | -0.71 | -20.8 % | 51.0 % | 0.324 % | 1.456 % | 2018-05-11 |
+| 10 | Cardano | a la baja | -0.78 | -29.6 % | 53.0 % | 1.418 % | -0.589 % | 2018-05-11 |
+| 11 | S&P 500 | a la baja | -0.81 | -6.7 % | 54.3 % | 0.034 % | 0.3 % | 1993-07-30 |
+| 12 | Nikkei 225 | a la baja | -0.83 | -11.2 % | 52.5 % | 0.09 % | 0.023 % | 1970-07-10 |
+| 13 | Nasdaq 100 | a la baja | -0.99 | -11.7 % | 55.2 % | 0.128 % | 0.124 % | 1999-09-10 |
+| 14 | Bitcoin | a la baja | -1.06 | -23.5 % | 53.5 % | 1.148 % | 0.16 % | 2015-03-20 |
+| 15 | XRP | a la baja | -1.06 | -31.5 % | 44.3 % | -1.166 % | 1.955 % | 2018-05-11 |
+| 16 | Ethereum | a la baja | -1.10 | -30.8 % | 49.0 % | 0.437 % | 0.378 % | 2018-05-11 |
+| 17 | Solana | a la baja | -1.10 | -30.2 % | 50.8 % | 1.147 % | 1.072 % | 2020-10-09 |
+| 18 | Euro Stoxx 50 | a la baja | -1.10 | -7.8 % | 48.5 % | -0.232 % | 0.331 % | 2007-09-28 |
+| 19 | Libra / dólar | a la baja | -1.14 | -3.2 % | 49.5 % | -0.024 % | -0.027 % | 2004-06-04 |
+| 20 | Dogecoin | a la baja | -1.28 | -33.0 % | 48.5 % | 2.048 % | 0.711 % | 2018-05-11 |
+| 21 | BNB | a la baja | -1.30 | -22.5 % | 49.0 % | 0.762 % | 0.87 % | 2018-05-11 |
+| 22 | Oro | a la baja | -1.79 | -19.5 % | 50.7 % | 0.043 % | 0.191 % | 2005-05-20 |
+| 23 | Cobre | a la baja | -2.10 | -18.6 % | 45.7 % | -0.121 % | 0.195 % | 2012-05-18 |
+| 24 | Plata | a la baja | -2.29 | -38.0 % | 48.5 % | -0.095 % | 0.308 % | 2006-10-27 |
+| 25 | Euro / dólar | a la baja | -2.49 | -5.7 % | 51.4 % | -0.008 % | -0.009 % | 2004-06-04 |
 
 Fuentes: BTC: yahoo, ETH: yahoo, SOL: yahoo, XRP: yahoo, BNB: yahoo, DOGE: yahoo, ADA: yahoo, LINK: yahoo, AVAX: yahoo, LTC: yahoo, ORO: yahoo, PLATA: yahoo, WTI: yahoo, BRENT: yahoo, GAS: yahoo, COBRE: yahoo, SP500: yahoo, NASDAQ100: yahoo, DAX: yahoo, EUROSTOXX50: yahoo, NIKKEI: yahoo, BONOS: yahoo, EURUSD: yahoo, USDJPY: yahoo, GBPUSD: yahoo
