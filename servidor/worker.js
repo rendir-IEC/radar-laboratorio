@@ -16,7 +16,7 @@
 // y un disparador Cron cada minuto (* * * * *). Primero repasa unas 5000 horas de historia, 16 por minuto;
 // después aprende cada hora en vivo. Todo en papel: no mueve dinero.
 
-const VERSION = '2.6.1';
+const VERSION = '2.7.0';
 const HL = 'https://api.hyperliquid.xyz/info';
 const BINANCE = 'https://data-api.binance.vision/api/v3';
 const KRAKEN = 'https://api.kraken.com/0/public';
@@ -326,7 +326,14 @@ const AP = {
   // Nº de pruebas para el Sharpe deflactado: como mínimo, las variantes que se miraron al diseñar los expertos (no solo
   // los 22 que quedaron). Criterio de quien firma; cuando entren las estrategias del laboratorio, su nº real de pruebas.
   PRUEBAS: 100,
+  // v2.7.0: también oro, plata, petróleo, gas, cobre, S&P 500, Nasdaq 100, euro y yen, por sus perpetuos de trade.xyz en
+  // Hyperliquid (dex «xyz»). Siguen al mercado de referencia cuando está abierto; fuera de horario el precio es interno.
+  // Sin flujo de órdenes, sin cobro del funding y sin bot de Kraken: solo para los expertos de dirección y la zona de prácticas.
+  XYZ: ['xyz:GOLD', 'xyz:SILVER', 'xyz:CL', 'xyz:NATGAS', 'xyz:COPPER', 'xyz:SP500', 'xyz:XYZ100', 'xyz:EUR', 'xyz:JPY'],
 };
+AP.MERCADOS = AP.MONEDAS.concat(AP.XYZ);
+const XYZ_NOMBRE = { 'xyz:GOLD': 'ORO', 'xyz:SILVER': 'PLATA', 'xyz:CL': 'WTI', 'xyz:NATGAS': 'GAS', 'xyz:COPPER': 'COBRE', 'xyz:SP500': 'SP500', 'xyz:XYZ100': 'NASDAQ100', 'xyz:EUR': 'EURUSD', 'xyz:JPY': 'USDJPY' };
+const apEtiqueta = (m) => XYZ_NOMBRE[m] || m;
 
 // Expertos: cada uno da, para cada moneda, una señal entre -1 (vender) y +1 (comprar).
 const AP_EXPERTOS = [
@@ -587,7 +594,7 @@ function apPaso(E, snap) {
   const EXPERTOS = apListaExpertos(E);
   // 1) resultado de la hora que acaba para cada experto
   const ret = {};
-  for (const m of AP.MONEDAS) {
+  for (const m of AP.MERCADOS) {
     const c = E.monedas[m];
     const p = snap.px[m];
     ret[m] = c && c.px && p ? p / c.px - 1 : 0;
@@ -626,7 +633,7 @@ function apPaso(E, snap) {
     }
   }
   // 2) memoria del mercado
-  for (const m of AP.MONEDAS) {
+  for (const m of AP.MERCADOS) {
     const p = snap.px[m];
     if (!(p > 0)) continue;
     const c = E.monedas[m] || (E.monedas[m] = apMoneda());
@@ -688,7 +695,7 @@ function apPaso(E, snap) {
     for (const ex of activos) E.lw[ex.id] -= maxLw;
   }
   // 4) posiciones nuevas de cada experto (y activar los que ya tienen datos suficientes)
-  const listas = AP.MONEDAS.filter((m) => E.monedas[m] && E.monedas[m].n >= 720 && snap.px[m] > 0);
+  const listas = AP.MERCADOS.filter((m) => E.monedas[m] && E.monedas[m].n >= 720 && snap.px[m] > 0);
   const habilidad = apHabilidades(E);
   for (const ex of EXPERTOS) {
     let X = E.expertos[ex.id];
@@ -729,11 +736,11 @@ function apPaso(E, snap) {
   E.carryPos = combC;
   // aviso solo al cruzar umbrales con histéresis: entra a partir del 5 % del dinero y sale por debajo del 1 %
   E.senal = E.senal || {};
-  for (const m of AP.MONEDAS) {
+  for (const m of AP.MERCADOS) {
     const v = comb[m] || 0;
     const antes = E.senal[m] || 0;
     const ahora = v >= 0.05 ? 1 : v <= -0.05 ? -1 : Math.abs(v) < 0.01 ? 0 : antes;
-    if (ahora !== antes && E.horas > 0) apAlerta(E, snap.t, 'senal', m, m + ': la cartera en papel pasa a ' + (ahora > 0 ? 'comprar' : ahora < 0 ? 'vender' : 'no tener') + ' (' + (v * 100).toFixed(1) + ' % del dinero; no es una recomendación)');
+    if (ahora !== antes && E.horas > 0) apAlerta(E, snap.t, 'senal', m, apEtiqueta(m) + ': la cartera en papel pasa a ' + (ahora > 0 ? 'comprar' : ahora < 0 ? 'vender' : 'no tener') + ' (' + (v * 100).toFixed(1) + ' % del dinero; no es una recomendación)');
     E.senal[m] = ahora;
   }
   E.posSistema = comb; E.carrySistema = carry;
@@ -1079,8 +1086,22 @@ async function apCiclo(env) {
     enDex.add(a.name);
     if (AP.MONEDAS.includes(a.name)) { if (precio > 0) p[a.name] = precio; const fr = num(c.funding); if (fr != null) f[a.name] = fr; }
   });
+  // oro, petróleo, índices y divisas: perpetuos de trade.xyz (+1 petición); si falla, esa hora aprenden solo las cripto
+  try {
+    const [mx, cx] = await hl({ type: 'metaAndAssetCtxs', dex: 'xyz' });
+    ((mx && mx.universe) || []).forEach((a, i) => {
+      const c = cx && cx[i];
+      if (!c || a.isDelisted) return;
+      const nombre = String(a.name).includes(':') ? a.name : 'xyz:' + a.name;
+      enDex.add(nombre);
+      if (!AP.XYZ.includes(nombre)) return;
+      const precio = num(c.markPx);
+      if (precio > 0) p[nombre] = precio;
+      const fr = num(c.funding); if (fr != null) f[nombre] = fr;
+    });
+  } catch (e) { console.log('xyz: ' + (e.message || e)); for (const m of AP.XYZ) enDex.add(m); }
   // los mercados nuevos se calientan en otros minutos (apCalentarMinuto), no en este, que ya es el más cargado
-  E.fueraDex = AP.MONEDAS.filter((m) => !enDex.has(m));
+  E.fueraDex = AP.MERCADOS.filter((m) => !enDex.has(m));
   const carteras = {};
   const seguidas = apSeguidas(E, ahora);
   apDejarDeSeguir(E, seguidas, ahora);
@@ -1111,7 +1132,7 @@ async function apCalentar(E, limite, enDex) {
   if (E.t == null) return [];
   // por turnos: una moneda que no puede calentarse (p. ej. con menos de 720 h de historia) no bloquea a las demás
   const intentos = E.calentar || (E.calentar = {});
-  const faltan = AP.MONEDAS.filter((m) => (!E.monedas[m] || E.monedas[m].n < AP.HORAS_MIN) && (!enDex || enDex.has(m)))
+  const faltan = AP.MERCADOS.filter((m) => (!E.monedas[m] || E.monedas[m].n < AP.HORAS_MIN) && (!enDex || enDex.has(m)))
     .sort((a, b) => (intentos[a] || 0) - (intentos[b] || 0)).slice(0, limite);
   const hechos = [];
   for (const m of faltan) {
@@ -1119,7 +1140,7 @@ async function apCalentar(E, limite, enDex) {
     try {
       const [v, fh] = await Promise.all([
         hl({ type: 'candleSnapshot', req: { coin: m, interval: '1h', startTime: E.t - 800 * H1, endTime: E.t } }),
-        hl({ type: 'fundingHistory', coin: m, startTime: E.t - 200 * H1, endTime: E.t }),
+        hl({ type: 'fundingHistory', coin: m, startTime: E.t - 200 * H1, endTime: E.t }).catch(() => []), // sin funding se calienta igual
       ]);
       const cierres = (Array.isArray(v) ? v : []).map((k) => [Number(k.t) + H1, num(k.c)]).filter((x) => x[0] <= E.t && x[1] > 0).sort((a, b) => a[0] - b[0]);
       if (cierres.length < AP.HORAS_MIN) continue;
@@ -1138,7 +1159,7 @@ async function apCalentar(E, limite, enDex) {
       hechos.push(m);
     } catch (e) { /* se reintenta la hora siguiente */ }
   }
-  if (hechos.length) apAlerta(E, Math.floor(Date.now() / 60e3) * 60e3, 'mercados', hechos.join(','), 'Se incorporan al aprendizaje: ' + hechos.join(', ') + ' (con sus últimas 800 horas de memoria)');
+  if (hechos.length) apAlerta(E, Math.floor(Date.now() / 60e3) * 60e3, 'mercados', hechos.join(','), 'Se incorporan al aprendizaje: ' + hechos.map(apEtiqueta).join(', ') + ' (con sus últimas 800 horas de memoria)');
   return hechos;
 }
 
@@ -1164,7 +1185,7 @@ async function apCalentarMinuto(env) {
   const E = await apCargar(env);
   if (E.t == null) return { ok: true, modo: 'nada que calentar' };
   const fuera = new Set(E.fueraDex || []);
-  if (!AP.MONEDAS.some((m) => (!E.monedas[m] || E.monedas[m].n < AP.HORAS_MIN) && !fuera.has(m))) return { ok: true, modo: 'nada que calentar' };
+  if (!AP.MERCADOS.some((m) => (!E.monedas[m] || E.monedas[m].n < AP.HORAS_MIN) && !fuera.has(m))) return { ok: true, modo: 'nada que calentar' };
   const tAntes = E.t;
   const hechos = await apCalentar(E, 1, { has: (m) => !fuera.has(m) });
   await env.DB.prepare('UPDATE ap_estado SET json = ?1 WHERE id = ?2 AND t = ?3').bind(JSON.stringify(E), 'principal', tAntes).run();
@@ -1890,7 +1911,7 @@ function prPaso(E, P, snap, antes) {
   for (const A of P.alumnos.slice()) if (A.st.log <= PR.QUIEBRA) { out.quiebras.push(prNombre(A)); prRetira(P, A, t, 'quiebra'); } // 2) quiebras
   if (t - P.ronda >= PR.RONDA_H * H1) out.retirados = prRonda(P, t); // 3) ronda
   prRellena(P, t);
-  const listas = AP.MONEDAS.filter((m) => E.monedas[m] && E.monedas[m].n >= AP.HORAS_MIN && snap.px[m] > 0);
+  const listas = AP.MERCADOS.filter((m) => E.monedas[m] && E.monedas[m].n >= AP.HORAS_MIN && snap.px[m] > 0);
   for (const A of P.alumnos) { // 4) posiciones nuevas
     const sp = A.spec;
     let nueva;
@@ -1982,7 +2003,7 @@ async function aprendizaje({ vista } = {}, env) {
   const pct = (log) => (Math.exp(log) - 1) * 100;
   if (v === 'expertos') return { rows: apInforme(E), nota: 'Peso: cuánto confía hoy el sistema en cada experto. rentPct, sharpeAnual y caidaMaxPct incluyen el repaso de la historia, una simulación sobre los mismos datos con los que se diseñaron los expertos: no demuestran nada. Las columnas «Vivo» cuentan solo horas en vivo. Sharpe deflactado (solo en vivo): probabilidad estimada de que el Sharpe real sea positivo, corrigiendo por al menos ' + AP.PRUEBAS + ' pruebas; supone horas independientes. Asciende con más de 0,95 y al menos 720 horas en vivo («aprendiendo» hasta entonces). Cobro del funding, comprar y mantener y efectivo son referencias: el cobro del funding se modela sin riesgo de precio.' };
   if (v === 'posiciones') {
-    const rows = AP.MONEDAS.map((m) => { const x = (E.posSistema || {})[m] || 0; const s = (E.senal || {})[m] || 0; return { moneda: m, posicionPct: x * 100, senal: s > 0 ? 'comprar' : s < 0 ? 'vender' : 'nada', precio: E.monedas[m] ? E.monedas[m].px : null }; });
+    const rows = AP.MERCADOS.map((m) => { const x = (E.posSistema || {})[m] || 0; const s = (E.senal || {})[m] || 0; return { moneda: apEtiqueta(m), posicionPct: x * 100, senal: s > 0 ? 'comprar' : s < 0 ? 'vender' : 'nada', precio: E.monedas[m] ? E.monedas[m].px : null }; });
     rows.push({ moneda: 'Cobro del funding', posicionPct: (E.carrySistema || 0) * 100, senal: (E.carrySistema || 0) > 0.05 ? 'mantener' : 'nada', precio: null });
     return { rows, hora: E.t ? iso(E.t) : null, nota: 'Posición combinada del sistema en papel, en % del dinero. Positivo: comprado; negativo: vendido. Exposición direccional como mucho del 100 % del dinero; el cobro del funding usa 2/3 en contado y un corto de perpetuo del mismo tamaño con 1/3 de margen (2x en esa pata). No es una recomendación de inversión.' };
   }

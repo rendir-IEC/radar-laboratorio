@@ -22,7 +22,7 @@ let semilla = 12345;
 const azar = () => { semilla = (semilla + 0x6D2B79F5) | 0; let t = Math.imul(semilla ^ (semilla >>> 15), 1 | semilla); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
 const normal = () => { const u = Math.max(azar(), 1e-12), v = azar(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v); };
 
-check(/^2\.6\.[1-9]/.test(W.VERSION), 'versión ' + W.VERSION);
+check(/^2\.(6\.[1-9]|([7-9]|\d\d)\.\d+)/.test(W.VERSION), 'versión ' + W.VERSION);
 
 // 1) nacimiento de la zona
 const T0 = Date.UTC(2026, 10, 26, 13);

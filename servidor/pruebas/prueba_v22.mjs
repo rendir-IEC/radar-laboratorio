@@ -44,11 +44,12 @@ globalThis.fetch = async (url, init = {}) => {
   if (u.host === 'ntfy.sh') { porTipo.ntfy = (porTipo.ntfy || 0) + 1; return new Response('{}', { status: 200 }); }
   if (u.host === 'raw.githubusercontent.com') { porTipo.lab = (porTipo.lab || 0) + 1; return resp(LAB_JSON); }
   if (u.host !== 'api.hyperliquid.xyz') throw new Error('Host no simulado ' + u.host);
-  if (JSON.parse(init.body).type === 'metaAndAssetCtxs' && HUECO_ETH(AHORA)) { const r = await metaOriginal(url, init); const j = await r.json(); const i = j[0].universe.findIndex((a) => a.name === 'ETH'); j[1][i].markPx = ''; return resp(j); }
+  if (JSON.parse(init.body).type === 'metaAndAssetCtxs' && !JSON.parse(init.body).dex && HUECO_ETH(AHORA)) { const r = await metaOriginal(url, init); const j = await r.json(); const i = j[0].universe.findIndex((a) => a.name === 'ETH'); j[1][i].markPx = ''; return resp(j); }
   const b = JSON.parse(init.body);
   porTipo[b.type] = (porTipo[b.type] || 0) + 1;
   if (b.type === 'candleSnapshot') { const out = []; for (let t = Math.ceil(b.req.startTime / H) * H; t <= b.req.endTime; t += H) out.push({ t, c: String(precio(b.req.coin, t + H)) }); return resp(out); }
   if (b.type === 'fundingHistory') { const out = []; for (let t = Math.ceil(b.startTime / H) * H; t <= b.endTime && out.length < 500; t += H) out.push({ coin: b.coin, fundingRate: String(0.0000125 + 0.00001 * Math.sin(t / H / 30)), time: t }); return resp(out); }
+  if (b.type === 'metaAndAssetCtxs' && b.dex === 'xyz') { porTipo.xyz = (porTipo.xyz || 0) + 1; const xs = ['GOLD', 'SILVER', 'CL', 'NATGAS', 'COPPER', 'SP500', 'XYZ100', 'EUR', 'JPY', 'TSLA']; return resp([{ universe: xs.map((n) => ({ name: 'xyz:' + n, maxLeverage: 10 })) }, xs.map((n) => ({ markPx: String(precio('xyz:' + n, AHORA)), funding: '0.00001', openInterest: '1000', dayNtlVlm: '1e6' }))]); }
   if (b.type === 'metaAndAssetCtxs') { const nombres = ['BTC', 'ETH', 'SOL', 'XRP', 'DOGE', 'BNB', 'HYPE', 'LINK', 'AVAX', 'SUI', 'ZEC', 'NEAR', 'UNI', 'ENA', 'AAVE', 'ADA', 'ARB', 'WLD', 'XMR', 'kPEPE', 'TRUMP']; return resp([{ universe: nombres.map((n) => ({ name: n, maxLeverage: 10 })) }, nombres.map((n) => ({ markPx: String(precio(n, AHORA)), funding: '0.0000125', openInterest: '1000', dayNtlVlm: '1e6' }))]); }
   if (b.type === 'clearinghouseState') { const k = parseInt(b.user.slice(2, 4), 16); return resp({ marginSummary: { accountValue: String(1e6) }, assetPositions: [{ position: { coin: 'BTC', szi: String((k % 2 ? 1 : -1) * 5) } }, { position: { coin: 'TRUMP', szi: '100' } }] }); }
   if (b.type === 'l2Book') { const m = Math.floor(AHORA / MIN); const sesgo = Math.sin(m / 13 + b.coin.length); const lado = (base, s) => Array.from({ length: 20 }, (_, i) => ({ px: String(base + s * i * 0.5), sz: String(1 + Math.abs(Math.sin(m * (i + 1))) + (s < 0 ? Math.max(0, sesgo) : Math.max(0, -sesgo))), n: 3 })); const p = precio(b.coin, AHORA); return resp({ coin: b.coin, time: AHORA, levels: [lado(p - 0.5 + 0.1 * Math.sin(m), -1), lado(p + 0.5 + 0.1 * Math.cos(m), 1)] }); }
@@ -82,7 +83,16 @@ while (AHORA < t0 + 8 * H) {
   AHORA += MIN;
   const r = await ejecutar(); maxVivo = Math.max(maxVivo, r.llamadas); cpuMin.push(r.ms);
 }
-check(maxVivo <= 50, 'peticiones externas por minuto en vivo: máximo ' + maxVivo + ' (la hora en vivo usa 31; el flujo, 20)');
+check(maxVivo <= 50, 'peticiones externas por minuto en vivo: máximo ' + maxVivo + ' (la hora en vivo usa 32; el flujo, 20)');
+{ const E = estado(); const xyz = ['xyz:GOLD', 'xyz:SILVER', 'xyz:CL', 'xyz:NATGAS', 'xyz:COPPER', 'xyz:SP500', 'xyz:XYZ100', 'xyz:EUR', 'xyz:JPY'];
+  const listos = xyz.filter((m) => E.monedas[m] && E.monedas[m].n >= 720);
+  check(listos.length === 9 && !(E.fueraDex || []).some((m) => m.startsWith('xyz:')), 'oro, plata, petróleo, gas, cobre, S&P 500, Nasdaq, euro y yen se calientan y aprenden: ' + listos.length + ' de 9');
+  const conXyz = Object.values(E.expertos).filter((X) => Object.keys(X.pos || {}).some((m) => m.startsWith('xyz:'))).length;
+  check(conXyz >= 5 && Object.keys(E.posSistema).some((m) => m.startsWith('xyz:')), 'los expertos operan también esos mercados: ' + conXyz + ' expertos con alguno');
+  check(!Object.keys(E.expertos.carry_alt.pos || {}).some((m) => m.startsWith('xyz:')) && !Object.keys(E.monedas).includes('xyz:TSLA'), 'el cobro del funding sigue solo en cripto y no entra lo que no está en la lista (TSLA)');
+  check((porTipo.xyz || 0) >= 7 && (porTipo.xyz || 0) <= 10, 'precios de trade.xyz: 1 petición por hora en vivo (' + porTipo.xyz + ' en 8 h)'); }
+{ const fp = db.prepare("SELECT json FROM ap_estado WHERE id = 'practicas'").get(); const P0 = fp ? JSON.parse(fp.json) : null;
+  check(P0 && P0.alumnos.some((A) => Object.keys(A.pos).some((m) => m.startsWith('xyz:'))), 'los alumnos de la zona de prácticas también operan oro, petróleo, índices o divisas'); }
 { const fp = db.prepare("SELECT json FROM ap_estado WHERE id = 'practicas'").get(); const P = fp ? JSON.parse(fp.json) : null;
   check(P && P.alumnos.length === 36 && P.alumnos.filter((A) => A.grupo === 'arriesgado').length === 12 && P.alumnos.every((A) => A.st.n >= 6), 'zona de prácticas en vivo: ' + (P ? P.alumnos.length + ' alumnos, ' + Math.min(...P.alumnos.map((A) => A.st.n)) + '–' + Math.max(...P.alumnos.map((A) => A.st.n)) + ' h, ' + Math.round(fp.json.length / 1024) + ' KB' : 'no existe')); }
 const exp = (await herramienta('aprendizaje', { vista: 'expertos' })).rows;
@@ -102,7 +112,7 @@ const posLab = E2.expertos['lab_cruce_24_168_c0.5_sec_amb_nf_h1'].pos;
 const netoLab = Object.values(posLab).reduce((a, b) => a + b, 0), brutoLab = Object.values(posLab).reduce((a, b) => a + Math.abs(b), 0);
 check(Object.keys(posLab).length >= 10 && Math.abs(netoLab) < 0.5 * brutoLab, 'la estrategia relativa entre monedas reparte compras y ventas: ' + Object.keys(posLab).length + ' monedas, neto ' + netoLab.toFixed(3) + ' de ' + brutoLab.toFixed(3));
 const pos = (await herramienta('aprendizaje', { vista: 'posiciones' })).rows;
-check(pos.length === 21, '20 mercados más el cobro del funding en las posiciones: ' + pos.length);
+check(pos.length === 30 && pos.some((x) => x.moneda === 'ORO') && pos.some((x) => x.moneda === 'SP500'), '20 cripto, 9 de trade.xyz (oro, petróleo, índices, divisas…) y el cobro del funding en las posiciones: ' + pos.length);
 const res1 = (await herramienta('aprendizaje', { vista: 'resumen' })).rows[0];
 console.log('     resumen:', JSON.stringify(res1));
 const est = db.prepare("SELECT length(json) AS b FROM ap_estado WHERE id = 'principal'").get();
