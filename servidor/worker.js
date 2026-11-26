@@ -387,18 +387,20 @@ const SEMANA_MAX_BYTES = 65536;    // el archivo del laboratorio pesa ~16 KB; un
 // se guarda en la base de datos D1 y solo se ve con el TOKEN (vista «avisos»): nunca está en este código.
 const NTFY_URL = 'https://ntfy.sh/';
 const AVISO = {
-  MINUTO: 47,                       // ranking semanal y resumen de la mañana: minuto libre de calentamiento, laboratorio y bot
-  HORA_RESUMEN: 8,                  // de lunes a viernes a las 8:47 de Madrid
-  NOCHE: [23, 8],                   // de 23:00 a 7:59 de Madrid los avisos llegan sin sonido; los del ranking esperan al resumen
-  MOV_PCT: { BTC: 5, ETH: 5 },      // movimiento en la última hora que dispara el aviso
-  MOV_OTRAS_PCT: 10,                // resto de monedas que vigila el sistema
+  MINUTO: 47,                       // ranking semanal y plan: minuto libre de calentamiento, laboratorio y bot
+  HORA_MANANA: 8,                   // los cambios del ranking de la noche salen a las 8:47 de Madrid
+  HORA_PLAN: 9,                     // plan de Bitcoin: los lunes a las 9:47 de Madrid
+  PLAN_DESDE: '2026-11-30',         // primer lunes del plan (la usuaria empieza a mover dinero en diciembre)
+  NOCHE: [23, 8],                   // de 23:00 a 7:59 de Madrid los avisos de precio llegan sin sonido y los del ranking esperan
+  MOV_PCT: { BTC: 5, ETH: 5 },      // solo estas monedas: movimiento en la última hora que dispara el aviso
   MOV_MAX_PCT: 40,                  // más que esto en una hora es un dato roto: no se avisa
   MUESTRA_MIN: 4.5,                 // una muestra de precio cada ~5 minutos, 65 minutos guardados
   REPETIR_H: 3,                     // el mismo aviso (moneda y sentido) no se repite en 3 h salvo que el movimiento crezca otro tanto
   PRUEBA_MIN: 10,                   // como mucho un aviso de prueba cada 10 minutos
   MAX_GUARDADOS: 30,
-  MAX_POR_MINUTO: 3,
 };
+// Plan semanal de Bitcoin del laboratorio (laboratorio/plan/plan_core.js): reglas fijadas antes de ver resultados.
+const PLAN_BTC = { CAPITAL: 962, SEMANAS_BASE: 12, MEDIA: 200, TRAMOS: [[0.8, 2], [1.0, 1.5], [1.5, 1], [2.4, 0.5], [Infinity, 0]] };
 function apListaExpertos(E) {
   const lab = (E && E.lab && E.lab.specs) || [];
   if (!lab.length) return AP_EXPERTOS;
@@ -1417,14 +1419,15 @@ async function semanaLeer() {
 const SEMANA_NOTA = 'Laboratorio: cada día laborable ordena unos 25 mercados (cripto, materias primas, índices, bonos y divisas) por su tendencia de 12 semanas dividida por su volatilidad (puntuación). Fuerza: fuerte desde 1, débil entre 0 y 1, ninguna por debajo de 0. Historial con cierres semanales públicos desde 2004 y un 0,10 % por operación. Investigación en papel; no es una recomendación.';
 
 // ---------- avisos al móvil (v2.5.2) por ntfy ----------
-// Tres avisos: 1) BTC o ETH se mueven un 5 % o más en una hora (el resto de monedas que vigila el sistema, un 10 %),
-// medido cada minuto con el libro de órdenes que ya se lee para el flujo (sin peticiones de más);
-// 2) un mercado entra o sale de la tendencia fuerte del ranking semanal (se mira cada hora en el minuto :47);
-// 3) un resumen de lunes a viernes a las 8:47 de Madrid. De noche no suenan: los del ranking esperan al resumen.
+// Solo avisos para actuar o seguir algo importante (los resúmenes se ven en el panel):
+// 1) señal del ranking semanal: un mercado entra o sale de la tendencia fuerte (se mira cada hora en el minuto :47);
+// 2) plan de Bitcoin: los lunes a las 9:47 de Madrid, cuánto toca comprar esa semana según la regla (si toca algo);
+// 3) BTC o ETH se mueven un 5 % o más en una hora, medido cada minuto con el libro de órdenes que ya se lee (sin peticiones de más).
+// De noche los de precio llegan sin sonido y los del ranking esperan a las 8:47.
 function madrid(ms) {
   const p = {};
   for (const x of new Intl.DateTimeFormat('en-GB', { timeZone: 'Europe/Madrid', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', hourCycle: 'h23', weekday: 'short' }).formatToParts(new Date(ms))) p[x.type] = x.value;
-  return { fecha: p.year + '-' + p.month + '-' + p.day, hora: Number(p.hour), laborable: p.weekday !== 'Sat' && p.weekday !== 'Sun' };
+  return { fecha: p.year + '-' + p.month + '-' + p.day, hora: Number(p.hour), dia: p.weekday, laborable: p.weekday !== 'Sat' && p.weekday !== 'Sun' };
 }
 const deNoche = (hora) => hora >= AVISO.NOCHE[0] || hora < AVISO.NOCHE[1];
 const comaFija = (x, d = 1) => x.toFixed(d).replace('.', ',');
@@ -1466,10 +1469,10 @@ async function avisoMandar(A, { titulo, texto, prioridad = 3, etiquetas = [] }, 
 // Guarda una muestra de precio cada ~5 minutos y devuelve las monedas que se han movido de más en la última hora.
 function avisoMovimientos(F, mids, ahora) {
   F.px = F.px || {}; F.avMov = F.avMov || {};
-  for (const m of Object.keys(F.px)) if (!AP.MONEDAS.includes(m)) delete F.px[m];
+  for (const m of Object.keys(F.px)) if (!AVISO.MOV_PCT[m]) delete F.px[m];
   const salen = [];
   for (const [m, mid] of Object.entries(mids)) {
-    if (!(mid > 0)) continue;
+    if (!AVISO.MOV_PCT[m] || !(mid > 0)) continue;
     const serie = (Array.isArray(F.px[m]) ? F.px[m] : []).filter((x) => Array.isArray(x) && ahora - x[0] <= 65 * 60e3 && x[1] > 0);
     let mayor = null;
     for (const [t, p] of serie) {
@@ -1481,7 +1484,7 @@ function avisoMovimientos(F, mids, ahora) {
     const ult = serie[serie.length - 1];
     if ((!ult || ahora - ult[0] >= AVISO.MUESTRA_MIN * 60e3) && !(ult && Math.abs((mid / ult[1] - 1) * 100) > AVISO.MOV_MAX_PCT)) serie.push([ahora, mid]);
     F.px[m] = serie;
-    const umbral = AVISO.MOV_PCT[m] || AVISO.MOV_OTRAS_PCT;
+    const umbral = AVISO.MOV_PCT[m];
     if (!mayor || Math.abs(mayor.c) < umbral || Math.abs(mayor.c) > AVISO.MOV_MAX_PCT) continue;
     const dir = mayor.c > 0 ? 1 : -1, u = F.avMov[m];
     if (u && ahora - u.t < AVISO.REPETIR_H * H1 && u.dir === dir && Math.abs((mid / u.px - 1) * 100) < umbral) continue;
@@ -1520,26 +1523,31 @@ function avisoTextoCambio(cambios) {
   const titulo = 'Tendencia fuerte: ' + [entran.length ? (entran.length > 1 ? 'entran ' : 'entra ') + entran.join(', ') : '', salen.length ? (salen.length > 1 ? 'salen ' : 'sale ') + salen.join(', ') : ''].filter(Boolean).join(' · ');
   return { titulo, texto: avisoLineasCambio(cambios).join('\n') + '\nRanking de 12 semanas del laboratorio. Investigación en papel, no una recomendación.', prioridad: 3, etiquetas: ['bar_chart'] };
 }
-function avisoTextoResumen(S, pendientes) {
-  const l = [];
-  if (S.error) l.push('No he podido leer el ranking de la semana: ' + S.error);
-  else {
-    const f = S.mercados.filter((m) => m.fuerza === 'fuerte');
-    l.push(f.length ? 'En tendencia fuerte: ' + f.map((m) => (m.nombre || m.simbolo) + ' ' + comaFija(m.puntuacion, 2)).join(', ') + '.' : 'Ningún mercado en tendencia fuerte: sin fuerza, la ventaja histórica de la semana siguiente es pequeña.');
-    const top = S.mercados.filter((m) => m.puntuacion != null).sort((a, b) => b.puntuacion - a.puntuacion).slice(0, 3);
-    if (top.length) l.push('Primeros del ranking: ' + top.map((m) => m.simbolo + ' ' + comaFija(m.puntuacion, 2)).join(' · ') + '.');
-    const alza = S.mercados.filter((m) => m.puntuacion > 0).length;
-    l.push(alza + ' de ' + S.mercados.length + ' mercados al alza en 12 semanas.');
-  }
-  if (pendientes.length) { l.push('Novedades del ranking:'); l.push(...avisoLineasCambio(pendientes)); }
-  l.push('Investigación en papel, no una recomendación.');
-  return { titulo: 'Radar: buenos días', texto: l.join('\n'), prioridad: 3, etiquetas: ['sunrise'] };
+// Plan de Bitcoin con el último cierre diario completo (el del domingo, si es lunes). Misma regla que el panel.
+async function avisoPlan(ahora) {
+  const hoy = fechaDe(ahora);
+  const h = await historicoDiario({ simbolo: 'BTC', desde: fechaDe(ahora - 320 * 86400e3) });
+  const c = h.rows.filter((r) => r.fecha < hoy && r.c > 0);
+  if (c.length < PLAN_BTC.MEDIA) return null;
+  const n = c.length, media = c.slice(n - PLAN_BTC.MEDIA).reduce((a, r) => a + r.c, 0) / PLAN_BTC.MEDIA;
+  const M = c[n - 1].c / media;
+  let veces = 0;
+  for (const [hasta, x] of PLAN_BTC.TRAMOS) if (M < hasta) { veces = x; break; }
+  const base = PLAN_BTC.CAPITAL / PLAN_BTC.SEMANAS_BASE;
+  return { fecha: c[n - 1].fecha, precio: c[n - 1].c, media200: media, mayer: M, veces, baseEur: base, compraEur: Math.min(PLAN_BTC.CAPITAL, base * veces) };
+}
+function avisoTextoPlan(P) {
+  const dist = (P.mayer - 1) * 100;
+  return {
+    titulo: 'Plan de Bitcoin: esta semana ' + Math.round(P.compraEur) + ' €',
+    texto: 'Bitcoin cerró el ' + P.fecha.slice(8, 10) + '/' + P.fecha.slice(5, 7) + ' en ' + fmtPx(P.precio) + ' $, un ' + comaFija(Math.abs(dist), 0) + ' % ' + (dist < 0 ? 'por debajo' : 'por encima') + ' de su media de 200 días (múltiplo ' + comaFija(P.mayer, 2) + ' → ×' + comaFija(P.veces, 1) + ' sobre la base de ' + Math.round(P.baseEur) + ' €).\nRegla del plan fijada de antemano; la decisión es tuya.',
+    prioridad: 3, etiquetas: ['moneybag'],
+  };
 }
 async function avisosHora(env, ahora = Date.now()) {
   const S = await semanaLeer();
   const A = await avisosCargar(env);
   const md = madrid(ahora);
-  const tocaResumen = md.hora === AVISO.HORA_RESUMEN && A.resumenFecha !== md.fecha;
   let cambia = false;
   if (!S.error && S.generado && S.generado !== A.semanaGenerado) {
     const fuertes = S.mercados.filter((m) => m.fuerza === 'fuerte');
@@ -1547,17 +1555,22 @@ async function avisosHora(env, ahora = Date.now()) {
       const antes = new Set(A.fuertes.map((m) => m.simbolo)), ya = new Set(fuertes.map((m) => m.simbolo));
       const cambio = { t: iso(ahora), entran: fuertes.filter((m) => !antes.has(m.simbolo)).map(avisoFicha), salen: A.fuertes.filter((m) => !ya.has(m.simbolo)) };
       if (cambio.entran.length || cambio.salen.length) {
-        if (deNoche(md.hora) || tocaResumen) A.pendientes = [...(A.pendientes || []), cambio].slice(-5); // va en el resumen
-        else await avisoMandar(A, avisoTextoCambio([cambio]), ahora);
+        if (deNoche(md.hora)) A.pendientes = [...(A.pendientes || []), cambio].slice(-5);
+        else { await avisoMandar(A, avisoTextoCambio([...(A.pendientes || []), cambio]), ahora); A.pendientes = []; }
       }
     }
     A.fuertes = fuertes.map((m) => ({ simbolo: m.simbolo, nombre: m.nombre }));
     A.semanaGenerado = S.generado; cambia = true;
   }
-  const pendientes = A.pendientes || [];
-  if (tocaResumen && (md.laborable || pendientes.length)) {
-    await avisoMandar(A, avisoTextoResumen(S, pendientes), ahora);
-    A.pendientes = []; A.resumenFecha = md.fecha; cambia = true;
+  if (!deNoche(md.hora) && (A.pendientes || []).length) { // lo de la noche, a primera hora (8:47)
+    await avisoMandar(A, avisoTextoCambio(A.pendientes), ahora);
+    A.pendientes = []; cambia = true;
+  }
+  if (md.dia === 'Mon' && md.hora === AVISO.HORA_PLAN && md.fecha >= AVISO.PLAN_DESDE && A.planFecha !== md.fecha) {
+    A.planFecha = md.fecha; cambia = true;
+    const P = await avisoPlan(ahora).catch(() => null);
+    A.plan = P ? { fecha: P.fecha, mayer: P.mayer, compraEur: P.compraEur } : { error: 'sin datos de Bitstamp' };
+    if (P && P.compraEur > 0) await avisoMandar(A, avisoTextoPlan(P), ahora);
   }
   if (cambia) await avisosGuardar(env, A);
   return { ok: true, cambia };
@@ -1577,8 +1590,8 @@ async function avisosVista(env, prueba) {
   }
   return {
     rows: A.enviados, canal: A.canal, servidor: 'ntfy.sh', creado: A.creado, prueba: resultado,
-    vigilando: { tendenciaFuerte: (A.fuertes || []).map((m) => m.simbolo), pendientesParaLaManana: (A.pendientes || []).length, ultimoRanking: A.semanaGenerado || null, ultimoResumen: A.resumenFecha || null },
-    nota: 'Avisos al móvil con la app ntfy: suscríbete al canal (servidor ntfy.sh). BTC y ETH: un ' + AVISO.MOV_PCT.BTC + ' % o más en una hora; el resto de monedas del sistema: un ' + AVISO.MOV_OTRAS_PCT + ' %. Ranking semanal: cuando un mercado entra o sale de la tendencia fuerte. Resumen de lunes a viernes a las ' + AVISO.HORA_RESUMEN + ':' + AVISO.MINUTO + ' de Madrid. De 23:00 a 8:00 los avisos llegan sin sonido y los del ranking esperan al resumen. El nombre del canal es la única llave: no lo publiques.',
+    vigilando: { tendenciaFuerte: (A.fuertes || []).map((m) => m.simbolo), pendientesParaLaManana: (A.pendientes || []).length, ultimoRanking: A.semanaGenerado || null, ultimoPlan: A.plan || null },
+    nota: 'Avisos al móvil con la app ntfy (servidor ntfy.sh), solo para actuar o seguir algo importante; los resúmenes están en el panel. 1) Ranking semanal: un mercado entra o sale de la tendencia fuerte. 2) Plan de Bitcoin: los lunes a las ' + AVISO.HORA_PLAN + ':' + AVISO.MINUTO + ' de Madrid, si la regla dice comprar algo esa semana (desde el ' + AVISO.PLAN_DESDE + '). 3) BTC o ETH: un ' + AVISO.MOV_PCT.BTC + ' % o más en una hora. De 23:00 a 8:00 los de precio llegan sin sonido y los del ranking esperan a las ' + AVISO.HORA_MANANA + ':' + AVISO.MINUTO + '. El nombre del canal es la única llave: no lo publiques.',
   };
 }
 
@@ -1891,7 +1904,7 @@ export default {
         // mercados nuevos: 1 cada 10 minutos (:05, :15… :55), lejos de la hora en vivo; +2 peticiones
         if (minuto % 10 === 5) await apCalentarMinuto(env).catch((e) => console.log('calentar: ' + (e.message || e)));
         // laboratorio: +1 petición como mucho cada 6 h, y la señal del aprendizaje automático +1 cada 3 h, en un minuto sin calentamiento
-        // avisos al móvil: ranking semanal y resumen de la mañana (+1 petición con caché, +2 a ntfy como mucho)
+        // avisos al móvil: ranking semanal y, los lunes a las 9:47 de Madrid, el plan de Bitcoin (+1 petición con caché, +1 a Bitstamp, +2 a ntfy como mucho)
         if (minuto === AVISO.MINUTO) await avisosHora(env).catch((e) => console.log('avisos: ' + (e.message || e)));
         if (minuto === 37) await apLabMinuto(env).catch((e) => console.log('laboratorio: ' + (e.message || e)));
         // bot de pruebas: del minuto :07 al :12 hasta que haga la hora (+2 peticiones); fichas de Kraken a las :27 (+1, una vez al día)

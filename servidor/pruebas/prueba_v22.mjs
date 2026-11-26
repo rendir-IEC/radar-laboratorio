@@ -90,7 +90,7 @@ check(exp.length === 26, 'hay 26 expertos: 23 fijos (con el de aprendizaje autom
 const lab = await herramienta('aprendizaje', { vista: 'laboratorio' });
 check(lab.rows.length === 3 && lab.rows.every((r) => r.horasEnVivo > 0), 'los 3 del laboratorio aprenden en vivo: ' + lab.rows.map((r) => r.id + ' ' + r.horasEnVivo + ' h').join(', '));
 check(lab.laboratorio.estrategiasProbadas === 2232 && lab.laboratorio.fueraDeMuestraTop5.sharpeAnual === 1, 'la vista laboratorio resume lo publicado');
-check((porTipo.semana || 0) >= 7 && (porTipo.semana || 0) <= 9 && (porTipo.ntfy || 0) === 1, 'avisos: el ranking semanal se mira una vez por hora (' + porTipo.semana + ' en 8 h); con precios tranquilos solo sale el resumen de las 8:47 de Madrid (' + (porTipo.ntfy || 0) + ')');
+check((porTipo.semana || 0) >= 7 && (porTipo.semana || 0) <= 9 && !porTipo.ntfy, 'avisos: el ranking semanal se mira una vez por hora (' + porTipo.semana + ' en 8 h) y con precios tranquilos no sale ningún aviso (ni resumen)');
 check((porTipo.lab || 0) >= 1 && (porTipo.lab || 0) <= 3, 'consulta el laboratorio como mucho cada 6 horas: ' + porTipo.lab + ' veces en 8 h');
 const al = (await herramienta('aprendizaje', { vista: 'alertas' })).rows;
 check(al.some((a) => a.tipo === 'laboratorio' && a.texto.startsWith('Llegan del laboratorio')), 'avisa de las que llegan del laboratorio');
