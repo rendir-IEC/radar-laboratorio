@@ -308,35 +308,35 @@
   },
   "ticker": {
    "symbol": "PF_XBTUSD",
-   "last": 58855,
-   "lastTime": "2026-11-25T08:18:31.231833519Z",
+   "last": 60456,
+   "lastTime": "2026-11-26T16:57:16.054444332Z",
    "tag": "perpetual",
    "pair": "XBT:USD",
-   "markPrice": 58852.88921552326,
-   "bid": 58854,
-   "bidSize": 8.1575,
-   "ask": 58855,
-   "askSize": 24.3628,
-   "vol24h": 8980.6416,
-   "volumeQuote": 535847301.4721,
-   "openInterest": 2131.7696,
-   "open24h": 60318,
-   "high24h": 60609,
-   "low24h": 58538,
-   "vwap24h": 59666.928638161,
-   "lastSize": 0.044,
-   "fundingRate": 0.48759276733731377,
-   "fundingRatePrediction": -0.3537613051125,
-   "relativeFundingRate": 8.310620833333e-06,
-   "relativeFundingRatePrediction": -6.016625e-06,
+   "markPrice": 60457.16029985649,
+   "bid": 60456,
+   "bidSize": 7.1107,
+   "ask": 60457,
+   "askSize": 9.1011,
+   "vol24h": 8923.4749,
+   "volumeQuote": 538294690.501,
+   "openInterest": 2050.1853,
+   "open24h": 58440,
+   "high24h": 61553,
+   "low24h": 58390,
+   "vwap24h": 60323.4386305048,
+   "lastSize": 0.2592,
+   "fundingRate": 0.3504587174485215,
+   "fundingRatePrediction": 0.389538117975,
+   "relativeFundingRate": 5.788070833333e-06,
+   "relativeFundingRatePrediction": 6.4424375e-06,
    "suspended": false,
-   "indexPrice": 58851.61,
+   "indexPrice": 60460.84,
    "postOnly": false,
-   "change24h": -2.43
+   "change24h": 3.45
   }
  },
- "generado": "2026-11-25T08:29:50Z",
- "eur_usd": 1.09322,
+ "generado": "2026-11-26T17:08:37Z",
+ "eur_usd": 1.09693,
  "comisiones": {
   "hyperliquid": {
    "taker": 0.00045,
@@ -366,10 +366,10 @@
    },
    "kraken": {
     "simbolo": "PF_XBTUSD",
-    "volumen_24h_musd": 535.85,
-    "interes_abierto_musd": 125.46,
+    "volumen_24h_musd": 538.29,
+    "interes_abierto_musd": 123.95,
     "diferencial_pb": 0.17,
-    "orden_min_usd": 5.89,
+    "orden_min_usd": 6.05,
     "apalancamiento_max": 100.0,
     "apalancamiento_max_minorista": 100.0,
     "coste_ida_pct": {
@@ -382,23 +382,23 @@
     "horas_comunes": 4800,
     "correlacion": 0.9992,
     "seguimiento_pb_hora": 1.76,
-    "diferencia_precio_pb": -5.17
+    "diferencia_precio_pb": -5.23
    },
    "funding_intervalo_kraken_h": 1.0,
    "funding_ticker": {
-    "absoluta": 0.48759276733731377,
-    "precio": 58852.88921552326,
-    "ultima_relativa": 8.310620833333e-06,
-    "ultima_relativa_t": 1795593600000,
-    "rel_sobre_abs_por_precio": 2.896065801730739e-10,
-    "rel_sobre_abs_entre_precio": 1.0030994714858175,
-    "prediccion": -0.3537613051125
+    "absoluta": 0.3504587174485215,
+    "precio": 60457.16029985649,
+    "ultima_relativa": 5.788070833333e-06,
+    "ultima_relativa_t": 1795708800000,
+    "rel_sobre_abs_por_precio": 2.7318020444646626e-10,
+    "rel_sobre_abs_entre_precio": 0.9984922867531124,
+    "prediccion": 0.389538117975
    },
    "funding": {
-    "kraken_anual_pct": 5.45,
-    "hyperliquid_anual_pct": 7.58,
-    "diferencia_anual_pct": -2.13,
-    "correlacion_diaria": 0.394,
+    "kraken_anual_pct": 5.5,
+    "hyperliquid_anual_pct": 7.59,
+    "diferencia_anual_pct": -2.09,
+    "correlacion_diaria": 0.405,
     "dias": 201
    }
   },
@@ -416,39 +416,39 @@
    },
    "kraken": {
     "simbolo": "PF_ETHUSD",
-    "volumen_24h_musd": 129.03,
-    "interes_abierto_musd": 52.98,
-    "diferencial_pb": 0.61,
-    "orden_min_usd": 1.64,
+    "volumen_24h_musd": 149.11,
+    "interes_abierto_musd": 52.35,
+    "diferencial_pb": 0.59,
+    "orden_min_usd": 1.69,
     "apalancamiento_max": 100.0,
     "apalancamiento_max_minorista": 100.0,
     "coste_ida_pct": {
      "50": 0.053,
      "200": 0.053,
-     "1000": 0.0575
+     "1000": 0.053
     }
    },
    "precios": {
     "horas_comunes": 4800,
     "correlacion": 0.9993,
     "seguimiento_pb_hora": 2.16,
-    "diferencia_precio_pb": -5.69
+    "diferencia_precio_pb": -5.76
    },
    "funding_intervalo_kraken_h": 1.0,
    "funding_ticker": {
-    "absoluta": -0.005140885636499454,
-    "precio": 1640.84716306672,
-    "ultima_relativa": -3.136445833333e-06,
-    "ultima_relativa_t": 1795593600000,
-    "rel_sobre_abs_por_precio": 3.718191197731109e-07,
-    "rel_sobre_abs_entre_precio": 1.0010781432673936,
-    "prediccion": -0.0287491497825
+    "absoluta": -0.001173326123999436,
+    "precio": 1690.24023463436,
+    "ultima_relativa": -6.94045833333e-07,
+    "ultima_relativa_t": 1795708800000,
+    "rel_sobre_abs_por_precio": 3.499620690559043e-07,
+    "rel_sobre_abs_entre_precio": 0.9998108524006013,
+    "prediccion": 0.00050068430133277
    },
    "funding": {
-    "kraken_anual_pct": 5.6,
-    "hyperliquid_anual_pct": 7.26,
-    "diferencia_anual_pct": -1.66,
-    "correlacion_diaria": 0.434,
+    "kraken_anual_pct": 5.57,
+    "hyperliquid_anual_pct": 7.24,
+    "diferencia_anual_pct": -1.67,
+    "correlacion_diaria": 0.438,
     "dias": 201
    }
   },
@@ -466,39 +466,39 @@
    },
    "kraken": {
     "simbolo": "PF_SOLUSD",
-    "volumen_24h_musd": 42.33,
-    "interes_abierto_musd": 16.87,
-    "diferencial_pb": 2.95,
-    "orden_min_usd": 0.68,
+    "volumen_24h_musd": 36.84,
+    "interes_abierto_musd": 15.03,
+    "diferencial_pb": 1.41,
+    "orden_min_usd": 0.71,
     "apalancamiento_max": 100.0,
     "apalancamiento_max_minorista": 100.0,
     "coste_ida_pct": {
-     "50": 0.0647,
-     "200": 0.0647,
-     "1000": 0.0647
+     "50": 0.064,
+     "200": 0.0641,
+     "1000": 0.0641
     }
    },
    "precios": {
     "horas_comunes": 4800,
     "correlacion": 0.9988,
-    "seguimiento_pb_hora": 3.13,
-    "diferencia_precio_pb": -3.34
+    "seguimiento_pb_hora": 3.15,
+    "diferencia_precio_pb": -3.38
    },
    "funding_intervalo_kraken_h": 1.0,
    "funding_ticker": {
-    "absoluta": -0.000969313379666644,
-    "precio": 67.86079301009,
-    "ultima_relativa": -1.4311433333333e-05,
-    "ultima_relativa_t": 1795593600000,
-    "rel_sobre_abs_por_precio": 0.00021757049206711678,
-    "rel_sobre_abs_entre_precio": 1.0019310941988782,
-    "prediccion": -0.0012498114675
+    "absoluta": -0.000356515258333357,
+    "precio": 70.91019701209,
+    "ultima_relativa": -5.021341666667e-06,
+    "ultima_relativa_t": 1795708800000,
+    "rel_sobre_abs_por_precio": 0.00019862456509396175,
+    "rel_sobre_abs_entre_precio": 0.9987351691843662,
+    "prediccion": -0.000229411425000024
    },
    "funding": {
-    "kraken_anual_pct": 1.45,
-    "hyperliquid_anual_pct": 4.66,
-    "diferencia_anual_pct": -3.21,
-    "correlacion_diaria": 0.527,
+    "kraken_anual_pct": 1.46,
+    "hyperliquid_anual_pct": 4.59,
+    "diferencia_anual_pct": -3.13,
+    "correlacion_diaria": 0.529,
     "dias": 201
    }
   },
@@ -507,48 +507,48 @@
    "en_kraken": true,
    "hyperliquid": {
     "coste_ida_pct": {
-     "50": 0.0472,
-     "200": 0.0484,
-     "1000": 0.0491
+     "50": 0.0455,
+     "200": 0.0455,
+     "1000": 0.0476
     },
     "orden_min_usd": 10.0,
     "apalancamiento_max": 20
    },
    "kraken": {
     "simbolo": "PF_XRPUSD",
-    "volumen_24h_musd": 5.92,
-    "interes_abierto_musd": 8.44,
-    "diferencial_pb": 1.09,
-    "orden_min_usd": 0.92,
+    "volumen_24h_musd": 11.63,
+    "interes_abierto_musd": 8.83,
+    "diferencial_pb": 1.05,
+    "orden_min_usd": 0.95,
     "apalancamiento_max": 50.0,
     "apalancamiento_max_minorista": 50.0,
     "coste_ida_pct": {
-     "50": 0.0609,
-     "200": 0.0643,
-     "1000": 0.0761
+     "50": 0.0603,
+     "200": 0.0605,
+     "1000": 0.0662
     }
    },
    "precios": {
     "horas_comunes": 4800,
     "correlacion": 0.9983,
     "seguimiento_pb_hora": 3.91,
-    "diferencia_precio_pb": -2.67
+    "diferencia_precio_pb": -2.73
    },
    "funding_intervalo_kraken_h": 1.0,
    "funding_ticker": {
-    "absoluta": -4.318745768666e-06,
-    "precio": 0.91643616901,
-    "ultima_relativa": -4.726345833333e-06,
-    "ultima_relativa_t": 1795593600000,
-    "rel_sobre_abs_por_precio": 1.1941685685119392,
-    "rel_sobre_abs_entre_precio": 1.002928743882504,
-    "prediccion": -1.249947545e-06
+    "absoluta": 1.3753055295e-06,
+    "precio": 0.94906017017,
+    "ultima_relativa": 1.452675e-06,
+    "ultima_relativa_t": 1795708800000,
+    "rel_sobre_abs_por_precio": 1.1129496724280463,
+    "rel_sobre_abs_entre_precio": 1.0024506941398907,
+    "prediccion": -4.087848866e-06
    },
    "funding": {
-    "kraken_anual_pct": 3.0,
-    "hyperliquid_anual_pct": 5.47,
-    "diferencia_anual_pct": -2.47,
-    "correlacion_diaria": 0.668,
+    "kraken_anual_pct": 3.02,
+    "hyperliquid_anual_pct": 5.42,
+    "diferencia_anual_pct": -2.4,
+    "correlacion_diaria": 0.672,
     "dias": 201
    }
   },
@@ -557,48 +557,48 @@
    "en_kraken": true,
    "hyperliquid": {
     "coste_ida_pct": {
-     "50": 0.0496,
-     "200": 0.0509,
-     "1000": 0.0523
+     "50": 0.0459,
+     "200": 0.0463,
+     "1000": 0.0471
     },
     "orden_min_usd": 10.0,
     "apalancamiento_max": 10
    },
    "kraken": {
     "simbolo": "PF_DOGEUSD",
-    "volumen_24h_musd": 2.95,
-    "interes_abierto_musd": 2.59,
-    "diferencial_pb": 1.84,
-    "orden_min_usd": 0.05,
+    "volumen_24h_musd": 3.48,
+    "interes_abierto_musd": 2.87,
+    "diferencial_pb": 3.53,
+    "orden_min_usd": 0.06,
     "apalancamiento_max": 50.0,
     "apalancamiento_max_minorista": 50.0,
     "coste_ida_pct": {
-     "50": 0.0684,
-     "200": 0.0684,
-     "1000": 0.0684
+     "50": 0.0677,
+     "200": 0.0677,
+     "1000": 0.0677
     }
    },
    "precios": {
     "horas_comunes": 4800,
     "correlacion": 0.9971,
     "seguimiento_pb_hora": 5.22,
-    "diferencia_precio_pb": -4.13
+    "diferencia_precio_pb": -4.15
    },
    "funding_intervalo_kraken_h": 1.0,
    "funding_ticker": {
-    "absoluta": -3.68719885942e-07,
-    "precio": 0.05437605613,
-    "ultima_relativa": -6.798058333333e-06,
-    "ultima_relativa_t": 1795593600000,
-    "rel_sobre_abs_por_precio": 339.0631722292835,
-    "rel_sobre_abs_entre_precio": 1.0025268926408706,
-    "prediccion": -7.50000577e-07
+    "absoluta": -3.56085312412e-07,
+    "precio": 0.0566136529,
+    "ultima_relativa": 8.092641666667e-06,
+    "ultima_relativa_t": 1795712400000,
+    "rel_sobre_abs_por_precio": -401.43484985797056,
+    "rel_sobre_abs_entre_precio": -1.286641123323466,
+    "prediccion": 5.1647678385e-07
    },
    "funding": {
-    "kraken_anual_pct": 2.97,
-    "hyperliquid_anual_pct": 7.56,
-    "diferencia_anual_pct": -4.59,
-    "correlacion_diaria": 0.478,
+    "kraken_anual_pct": 2.96,
+    "hyperliquid_anual_pct": 7.52,
+    "diferencia_anual_pct": -4.56,
+    "correlacion_diaria": 0.479,
     "dias": 201
    }
   },
@@ -608,47 +608,47 @@
    "hyperliquid": {
     "coste_ida_pct": {
      "50": 0.0459,
-     "200": 0.0459,
-     "1000": 0.0465
+     "200": 0.0471,
+     "1000": 0.0487
     },
     "orden_min_usd": 10.0,
     "apalancamiento_max": 10
    },
    "kraken": {
     "simbolo": "PF_BNBUSD",
-    "volumen_24h_musd": 0.33,
-    "interes_abierto_musd": 1.65,
-    "diferencial_pb": 5.75,
-    "orden_min_usd": 5.4,
+    "volumen_24h_musd": 0.35,
+    "interes_abierto_musd": 1.57,
+    "diferencial_pb": 3.81,
+    "orden_min_usd": 5.51,
     "apalancamiento_max": 50.0,
     "apalancamiento_max_minorista": 50.0,
     "coste_ida_pct": {
-     "50": 0.0806,
-     "200": 0.0806,
-     "1000": 0.0806
+     "50": 0.0733,
+     "200": 0.0765,
+     "1000": 0.079
     }
    },
    "precios": {
     "horas_comunes": 4800,
-    "correlacion": 0.9818,
-    "seguimiento_pb_hora": 8.93,
+    "correlacion": 0.9815,
+    "seguimiento_pb_hora": 9.02,
     "diferencia_precio_pb": -4.37
    },
    "funding_intervalo_kraken_h": 1.0,
    "funding_ticker": {
-    "absoluta": -0.007842476681325,
-    "precio": 539.60997888572,
-    "ultima_relativa": -1.45556125e-05,
-    "ultima_relativa_t": 1795593600000,
-    "rel_sobre_abs_por_precio": 3.439515546865391e-06,
-    "rel_sobre_abs_entre_precio": 1.0015144542918446,
-    "prediccion": -0.007875067566
+    "absoluta": -0.0055271434399125,
+    "precio": 551.0031420173,
+    "ultima_relativa": 3.54229166667e-07,
+    "ultima_relativa_t": 1795712400000,
+    "rel_sobre_abs_por_precio": -1.1631333455773468e-07,
+    "rel_sobre_abs_entre_precio": -0.03531324742148844,
+    "prediccion": -0.000366932367
    },
    "funding": {
-    "kraken_anual_pct": 2.74,
-    "hyperliquid_anual_pct": 7.37,
-    "diferencia_anual_pct": -4.63,
-    "correlacion_diaria": 0.339,
+    "kraken_anual_pct": 2.66,
+    "hyperliquid_anual_pct": 7.31,
+    "diferencia_anual_pct": -4.65,
+    "correlacion_diaria": 0.34,
     "dias": 201
    }
   },
@@ -657,48 +657,48 @@
    "en_kraken": true,
    "hyperliquid": {
     "coste_ida_pct": {
-     "50": 0.0459,
-     "200": 0.0459,
-     "1000": 0.0459
+     "50": 0.0458,
+     "200": 0.0477,
+     "1000": 0.0559
     },
     "orden_min_usd": 10.0,
     "apalancamiento_max": 10
    },
    "kraken": {
     "simbolo": "PF_HYPEUSD",
-    "volumen_24h_musd": 27.92,
-    "interes_abierto_musd": 8.27,
-    "diferencial_pb": 4.28,
-    "orden_min_usd": 5.85,
+    "volumen_24h_musd": 22.0,
+    "interes_abierto_musd": 10.74,
+    "diferencial_pb": 4.96,
+    "orden_min_usd": 6.04,
     "apalancamiento_max": 50.0,
     "apalancamiento_max_minorista": 50.0,
     "coste_ida_pct": {
-     "50": 0.0628,
-     "200": 0.0705,
-     "1000": 0.0746
+     "50": 0.069,
+     "200": 0.069,
+     "1000": 0.0718
     }
    },
    "precios": {
     "horas_comunes": 4800,
-    "correlacion": 0.9962,
-    "seguimiento_pb_hora": 8.06,
-    "diferencia_precio_pb": 3.33
+    "correlacion": 0.9963,
+    "seguimiento_pb_hora": 7.98,
+    "diferencia_precio_pb": 3.32
    },
    "funding_intervalo_kraken_h": 1.0,
    "funding_ticker": {
-    "absoluta": -0.0006652542938575,
-    "precio": 58.47890385859,
-    "ultima_relativa": -1.13734625e-05,
-    "ultima_relativa_t": 1795593600000,
-    "rel_sobre_abs_por_precio": 0.00029235181212894183,
-    "rel_sobre_abs_entre_precio": 0.9997795222337149,
-    "prediccion": -0.0020249765945
+    "absoluta": -0.00017463922846627,
+    "precio": 60.447983038,
+    "ultima_relativa": 1.8032833333333e-05,
+    "ultima_relativa_t": 1795712400000,
+    "rel_sobre_abs_por_precio": -0.0017082064223756346,
+    "rel_sobre_abs_entre_precio": -6.241715638768567,
+    "prediccion": 0.001175618952615
    },
    "funding": {
-    "kraken_anual_pct": 10.11,
+    "kraken_anual_pct": 10.2,
     "hyperliquid_anual_pct": 10.41,
-    "diferencia_anual_pct": -0.3,
-    "correlacion_diaria": 0.358,
+    "diferencia_anual_pct": -0.21,
+    "correlacion_diaria": 0.356,
     "dias": 201
    }
   },
@@ -707,47 +707,47 @@
    "en_kraken": true,
    "hyperliquid": {
     "coste_ida_pct": {
-     "50": 0.049,
-     "200": 0.049,
-     "1000": 0.0529
+     "50": 0.0575,
+     "200": 0.0575,
+     "1000": 0.0582
     },
     "orden_min_usd": 10.0,
     "apalancamiento_max": 10
    },
    "kraken": {
     "simbolo": "PF_LINKUSD",
-    "volumen_24h_musd": 1.36,
-    "interes_abierto_musd": 3.26,
-    "diferencial_pb": 5.74,
-    "orden_min_usd": 0.87,
+    "volumen_24h_musd": 1.9,
+    "interes_abierto_musd": 3.65,
+    "diferencial_pb": 1.09,
+    "orden_min_usd": 0.92,
     "apalancamiento_max": 50.0,
     "apalancamiento_max_minorista": 50.0,
     "coste_ida_pct": {
-     "50": 0.0787,
-     "200": 0.0787,
-     "1000": 0.0827
+     "50": 0.0772,
+     "200": 0.0772,
+     "1000": 0.0786
     }
    },
    "precios": {
     "horas_comunes": 4800,
-    "correlacion": 0.9937,
-    "seguimiento_pb_hora": 8.18,
-    "diferencia_precio_pb": -3.88
+    "correlacion": 0.9936,
+    "seguimiento_pb_hora": 8.24,
+    "diferencia_precio_pb": -3.91
    },
    "funding_intervalo_kraken_h": 1.0,
    "funding_ticker": {
-    "absoluta": 5.179487775e-05,
-    "precio": 8.71915837302,
-    "ultima_relativa": 5.95275e-06,
-    "ultima_relativa_t": 1795593600000,
-    "rel_sobre_abs_por_precio": 0.013181239926180411,
-    "rel_sobre_abs_entre_precio": 1.002086929435697,
-    "prediccion": -6.2500374e-05
+    "absoluta": 0.000140229187366664,
+    "precio": 9.17584895551,
+    "ultima_relativa": 3.633054166667e-06,
+    "ultima_relativa_t": 1795712400000,
+    "rel_sobre_abs_por_precio": 0.002823496148790572,
+    "rel_sobre_abs_entre_precio": 0.23772765789019706,
+    "prediccion": 2.705343795e-05
    },
    "funding": {
-    "kraken_anual_pct": 2.06,
-    "hyperliquid_anual_pct": 9.53,
-    "diferencia_anual_pct": -7.47,
+    "kraken_anual_pct": 2.11,
+    "hyperliquid_anual_pct": 9.5,
+    "diferencia_anual_pct": -7.39,
     "correlacion_diaria": 0.496,
     "dias": 201
    }
@@ -757,48 +757,48 @@
    "en_kraken": true,
    "hyperliquid": {
     "coste_ida_pct": {
-     "50": 0.0527,
-     "200": 0.0533,
-     "1000": 0.0544
+     "50": 0.0511,
+     "200": 0.0546,
+     "1000": 0.0569
     },
     "orden_min_usd": 10.0,
     "apalancamiento_max": 10
    },
    "kraken": {
     "simbolo": "PF_AVAXUSD",
-    "volumen_24h_musd": 2.02,
-    "interes_abierto_musd": 2.05,
-    "diferencial_pb": 6.18,
-    "orden_min_usd": 0.06,
+    "volumen_24h_musd": 1.32,
+    "interes_abierto_musd": 2.45,
+    "diferencial_pb": 3.04,
+    "orden_min_usd": 0.07,
     "apalancamiento_max": 50.0,
     "apalancamiento_max_minorista": 50.0,
     "coste_ida_pct": {
-     "50": 0.0688,
-     "200": 0.0779,
-     "1000": 0.0811
+     "50": 0.0727,
+     "200": 0.0727,
+     "1000": 0.083
     }
    },
    "precios": {
     "horas_comunes": 4800,
     "correlacion": 0.9941,
-    "seguimiento_pb_hora": 8.71,
-    "diferencia_precio_pb": -1.04
+    "seguimiento_pb_hora": 8.76,
+    "diferencia_precio_pb": -1.01
    },
    "funding_intervalo_kraken_h": 1.0,
    "funding_ticker": {
-    "absoluta": -1.1148390826665e-05,
-    "precio": 6.47017419984,
-    "ultima_relativa": -1.726933333333e-06,
-    "ultima_relativa_t": 1795593600000,
-    "rel_sobre_abs_por_precio": 0.023941282626591717,
-    "rel_sobre_abs_entre_precio": 1.0022576057747874,
-    "prediccion": -0.00026248394655
+    "absoluta": 7.4954287916669e-05,
+    "precio": 6.58775923628,
+    "ultima_relativa": 8.980358333333e-06,
+    "ultima_relativa_t": 1795712400000,
+    "rel_sobre_abs_por_precio": 0.018186932921386796,
+    "rel_sobre_abs_entre_precio": 0.7892869133956768,
+    "prediccion": 6.332632305e-05
    },
    "funding": {
-    "kraken_anual_pct": -2.73,
-    "hyperliquid_anual_pct": 3.48,
-    "diferencia_anual_pct": -6.21,
-    "correlacion_diaria": 0.513,
+    "kraken_anual_pct": -2.72,
+    "hyperliquid_anual_pct": 3.39,
+    "diferencia_anual_pct": -6.12,
+    "correlacion_diaria": 0.511,
     "dias": 201
    }
   },
@@ -807,48 +807,48 @@
    "en_kraken": true,
    "hyperliquid": {
     "coste_ida_pct": {
-     "50": 0.0512,
-     "200": 0.0512,
-     "1000": 0.0515
+     "50": 0.0457,
+     "200": 0.0457,
+     "1000": 0.0463
     },
     "orden_min_usd": 10.0,
     "apalancamiento_max": 10
    },
    "kraken": {
     "simbolo": "PF_SUIUSD",
-    "volumen_24h_musd": 1.87,
-    "interes_abierto_musd": 2.93,
-    "diferencial_pb": 6.24,
-    "orden_min_usd": 0.64,
+    "volumen_24h_musd": 2.16,
+    "interes_abierto_musd": 3.07,
+    "diferencial_pb": 3.01,
+    "orden_min_usd": 0.66,
     "apalancamiento_max": 50.0,
     "apalancamiento_max_minorista": 50.0,
     "coste_ida_pct": {
-     "50": 0.0734,
-     "200": 0.0734,
-     "1000": 0.0781
+     "50": 0.065,
+     "200": 0.065,
+     "1000": 0.0733
     }
    },
    "precios": {
     "horas_comunes": 4800,
-    "correlacion": 0.9981,
+    "correlacion": 0.998,
     "seguimiento_pb_hora": 5.69,
-    "diferencia_precio_pb": -3.49
+    "diferencia_precio_pb": -3.5
    },
    "funding_intervalo_kraken_h": 1.0,
    "funding_ticker": {
-    "absoluta": -2.1017379642188e-05,
-    "precio": 0.64173620258,
-    "ultima_relativa": -3.28209375e-05,
-    "ultima_relativa_t": 1795593600000,
-    "rel_sobre_abs_por_precio": 2.4334132753674718,
-    "rel_sobre_abs_entre_precio": 1.0021412828308618,
-    "prediccion": -4.262484702125e-05
+    "absoluta": 2.5802692028e-06,
+    "precio": 0.66420885616,
+    "ultima_relativa": 4.9640875e-06,
+    "ultima_relativa_t": 1795712400000,
+    "rel_sobre_abs_por_precio": 2.896474752592838,
+    "rel_sobre_abs_entre_precio": 1.2778476279433093,
+    "prediccion": 2.2310618484e-06
    },
    "funding": {
-    "kraken_anual_pct": 1.26,
-    "hyperliquid_anual_pct": 7.69,
-    "diferencia_anual_pct": -6.43,
-    "correlacion_diaria": 0.564,
+    "kraken_anual_pct": 1.29,
+    "hyperliquid_anual_pct": 7.59,
+    "diferencia_anual_pct": -6.3,
+    "correlacion_diaria": 0.549,
     "dias": 201
    }
   },
@@ -857,47 +857,47 @@
    "en_kraken": true,
    "hyperliquid": {
     "coste_ida_pct": {
-     "50": 0.0457,
-     "200": 0.0457,
-     "1000": 0.0462
+     "50": 0.0499,
+     "200": 0.0499,
+     "1000": 0.0499
     },
     "orden_min_usd": 10.0,
     "apalancamiento_max": 10
    },
    "kraken": {
     "simbolo": "PF_ZECUSD",
-    "volumen_24h_musd": 23.38,
-    "interes_abierto_musd": 8.69,
-    "diferencial_pb": 6.73,
-    "orden_min_usd": 7.28,
+    "volumen_24h_musd": 55.99,
+    "interes_abierto_musd": 8.6,
+    "diferencial_pb": 3.7,
+    "orden_min_usd": 7.03,
     "apalancamiento_max": 50.0,
     "apalancamiento_max_minorista": 50.0,
     "coste_ida_pct": {
-     "50": 0.0707,
-     "200": 0.0732,
-     "1000": 0.0833
+     "50": 0.084,
+     "200": 0.084,
+     "1000": 0.0841
     }
    },
    "precios": {
     "horas_comunes": 4800,
     "correlacion": 0.998,
-    "seguimiento_pb_hora": 8.27,
-    "diferencia_precio_pb": -5.35
+    "seguimiento_pb_hora": 8.28,
+    "diferencia_precio_pb": -5.39
    },
    "funding_intervalo_kraken_h": 1.0,
    "funding_ticker": {
-    "absoluta": 0.0062534053370025,
-    "precio": 728.30865681413,
-    "ultima_relativa": 8.573025e-06,
-    "ultima_relativa_t": 1795593600000,
-    "rel_sobre_abs_por_precio": 1.8823571939626654e-06,
-    "rel_sobre_abs_entre_precio": 0.9984653138727864,
-    "prediccion": -0.005587871284125
+    "absoluta": -0.007021380812712266,
+    "precio": 703.35302944563,
+    "ultima_relativa": -5.7498875e-06,
+    "ultima_relativa_t": 1795712400000,
+    "rel_sobre_abs_por_precio": 1.1642961383699992e-06,
+    "rel_sobre_abs_entre_precio": 0.5759836846869922,
+    "prediccion": -0.000976333906505182
    },
    "funding": {
-    "kraken_anual_pct": -0.43,
-    "hyperliquid_anual_pct": 8.58,
-    "diferencia_anual_pct": -9.01,
+    "kraken_anual_pct": -0.09,
+    "hyperliquid_anual_pct": 8.6,
+    "diferencia_anual_pct": -8.69,
     "correlacion_diaria": 0.554,
     "dias": 201
    }
@@ -907,48 +907,48 @@
    "en_kraken": true,
    "hyperliquid": {
     "coste_ida_pct": {
-     "50": 0.0538,
-     "200": 0.0538,
-     "1000": 0.0538
+     "50": 0.0482,
+     "200": 0.0482,
+     "1000": 0.0522
     },
     "orden_min_usd": 10.0,
     "apalancamiento_max": 10
    },
    "kraken": {
     "simbolo": "PF_NEARUSD",
-    "volumen_24h_musd": 8.89,
-    "interes_abierto_musd": 2.8,
-    "diferencial_pb": 8.4,
-    "orden_min_usd": 2.86,
+    "volumen_24h_musd": 8.36,
+    "interes_abierto_musd": 3.42,
+    "diferencial_pb": 4.25,
+    "orden_min_usd": 3.06,
     "apalancamiento_max": 50.0,
     "apalancamiento_max_minorista": 50.0,
     "coste_ida_pct": {
-     "50": 0.0864,
-     "200": 0.0924,
-     "1000": 0.1018
+     "50": 0.0922,
+     "200": 0.0927,
+     "1000": 0.099
     }
    },
    "precios": {
     "horas_comunes": 4800,
     "correlacion": 0.9958,
-    "seguimiento_pb_hora": 11.58,
-    "diferencia_precio_pb": -4.97
+    "seguimiento_pb_hora": 11.56,
+    "diferencia_precio_pb": -5.01
    },
    "funding_intervalo_kraken_h": 1.0,
    "funding_ticker": {
-    "absoluta": 6.461526254168e-06,
-    "precio": 2.85621471614,
-    "ultima_relativa": 2.270229166667e-06,
-    "ultima_relativa_t": 1795593600000,
-    "rel_sobre_abs_por_precio": 0.12301093887264297,
-    "rel_sobre_abs_entre_precio": 1.0035186269903134,
-    "prediccion": -0.0001749938122125
+    "absoluta": 9.630785511668e-06,
+    "precio": 3.06104156166,
+    "ultima_relativa": 4.752445833333e-06,
+    "ultima_relativa_t": 1795712400000,
+    "rel_sobre_abs_por_precio": 0.1612078695452804,
+    "rel_sobre_abs_entre_precio": 1.5105137787302534,
+    "prediccion": 1.22596385625e-05
    },
    "funding": {
-    "kraken_anual_pct": 1.08,
-    "hyperliquid_anual_pct": 12.27,
-    "diferencia_anual_pct": -11.2,
-    "correlacion_diaria": 0.363,
+    "kraken_anual_pct": 1.17,
+    "hyperliquid_anual_pct": 12.22,
+    "diferencia_anual_pct": -11.05,
+    "correlacion_diaria": 0.361,
     "dias": 201
    }
   },
@@ -957,48 +957,48 @@
    "en_kraken": true,
    "hyperliquid": {
     "coste_ida_pct": {
-     "50": 0.0461,
-     "200": 0.0482,
-     "1000": 0.0522
+     "50": 0.0493,
+     "200": 0.0505,
+     "1000": 0.0533
     },
     "orden_min_usd": 10.0,
     "apalancamiento_max": 10
    },
    "kraken": {
     "simbolo": "PF_UNIUSD",
-    "volumen_24h_musd": 1.93,
-    "interes_abierto_musd": 1.83,
-    "diferencial_pb": 4.39,
+    "volumen_24h_musd": 3.79,
+    "interes_abierto_musd": 2.37,
+    "diferencial_pb": 4.34,
     "orden_min_usd": 0.46,
     "apalancamiento_max": 50.0,
     "apalancamiento_max_minorista": 50.0,
     "coste_ida_pct": {
-     "50": 0.0863,
-     "200": 0.0921,
-     "1000": 0.0936
+     "50": 0.0717,
+     "200": 0.0717,
+     "1000": 0.0796
     }
    },
    "precios": {
     "horas_comunes": 4800,
     "correlacion": 0.9956,
-    "seguimiento_pb_hora": 10.15,
-    "diferencia_precio_pb": -3.04
+    "seguimiento_pb_hora": 10.13,
+    "diferencia_precio_pb": -3.05
    },
    "funding_intervalo_kraken_h": 1.0,
    "funding_ticker": {
-    "absoluta": -5.6744298198918e-05,
-    "precio": 4.55348433376,
-    "ultima_relativa": -1.2467191666667e-05,
-    "ultima_relativa_t": 1795593600000,
-    "rel_sobre_abs_por_precio": 0.04825058246678325,
-    "rel_sobre_abs_entre_precio": 1.0004381716229223,
-    "prediccion": -0.00012498232134375
+    "absoluta": -5.427394536002e-06,
+    "precio": 4.60733175406,
+    "ultima_relativa": 1.5671341666667e-05,
+    "ultima_relativa_t": 1795712400000,
+    "rel_sobre_abs_por_precio": -0.6267080902103291,
+    "rel_sobre_abs_entre_precio": -13.303449677484773,
+    "prediccion": 7.5031764201625e-05
    },
    "funding": {
-    "kraken_anual_pct": 0.79,
-    "hyperliquid_anual_pct": 10.53,
-    "diferencia_anual_pct": -9.74,
-    "correlacion_diaria": 0.61,
+    "kraken_anual_pct": 0.94,
+    "hyperliquid_anual_pct": 10.52,
+    "diferencia_anual_pct": -9.57,
+    "correlacion_diaria": 0.607,
     "dias": 201
    }
   },
@@ -1007,48 +1007,48 @@
    "en_kraken": true,
    "hyperliquid": {
     "coste_ida_pct": {
-     "50": 0.0542,
-     "200": 0.0626,
-     "1000": 0.0666
+     "50": 0.0502,
+     "200": 0.0537,
+     "1000": 0.0547
     },
     "orden_min_usd": 10.0,
     "apalancamiento_max": 10
    },
    "kraken": {
     "simbolo": "PF_ENAUSD",
-    "volumen_24h_musd": 1.91,
-    "interes_abierto_musd": 1.24,
-    "diferencial_pb": 10.44,
+    "volumen_24h_musd": 1.78,
+    "interes_abierto_musd": 1.38,
+    "diferencial_pb": 5.96,
     "orden_min_usd": 0.1,
     "apalancamiento_max": 50.0,
     "apalancamiento_max_minorista": 50.0,
     "coste_ida_pct": {
-     "50": 0.0866,
-     "200": 0.0866,
-     "1000": 0.0895
+     "50": 0.0896,
+     "200": 0.0918,
+     "1000": 0.1016
     }
    },
    "precios": {
     "horas_comunes": 4800,
     "correlacion": 0.9871,
-    "seguimiento_pb_hora": 20.89,
+    "seguimiento_pb_hora": 20.84,
     "diferencia_precio_pb": -2.27
    },
    "funding_intervalo_kraken_h": 1.0,
    "funding_ticker": {
-    "absoluta": -3.5263454643e-06,
-    "precio": 0.0958413768,
-    "ultima_relativa": -3.6821366666667e-05,
-    "ultima_relativa_t": 1795593600000,
-    "rel_sobre_abs_por_precio": 108.94868769475269,
-    "rel_sobre_abs_entre_precio": 1.0007557435078247,
-    "prediccion": -4.37486141425e-06
+    "absoluta": -1.163567386729e-06,
+    "precio": 0.10069508931,
+    "ultima_relativa": 3.2291704166667e-05,
+    "ultima_relativa_t": 1795712400000,
+    "rel_sobre_abs_por_precio": -275.60756471831917,
+    "rel_sobre_abs_entre_precio": -2.7945231811416766,
+    "prediccion": 3.245324376958e-06
    },
    "funding": {
-    "kraken_anual_pct": -2.0,
-    "hyperliquid_anual_pct": 10.38,
-    "diferencia_anual_pct": -12.37,
-    "correlacion_diaria": 0.606,
+    "kraken_anual_pct": -1.98,
+    "hyperliquid_anual_pct": 10.37,
+    "diferencia_anual_pct": -12.35,
+    "correlacion_diaria": 0.603,
     "dias": 201
    }
   },
@@ -1057,48 +1057,48 @@
    "en_kraken": true,
    "hyperliquid": {
     "coste_ida_pct": {
-     "50": 0.051,
-     "200": 0.0514,
-     "1000": 0.0545
+     "50": 0.0487,
+     "200": 0.0487,
+     "1000": 0.0516
     },
     "orden_min_usd": 10.0,
     "apalancamiento_max": 10
    },
    "kraken": {
     "simbolo": "PF_AAVEUSD",
-    "volumen_24h_musd": 0.76,
-    "interes_abierto_musd": 1.8,
-    "diferencial_pb": 7.6,
-    "orden_min_usd": 0.92,
+    "volumen_24h_musd": 1.85,
+    "interes_abierto_musd": 2.21,
+    "diferencial_pb": 1.07,
+    "orden_min_usd": 0.93,
     "apalancamiento_max": 50.0,
     "apalancamiento_max_minorista": 50.0,
     "coste_ida_pct": {
-     "50": 0.0934,
-     "200": 0.0934,
-     "1000": 0.0979
+     "50": 0.0714,
+     "200": 0.0714,
+     "1000": 0.0809
     }
    },
    "precios": {
     "horas_comunes": 4800,
     "correlacion": 0.991,
-    "seguimiento_pb_hora": 11.98,
-    "diferencia_precio_pb": -2.15
+    "seguimiento_pb_hora": 11.96,
+    "diferencia_precio_pb": -2.16
    },
    "funding_intervalo_kraken_h": 1.0,
    "funding_ticker": {
-    "absoluta": -0.000662274985254136,
-    "precio": 92.16150889642,
-    "ultima_relativa": -7.179770833333e-06,
-    "ultima_relativa_t": 1795593600000,
-    "rel_sobre_abs_por_precio": 0.00011763123435964263,
-    "rel_sobre_abs_entre_precio": 0.99912955836096,
-    "prediccion": -0.0017499154249
+    "absoluta": 0.000301808947733364,
+    "precio": 93.08534686238,
+    "ultima_relativa": 1.0609654166667e-05,
+    "ultima_relativa_t": 1795712400000,
+    "rel_sobre_abs_por_precio": 0.00037764852715443264,
+    "rel_sobre_abs_entre_precio": 3.2722798499221457,
+    "prediccion": 0.000933848889013302
    },
    "funding": {
-    "kraken_anual_pct": -2.24,
-    "hyperliquid_anual_pct": 8.75,
-    "diferencia_anual_pct": -10.99,
-    "correlacion_diaria": 0.307,
+    "kraken_anual_pct": -2.16,
+    "hyperliquid_anual_pct": 8.7,
+    "diferencia_anual_pct": -10.86,
+    "correlacion_diaria": 0.31,
     "dias": 201
    }
   },
@@ -1107,48 +1107,48 @@
    "en_kraken": true,
    "hyperliquid": {
     "coste_ida_pct": {
-     "50": 0.0661,
-     "200": 0.0661,
-     "1000": 0.0772
+     "50": 0.0517,
+     "200": 0.0542,
+     "1000": 0.0594
     },
     "orden_min_usd": 10.0,
     "apalancamiento_max": 10
    },
    "kraken": {
     "simbolo": "PF_ADAUSD",
-    "volumen_24h_musd": 3.38,
-    "interes_abierto_musd": 2.91,
-    "diferencial_pb": 5.61,
-    "orden_min_usd": 0.14,
+    "volumen_24h_musd": 6.83,
+    "interes_abierto_musd": 3.76,
+    "diferencial_pb": 2.02,
+    "orden_min_usd": 0.15,
     "apalancamiento_max": 50.0,
     "apalancamiento_max_minorista": 50.0,
     "coste_ida_pct": {
-     "50": 0.0781,
-     "200": 0.0807,
-     "1000": 0.1084
+     "50": 0.0734,
+     "200": 0.0734,
+     "1000": 0.0788
     }
    },
    "precios": {
     "horas_comunes": 4800,
     "correlacion": 0.9971,
-    "seguimiento_pb_hora": 6.42,
+    "seguimiento_pb_hora": 6.43,
     "diferencia_precio_pb": -0.38
    },
    "funding_intervalo_kraken_h": 1.0,
    "funding_ticker": {
-    "absoluta": 2.16130906617e-07,
-    "precio": 0.14262065585,
-    "ultima_relativa": 1.518391666667e-06,
-    "ultima_relativa_t": 1795593600000,
-    "rel_sobre_abs_por_precio": 49.25887705527799,
-    "rel_sobre_abs_entre_precio": 1.0019576502354284,
-    "prediccion": -2.1230371375e-06
+    "absoluta": 7.40781277808e-07,
+    "precio": 0.14854739973,
+    "ultima_relativa": 9.60505e-06,
+    "ultima_relativa_t": 1795712400000,
+    "rel_sobre_abs_por_precio": 87.28599728289944,
+    "rel_sobre_abs_entre_precio": 1.9260816175033575,
+    "prediccion": 1.497801287062e-06
    },
    "funding": {
-    "kraken_anual_pct": -2.33,
-    "hyperliquid_anual_pct": -2.42,
-    "diferencia_anual_pct": 0.09,
-    "correlacion_diaria": 0.573,
+    "kraken_anual_pct": -2.31,
+    "hyperliquid_anual_pct": -2.56,
+    "diferencia_anual_pct": 0.25,
+    "correlacion_diaria": 0.567,
     "dias": 201
    }
   },
@@ -1157,48 +1157,48 @@
    "en_kraken": true,
    "hyperliquid": {
     "coste_ida_pct": {
-     "50": 0.0541,
-     "200": 0.057,
-     "1000": 0.067
+     "50": 0.0511,
+     "200": 0.0532,
+     "1000": 0.0566
     },
     "orden_min_usd": 10.0,
     "apalancamiento_max": 10
    },
    "kraken": {
     "simbolo": "PF_ARBUSD",
-    "volumen_24h_musd": 0.5,
-    "interes_abierto_musd": 0.9,
-    "diferencial_pb": 13.69,
+    "volumen_24h_musd": 0.57,
+    "interes_abierto_musd": 1.08,
+    "diferencial_pb": 4.44,
     "orden_min_usd": 0.11,
     "apalancamiento_max": 50.0,
     "apalancamiento_max_minorista": 50.0,
     "coste_ida_pct": {
-     "50": 0.1048,
-     "200": 0.1048,
-     "1000": 0.1129
+     "50": 0.0941,
+     "200": 0.0941,
+     "1000": 0.1008
     }
    },
    "precios": {
     "horas_comunes": 4800,
-    "correlacion": 0.9852,
-    "seguimiento_pb_hora": 19.72,
-    "diferencia_precio_pb": 0.67
+    "correlacion": 0.9851,
+    "seguimiento_pb_hora": 19.78,
+    "diferencia_precio_pb": 0.74
    },
    "funding_intervalo_kraken_h": 1.0,
    "funding_ticker": {
-    "absoluta": 3.9435829525e-07,
-    "precio": 0.10968346265,
-    "ultima_relativa": 3.597175e-06,
-    "ultima_relativa_t": 1795593600000,
-    "rel_sobre_abs_por_precio": 83.16286325262607,
-    "rel_sobre_abs_entre_precio": 1.0004876644166742,
-    "prediccion": 0
+    "absoluta": 2.1317620875e-08,
+    "precio": 0.11274573488,
+    "ultima_relativa": 4.067291666667e-06,
+    "ultima_relativa_t": 1795712400000,
+    "rel_sobre_abs_por_precio": 1692.2575524752729,
+    "rel_sobre_abs_entre_precio": 21.5113023455377,
+    "prediccion": 2.92056857e-07
    },
    "funding": {
-    "kraken_anual_pct": -1.74,
-    "hyperliquid_anual_pct": 4.92,
-    "diferencia_anual_pct": -6.66,
-    "correlacion_diaria": 0.272,
+    "kraken_anual_pct": -1.66,
+    "hyperliquid_anual_pct": 4.79,
+    "diferencia_anual_pct": -6.44,
+    "correlacion_diaria": 0.262,
     "dias": 201
    }
   },
@@ -1207,48 +1207,48 @@
    "en_kraken": true,
    "hyperliquid": {
     "coste_ida_pct": {
-     "50": 0.0484,
-     "200": 0.054,
-     "1000": 0.0622
+     "50": 0.0553,
+     "200": 0.0553,
+     "1000": 0.0676
     },
     "orden_min_usd": 10.0,
     "apalancamiento_max": 10
    },
    "kraken": {
     "simbolo": "PF_WLDUSD",
-    "volumen_24h_musd": 0.36,
-    "interes_abierto_musd": 0.54,
-    "diferencial_pb": 8.64,
-    "orden_min_usd": 0.23,
+    "volumen_24h_musd": 2.01,
+    "interes_abierto_musd": 0.56,
+    "diferencial_pb": 4.13,
+    "orden_min_usd": 0.24,
     "apalancamiento_max": 50.0,
     "apalancamiento_max_minorista": 50.0,
     "coste_ida_pct": {
-     "50": 0.0932,
-     "200": 0.1001,
-     "1000": 0.1199
+     "50": 0.0912,
+     "200": 0.0912,
+     "1000": 0.0949
     }
    },
    "precios": {
     "horas_comunes": 4800,
-    "correlacion": 0.9936,
-    "seguimiento_pb_hora": 15.86,
-    "diferencia_precio_pb": -3.09
+    "correlacion": 0.9937,
+    "seguimiento_pb_hora": 15.84,
+    "diferencia_precio_pb": -3.05
    },
    "funding_intervalo_kraken_h": 1.0,
    "funding_ticker": {
-    "absoluta": -4.067112161e-06,
-    "precio": 0.23175152186,
-    "ultima_relativa": -1.7622566666667e-05,
-    "ultima_relativa_t": 1795593600000,
-    "rel_sobre_abs_por_precio": 18.696504487456043,
-    "rel_sobre_abs_entre_precio": 1.0041662197669068,
-    "prediccion": -1.37167993375e-05
+    "absoluta": 8.043969032e-06,
+    "precio": 0.24199503709,
+    "ultima_relativa": 1.9725870833333e-05,
+    "ultima_relativa_t": 1795712400000,
+    "rel_sobre_abs_por_precio": 10.133496821556054,
+    "rel_sobre_abs_entre_precio": 0.5934337669569697,
+    "prediccion": 5.143643709167e-06
    },
    "funding": {
-    "kraken_anual_pct": -1.42,
-    "hyperliquid_anual_pct": 2.96,
-    "diferencia_anual_pct": -4.38,
-    "correlacion_diaria": 0.733,
+    "kraken_anual_pct": -1.45,
+    "hyperliquid_anual_pct": 2.71,
+    "diferencia_anual_pct": -4.15,
+    "correlacion_diaria": 0.736,
     "dias": 201
    }
   },
@@ -1257,48 +1257,48 @@
    "en_kraken": true,
    "hyperliquid": {
     "coste_ida_pct": {
-     "50": 0.0588,
-     "200": 0.0609,
-     "1000": 0.0743
+     "50": 0.0461,
+     "200": 0.0461,
+     "1000": 0.0461
     },
     "orden_min_usd": 10.0,
     "apalancamiento_max": 5
    },
    "kraken": {
     "simbolo": "PF_XMRUSD",
-    "volumen_24h_musd": 1.15,
-    "interes_abierto_musd": 2.54,
-    "diferencial_pb": 17.35,
-    "orden_min_usd": 5.08,
+    "volumen_24h_musd": 3.92,
+    "interes_abierto_musd": 2.3,
+    "diferencial_pb": 18.45,
+    "orden_min_usd": 4.5,
     "apalancamiento_max": 50.0,
     "apalancamiento_max_minorista": 50.0,
     "coste_ida_pct": {
-     "50": 0.114,
-     "200": 0.1246,
-     "1000": 0.1313
+     "50": 0.1284,
+     "200": 0.1345,
+     "1000": 0.1362
     }
    },
    "precios": {
     "horas_comunes": 4800,
-    "correlacion": 0.9832,
-    "seguimiento_pb_hora": 16.75,
-    "diferencia_precio_pb": -14.72
+    "correlacion": 0.9835,
+    "seguimiento_pb_hora": 16.78,
+    "diferencia_precio_pb": -14.79
    },
    "funding_intervalo_kraken_h": 1.0,
    "funding_ticker": {
-    "absoluta": -0.001504557213333165,
-    "precio": 507.7148921915,
-    "ultima_relativa": -2.973333333333e-06,
-    "ultima_relativa_t": 1795593600000,
-    "rel_sobre_abs_por_precio": 3.892377829942722e-06,
-    "rel_sobre_abs_entre_precio": 1.003355405434007,
-    "prediccion": -0.00849997180625
+    "absoluta": 0.06702958221513348,
+    "precio": 450.30387797655,
+    "ultima_relativa": 9.321079166667e-06,
+    "ultima_relativa_t": 1795712400000,
+    "rel_sobre_abs_por_precio": 3.0881187835072183e-07,
+    "rel_sobre_abs_entre_precio": 0.06261889089812851,
+    "prediccion": 0.005854319885025
    },
    "funding": {
-    "kraken_anual_pct": 24.33,
-    "hyperliquid_anual_pct": 33.74,
-    "diferencia_anual_pct": -9.41,
-    "correlacion_diaria": 0.534,
+    "kraken_anual_pct": 24.41,
+    "hyperliquid_anual_pct": 33.48,
+    "diferencia_anual_pct": -9.07,
+    "correlacion_diaria": 0.532,
     "dias": 201
    }
   },
@@ -1307,48 +1307,48 @@
    "en_kraken": true,
    "hyperliquid": {
     "coste_ida_pct": {
-     "50": 0.0594,
-     "200": 0.0594,
-     "1000": 0.0687
+     "50": 0.0593,
+     "200": 0.0638,
+     "1000": 0.0716
     },
     "orden_min_usd": 10.0,
     "apalancamiento_max": 10
    },
    "kraken": {
     "simbolo": "PF_PEPEUSD",
-    "volumen_24h_musd": 1.28,
-    "interes_abierto_musd": 0.86,
-    "diferencial_pb": 14.05,
+    "volumen_24h_musd": 1.74,
+    "interes_abierto_musd": 0.97,
+    "diferencial_pb": 4.9,
     "orden_min_usd": 0.0,
     "apalancamiento_max": 50.0,
     "apalancamiento_max_minorista": 50.0,
     "coste_ida_pct": {
-     "50": 0.0974,
-     "200": 0.0974,
-     "1000": 0.0999
+     "50": 0.0771,
+     "200": 0.0771,
+     "1000": 0.0938
     }
    },
    "precios": {
     "horas_comunes": 4800,
     "correlacion": 0.9834,
-    "seguimiento_pb_hora": 18.29,
-    "diferencia_precio_pb": -6.46
+    "seguimiento_pb_hora": 18.37,
+    "diferencia_precio_pb": -6.44
    },
    "funding_intervalo_kraken_h": 1.0,
    "funding_ticker": {
-    "absoluta": -1.01970825e-10,
-    "precio": 3.49069e-06,
-    "ultima_relativa": -2.93145125e-05,
-    "ultima_relativa_t": 1795593600000,
-    "rel_sobre_abs_por_precio": 82356041051.70674,
-    "rel_sobre_abs_entre_precio": 1.0035014979885177,
-    "prediccion": -3.499946e-11
+    "absoluta": -2.09379385e-10,
+    "precio": 3.47176e-06,
+    "ultima_relativa": -4.4732179166667e-05,
+    "ultima_relativa_t": 1795712400000,
+    "rel_sobre_abs_por_precio": 61537017102.52828,
+    "rel_sobre_abs_entre_precio": 0.7417128975885942,
+    "prediccion": -1.54986716e-10
    },
    "funding": {
-    "kraken_anual_pct": -2.79,
-    "hyperliquid_anual_pct": 8.43,
-    "diferencia_anual_pct": -11.22,
-    "correlacion_diaria": 0.476,
+    "kraken_anual_pct": -2.98,
+    "hyperliquid_anual_pct": 8.31,
+    "diferencia_anual_pct": -11.29,
+    "correlacion_diaria": 0.483,
     "dias": 201
    }
   }
@@ -1356,36 +1356,36 @@
  "perpetuos_kraken": 196,
  "costes_por_giro": {
   "hyperliquid": 0.07,
-  "kraken_futuros": 0.0796,
+  "kraken_futuros": 0.075,
   "kraken_contado": 0.825
  },
  "estrategias": {
   "siempre_comprado_20_monedas_escala_vol": {
    "giro_anual": 6.1,
-   "sin_costes_pct": 4.74,
+   "sin_costes_pct": 4.86,
    "solo_compras": true,
-   "coste_que_lo_anula_pct": 0.733,
-   "hyperliquid": 4.29,
-   "kraken_futuros": 4.23,
-   "kraken_contado": -0.59
+   "coste_que_lo_anula_pct": 0.75,
+   "hyperliquid": 4.41,
+   "kraken_futuros": 4.38,
+   "kraken_contado": -0.49
   },
   "tendencia_semana_mes": {
    "giro_anual": 23.3,
-   "sin_costes_pct": 27.96,
+   "sin_costes_pct": 27.79,
    "solo_compras": false,
-   "coste_que_lo_anula_pct": 0.932,
-   "hyperliquid": 25.86,
-   "kraken_futuros": 25.57,
-   "kraken_contado": 3.21
+   "coste_que_lo_anula_pct": 0.928,
+   "hyperliquid": 25.69,
+   "kraken_futuros": 25.54,
+   "kraken_contado": 3.08
   },
   "vendido_cuando_funding_positivo": {
-   "giro_anual": 14.0,
-   "sin_costes_pct": -9.24,
+   "giro_anual": 13.9,
+   "sin_costes_pct": -9.31,
    "solo_compras": false,
    "coste_que_lo_anula_pct": 0.0,
-   "hyperliquid": -10.13,
-   "kraken_futuros": -10.26,
-   "kraken_contado": -19.8
+   "hyperliquid": -10.2,
+   "kraken_futuros": -10.27,
+   "kraken_contado": -19.85
   },
   "lab_cruce_24_336_c2_sec_amb_nf_h1": {
    "giro_anual": 8.0,
@@ -1393,54 +1393,54 @@
    "solo_compras": false,
    "coste_que_lo_anula_pct": 0.288,
    "hyperliquid": 1.82,
-   "kraken_futuros": 1.74,
+   "kraken_futuros": 1.78,
    "kraken_contado": -4.48
   },
   "lab_cruce_24_168_c2_ser_lar_ba_h24": {
    "giro_anual": 5.5,
    "sin_costes_pct": 5.33,
    "solo_compras": true,
-   "coste_que_lo_anula_pct": 0.913,
+   "coste_que_lo_anula_pct": 0.912,
    "hyperliquid": 4.92,
-   "kraken_futuros": 4.87,
+   "kraken_futuros": 4.89,
    "kraken_contado": 0.51
   },
   "lab_cruce_12_336_s_ser_amb_ba_h1": {
    "giro_anual": 62.2,
-   "sin_costes_pct": 32.77,
+   "sin_costes_pct": 32.75,
    "solo_compras": false,
    "coste_que_lo_anula_pct": 0.399,
-   "hyperliquid": 27.03,
-   "kraken_futuros": 26.24,
-   "kraken_contado": -34.94
+   "hyperliquid": 27.01,
+   "kraken_futuros": 26.6,
+   "kraken_contado": -34.92
   },
   "lab_impulso_72_c2_ser_lar_ba_h24": {
    "giro_anual": 11.8,
    "sin_costes_pct": 6.42,
    "solo_compras": true,
    "coste_que_lo_anula_pct": 0.506,
-   "hyperliquid": 5.54,
-   "kraken_futuros": 5.41,
-   "kraken_contado": -4.05
+   "hyperliquid": 5.53,
+   "kraken_futuros": 5.47,
+   "kraken_contado": -4.06
   },
   "lab_cruce_24_336_c2_ser_amb_ba_h24": {
    "giro_anual": 7.4,
    "sin_costes_pct": 5.63,
    "solo_compras": false,
    "coste_que_lo_anula_pct": 0.709,
-   "hyperliquid": 5.08,
-   "kraken_futuros": 5.0,
+   "hyperliquid": 5.07,
+   "kraken_futuros": 5.03,
    "kraken_contado": -0.92
   },
   "lab_impulso_720_c0.5_ser_lar_nf_h24": {
    "giro_anual": 18.2,
-   "sin_costes_pct": 18.58,
+   "sin_costes_pct": 18.57,
    "solo_compras": true,
-   "coste_que_lo_anula_pct": 0.854,
-   "hyperliquid": 17.06,
-   "kraken_futuros": 16.85,
-   "kraken_contado": 0.63
+   "coste_que_lo_anula_pct": 0.855,
+   "hyperliquid": 17.05,
+   "kraken_futuros": 16.94,
+   "kraken_contado": 0.65
   }
  },
- "estrategias_de": "2026-11-25T07:57:42Z"
+ "estrategias_de": "2026-11-26T14:10:12Z"
 }
