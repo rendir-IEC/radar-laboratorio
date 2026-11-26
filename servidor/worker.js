@@ -16,7 +16,7 @@
 // y un disparador Cron cada minuto (* * * * *). Primero repasa unas 5000 horas de historia, 16 por minuto;
 // después aprende cada hora en vivo. Todo en papel: no mueve dinero.
 
-const VERSION = '2.8.0';
+const VERSION = '2.9.0';
 const HL = 'https://api.hyperliquid.xyz/info';
 const BINANCE = 'https://data-api.binance.vision/api/v3';
 const KRAKEN = 'https://api.kraken.com/0/public';
@@ -1119,6 +1119,9 @@ async function apCiclo(env) {
     for (const ap of r.value.assetPositions || []) { const q = ap && ap.position; if (q && num(q.szi)) pos[q.coin] = num(q.szi); }
     carteras[seguidas[i]] = { av: num(r.value.marginSummary.accountValue), pos };
   });
+  // cazadores de funding: con los datos de esta misma hora (sin peticiones de más); si fallan, el sistema sigue
+  let C = null, cz = null;
+  try { C = (await czCargar(env)) || czNuevo(horaActual); cz = czPaso(C, czMercados(meta, ctxs), horaActual); } catch (e) { console.log('cazadores: ' + (e.message || e)); C = null; }
   const flujo = await apFlujoDeLaHora(env, horaActual - H1);
   const antes = prFoto(E);
   apPaso(E, { t: horaActual, px: p, f, carteras, pxTodos: todos, flujo });
@@ -1128,6 +1131,7 @@ async function apCiclo(env) {
   curva.push([horaActual, E.sistema.log, E.btcLog, E.sistema.n]);
   await apGuardar(env, E, curva);
   if (P) await prGuardar(env, P).catch((e) => console.log('prácticas: ' + (e.message || e)));
+  if (C) await czGuardar(env, C).catch((e) => console.log('cazadores: ' + (e.message || e)));
   if (pr && pr.graduados.length) await avisosGraduados(env, pr.graduados, horaActual).catch((e) => console.log('avisos: ' + (e.message || e)));
   return { ok: true, modo: 'en vivo', hora: iso(horaActual), carteras: Object.keys(carteras).length, practicas: pr ? { quiebras: pr.quiebras.length, retirados: pr.retirados, graduados: pr.graduados.length } : null };
 }
@@ -2048,6 +2052,143 @@ async function prVista(env, v) {
   return { rows: filas, equipo, resumen: { alumnos: P.alumnos.length, arriesgados: P.alumnos.filter((A) => prGrupo(A) === 'arriesgado').length, retiradosArriesgados: gr.retirados, quiebrasArriesgados: gr.quiebras, probadas: P.probadas, rondas: P.rondas, proximaRonda: iso(proxima), retirados: P.cuenta.retirados, quiebras: P.cuenta.quiebras, graduados: P.graduados, abierta: iso(P.creado), hasta: P.t ? iso(P.t) : null }, nota };
 }
 
+// ---------- cazadores de funding (v2.9.0) ----------
+// Un equipo de 8 cazadores que buscan cada hora, entre todos los perpetuos de Hyperliquid con liquidez, a quienes pagan
+// demasiado por estar apalancados. Los «cubiertos» venden el perpetuo y compran lo mismo al contado: no dependen del precio
+// y cobran el funding (como el experto «carry», con su mismo coste). Los «sin cubrir» apuestan contra el exceso: venden
+// cuando los compradores pagan demasiado y compran cuando pagan los vendedores. Usan los datos que ya llegan en la hora en
+// vivo (sin peticiones de más). Trabajan en equipo: pesa más quien más gana. Todo en papel. Supuesto a vigilar: en monedas
+// pequeñas no siempre hay contado para cubrirse.
+const CZ = {
+  E24: 2 / 25,        // media móvil de unas 24 h del funding de cada mercado
+  ETA: 10,
+  REPARTO: 0.001,
+  MAX_MERCADO: 15,    // filas de la vista de mercados
+};
+const CZ_CAZADORES = [
+  { id: 'cz_cob_20', nombre: 'Cubierto: las 5 que más pagan (desde 20 % al año)', modo: 'cubierto', entra: 0.2, sale: 0.1, k: 5, vol: 1e6 },
+  { id: 'cz_cob_50', nombre: 'Cubierto: las 3 que más pagan (desde 50 % al año)', modo: 'cubierto', entra: 0.5, sale: 0.2, k: 3, vol: 1e6 },
+  { id: 'cz_cob_100', nombre: 'Cubierto: solo extremos (desde 100 % al año)', modo: 'cubierto', entra: 1.0, sale: 0.4, k: 3, vol: 1e6 },
+  { id: 'cz_cob_liq', nombre: 'Cubierto: las 10 que más pagan entre las muy líquidas (más de 5 M$ al día)', modo: 'cubierto', entra: 0.1, sale: 0.05, k: 10, vol: 5e6 },
+  { id: 'cz_cob_const', nombre: 'Cubierto: solo si pagan de forma constante (media de 24 h desde 30 %)', modo: 'cubierto', entra: 0.3, sale: 0.15, k: 5, vol: 1e6, media: true },
+  { id: 'cz_contra_compra', nombre: 'Sin cubrir: vende cuando los compradores pagan demasiado (desde 100 % al año)', modo: 'contra', lado: 'largos', entra: 1.0, sale: 0.3, k: 3, vol: 1e6 },
+  { id: 'cz_contra_venta', nombre: 'Sin cubrir: compra cuando los vendedores pagan demasiado (desde −50 % al año)', modo: 'contra', lado: 'cortos', entra: 0.5, sale: 0.15, k: 3, vol: 1e6 },
+  { id: 'cz_contra_ambos', nombre: 'Sin cubrir: contra los excesos de los dos lados (desde 75 % al año)', modo: 'contra', lado: 'ambos', entra: 0.75, sale: 0.25, k: 5, vol: 1e6 },
+];
+function czNuevo(t) {
+  const cz = {};
+  for (const c of CZ_CAZADORES) cz[c.id] = { pos: {}, st: apStats(), coste: 0, tUlt: null };
+  return { v: 1, creado: t, t: null, px: {}, f: {}, e24: {}, n: {}, cz, eq: { lw: {}, st: apStats() } };
+}
+// Lo que trae la hora en vivo (metaAndAssetCtxs del dex principal): precio, funding horario y volumen de cada perpetuo.
+function czMercados(meta, ctxs) {
+  const out = {};
+  ((meta && meta.universe) || []).forEach((a, i) => {
+    const c = ctxs && ctxs[i];
+    if (!c || a.isDelisted) return;
+    const px = num(c.markPx), f = num(c.funding), vol = num(c.dayNtlVlm);
+    if (!(px > 0) || f == null || !Number.isFinite(f)) return;
+    out[a.name] = { px, f, vol: Number.isFinite(vol) ? vol : 0 };
+  });
+  return out;
+}
+// Funding anual que mira cada cazador: el de ahora o, si lo pide, la media de 24 h.
+const czAnual = (C, c, m, M) => (c.media ? (C.n[m] >= 12 ? C.e24[m] : null) : M[m].f) * 8760;
+function czElige(C, c, M, pos0) {
+  const dentro = (m) => {
+    const fa = czAnual(C, c, m, M);
+    if (fa == null || M[m].vol < c.vol) return 0;
+    if (c.modo === 'cubierto') return fa >= c.entra ? 2 : fa >= c.sale ? 1 : 0;
+    if (c.lado === 'largos') return fa >= c.entra ? 2 : fa >= c.sale ? 1 : 0;
+    if (c.lado === 'cortos') return fa <= -c.entra ? 2 : fa <= -c.sale ? 1 : 0;
+    return Math.abs(fa) >= c.entra ? 2 : Math.abs(fa) >= c.sale ? 1 : 0;
+  };
+  const lado = (m) => (c.modo === 'cubierto' ? 1 : -Math.sign(czAnual(C, c, m, M)));
+  // se quedan los que siguen por encima del umbral de salida (y en el mismo lado); se llenan las plazas con los que más pagan
+  const siguen = Object.keys(pos0).filter((m) => M[m] && dentro(m) >= 1 && (c.modo === 'cubierto' || Math.sign(pos0[m]) === lado(m)));
+  const nuevos = Object.keys(M).filter((m) => !siguen.includes(m) && dentro(m) === 2).sort((a, b) => Math.abs(czAnual(C, c, b, M)) - Math.abs(czAnual(C, c, a, M)) || (a < b ? -1 : 1));
+  const elegidos = siguen.sort((a, b) => Math.abs(czAnual(C, c, b, M)) - Math.abs(czAnual(C, c, a, M))).slice(0, c.k).concat(nuevos).slice(0, c.k);
+  const pos = {};
+  for (const m of elegidos) pos[m] = lado(m) / c.k; // cubierto: fracción del dinero en la pareja; sin cubrir: posición con signo
+  return pos;
+}
+const czPesos = (C) => {
+  const ids = CZ_CAZADORES.map((c) => c.id), s = ids.reduce((a, id) => a + Math.exp(C.eq.lw[id] || 0), 0), w = {};
+  for (const id of ids) w[id] = Math.exp(C.eq.lw[id] || 0) / s;
+  return w;
+};
+// Una hora en vivo. M = czMercados(...) de esta hora.
+function czPaso(C, M, t) {
+  const horas = C.t == null ? 1 : Math.max(1, Math.round((t - C.t) / H1));
+  const w0 = czPesos(C), r = {};
+  let rEq = 0, alguno = false;
+  for (const c of CZ_CAZADORES) { // 1) cobrar o pagar la hora que acaba
+    const X = C.cz[c.id];
+    if (X.tUlt == null) continue;
+    let x = 0;
+    for (const [m, q] of Object.entries(X.pos)) {
+      const f = (C.f[m] || 0) * horas, a = C.px[m], b = M[m] ? M[m].px : null;
+      if (c.modo === 'cubierto') x += q * AP.PARTE_CARRY * f;
+      else if (a > 0 && b > 0) x += q * (b / a - 1 - f);
+    }
+    x -= X.coste || 0; X.coste = 0;
+    apSuma(X.st, Math.max(-0.99, x));
+    r[c.id] = x; rEq += w0[c.id] * x; alguno = true;
+  }
+  if (alguno) apSuma(C.eq.st, Math.max(-0.99, rEq));
+  for (const c of CZ_CAZADORES) if (r[c.id] != null) C.eq.lw[c.id] = (C.eq.lw[c.id] || 0) + CZ.ETA * Math.log(1 + Math.max(r[c.id], -0.99)); // 2) el equipo aprende
+  const w1 = czPesos(C), N = CZ_CAZADORES.length;
+  for (const c of CZ_CAZADORES) C.eq.lw[c.id] = Math.log((1 - CZ.REPARTO) * w1[c.id] + CZ.REPARTO / N);
+  const mx = Math.max(...CZ_CAZADORES.map((c) => C.eq.lw[c.id]));
+  for (const c of CZ_CAZADORES) C.eq.lw[c.id] -= mx;
+  for (const [m, d] of Object.entries(M)) { // 3) memoria del funding de cada mercado
+    const h = C.n[m] ? horas : 1;
+    C.e24[m] = C.e24[m] == null ? d.f : C.e24[m] + (1 - Math.pow(1 - CZ.E24, h)) * (d.f - C.e24[m]);
+    C.n[m] = (C.n[m] || 0) + 1;
+  }
+  for (const m of Object.keys(C.e24)) if (!M[m]) { delete C.e24[m]; delete C.n[m]; } // mercados que desaparecen
+  const usados = new Set();
+  for (const c of CZ_CAZADORES) { // 4) cada cazador elige
+    const X = C.cz[c.id];
+    const pos = czElige(C, c, M, X.pos);
+    const giro = apGiro(pos, X.pos);
+    X.coste = c.modo === 'cubierto' ? apCosteCarry(giro) : giro * AP.COMISION;
+    X.pos = pos; X.tUlt = t;
+    for (const m of Object.keys(pos)) usados.add(m);
+  }
+  C.px = {}; C.f = {};
+  for (const m of usados) { C.px[m] = M[m].px; C.f[m] = M[m].f; }
+  C.t = t;
+  return { cazadores: CZ_CAZADORES.length, mercados: Object.keys(M).length, conPosicion: usados.size };
+}
+async function czCargar(env) {
+  const fila = await env.DB.prepare('SELECT json FROM ap_estado WHERE id = ?1').bind('cazadores').first();
+  return fila ? JSON.parse(fila.json) : null;
+}
+async function czGuardar(env, C) {
+  await env.DB.prepare('INSERT INTO ap_estado (id, json, t) VALUES (?1, ?2, ?3) ON CONFLICT(id) DO UPDATE SET json = excluded.json, t = excluded.t').bind('cazadores', JSON.stringify(C), C.t || Date.now()).run();
+}
+const CZ_NOTA = 'Cazadores de funding, en papel: 8 reglas que buscan cada hora, entre los perpetuos de Hyperliquid con más de 1 M$ de volumen al día, a quienes pagan demasiado por estar apalancados. Cubiertos: venden el perpetuo y compran lo mismo al contado, sin riesgo de precio, y cobran el funding (dos tercios del dinero lo cobran; coste de entrar y salir como el cobro del funding del sistema); supone que hay contado para cubrirse, y en monedas pequeñas no siempre lo hay. Sin cubrir: apuestan contra el exceso y sí dependen del precio. Trabajan en equipo: el resultado del equipo pondera a cada cazador por lo que gana. tStat por encima de 2: poco probable que sea suerte. No mueve dinero ni es una recomendación.';
+async function czVista(env, v) {
+  await apTablas(env);
+  const C = await czCargar(env);
+  if (!C) return { rows: [], nota: 'Los cazadores empiezan en la próxima hora en vivo.' };
+  if (v === 'cazadores_mercado') {
+    const quien = {};
+    for (const c of CZ_CAZADORES) for (const m of Object.keys(C.cz[c.id].pos)) quien[m] = (quien[m] || 0) + 1;
+    const rows = Object.keys(C.e24).filter((m) => C.n[m] >= 3).map((m) => ({ mercado: m, media24hAnualPct: C.e24[m] * 8760 * 100, cazadores: quien[m] || 0 }))
+      .sort((a, b) => Math.abs(b.media24hAnualPct) - Math.abs(a.media24hAnualPct) || (a.mercado < b.mercado ? -1 : 1)).slice(0, CZ.MAX_MERCADO);
+    return { rows, hora: C.t ? iso(C.t) : null, nota: 'Los perpetuos que más funding pagan o cobran, por su media de unas 24 h, en % al año (todos los mercados, también los de poco volumen, que los cazadores no tocan). Positivo: los compradores pagan a los vendedores. cazadores: cuántos de los 8 están dentro. ' + CZ_NOTA };
+  }
+  const w = czPesos(C), mq = apMomentos(C.eq.st);
+  const rows = CZ_CAZADORES.map((c) => {
+    const X = C.cz[c.id], m = apMomentos(X.st);
+    return { id: c.id, cazador: c.nombre, modo: c.modo === 'cubierto' ? 'cubierto' : 'sin cubrir', horas: m.n, rentPct: (Math.exp(X.st.log) - 1) * 100, tStat: m.sr * Math.sqrt(m.n), caidaMaxPct: X.st.dd * 100,
+      pesoEquipoPct: w[c.id] * 100, mercados: Object.keys(X.pos).join(', ') || 'ninguno', exposicionPct: Object.values(X.pos).reduce((a, b) => a + Math.abs(b), 0) * 100 };
+  }).sort((a, b) => b.rentPct - a.rentPct);
+  return { rows, equipo: { horas: mq.n, rentPct: (Math.exp(C.eq.st.log) - 1) * 100, tStat: mq.sr * Math.sqrt(mq.n), caidaMaxPct: C.eq.st.dd * 100, desde: iso(C.creado) }, hora: C.t ? iso(C.t) : null, nota: CZ_NOTA };
+}
+
 async function aprendizaje({ vista } = {}, env) {
   const vs = vista || 'resumen';
   if (vs === 'semana' || vs === 'semana_resumen' || vs === 'semana_fuerza') {
@@ -2060,6 +2201,7 @@ async function aprendizaje({ vista } = {}, env) {
   const v = vista || 'resumen';
   if (v === 'avisos' || v === 'avisos_prueba') return avisosVista(env, v === 'avisos_prueba');
   if (v === 'practicas' || v === 'practicas_lecciones' || v === 'practicas_retirados') return prVista(env, v);
+  if (v === 'cazadores' || v === 'cazadores_mercado') return czVista(env, v);
   const E = await apCargar(env);
   if (v === 'bot') return botVista(env);
   if (v === 'ml') {
@@ -2272,7 +2414,7 @@ const HERRAMIENTAS = [
   { name: 'historico_diario', title: 'Historial diario largo', description: 'Velas diarias (UTC) de un activo desde una fecha: BTC desde 2015 y ETH desde 2016 vía Bitstamp; el resto, lo que haya en Kraken (hasta 720 días) o Hyperliquid. Una fila por día.', inputSchema: { type: 'object', properties: { simbolo: { type: 'string', description: 'p. ej. BTC, ETH, ORO, SP500' }, desde: { type: 'string', description: 'Fecha AAAA-MM-DD. Por defecto, la más antigua disponible.' } }, required: ['simbolo'], additionalProperties: false }, fn: historicoDiario },
   { name: 'derivados', title: 'Financiación y posiciones abiertas', description: 'Funding de los perpetuos cripto de Hyperliquid (ahora, media de 7 días y percentil de 30 días, anualizados), posiciones abiertas en dólares y prima frente al oráculo. Sirve para detectar exceso de apalancamiento.', inputSchema: { type: 'object', properties: { simbolos: S_SIMBOLOS }, additionalProperties: false }, fn: derivados },
   { name: 'funding_diario', title: 'Funding diario', description: 'Funding diario (suma de las 24 tasas horarias, UTC) de los perpetuos cripto de Hyperliquid en los últimos días cerrados (7 a 90). Una fila por símbolo y día. Sirve para el motor de cobro del funding.', inputSchema: { type: 'object', properties: { simbolos: S_SIMBOLOS, dias: { type: 'integer', minimum: 7, maximum: 90, description: 'Días cerrados hacia atrás (por defecto 60).' } }, additionalProperties: false }, fn: fundingDiario },
-  { name: 'aprendizaje', title: 'Sistema que aprende', description: 'Estado del sistema que aprende cada hora (en papel): resumen, expertos y sus pesos, posiciones combinadas, curva diaria frente a Bitcoin, carteras seguidas con su habilidad, avisos, lo que propone el laboratorio y el bot de pruebas (50, 200 y 1000 € en papel en Kraken Futuros).', inputSchema: { type: 'object', properties: { vista: { type: 'string', enum: ['resumen', 'expertos', 'posiciones', 'curva', 'carteras', 'alertas', 'laboratorio', 'bot', 'ml', 'semana', 'semana_resumen', 'semana_fuerza', 'avisos', 'avisos_prueba', 'practicas', 'practicas_lecciones', 'practicas_retirados'], description: 'Qué parte ver. Por defecto, resumen. bot: carteras en papel de 50, 200 y 1000 € que siguen al sistema en Kraken Futuros con costes y mínimos reales. ml: la señal diaria del aprendizaje automático y cómo le va a su experto. semana: unos 25 mercados ordenados por su tendencia de 12 semanas, con su historial; semana_resumen: cómo le fue a comprar cada semana las 3 mejores; semana_fuerza: la semana siguiente según la fuerza de la señal. avisos: el canal de ntfy para recibir avisos en el móvil y los últimos enviados; avisos_prueba: manda un aviso de prueba (uno cada 10 minutos como mucho). practicas: la zona de prácticas (alumnos que prueban variantes de las estrategias con riesgo ×1, ×2 o ×3, en papel); practicas_lecciones: qué decisiones funcionan mejor; practicas_retirados: los que se retiraron o quebraron y por qué.' } }, additionalProperties: false }, fn: aprendizaje },
+  { name: 'aprendizaje', title: 'Sistema que aprende', description: 'Estado del sistema que aprende cada hora (en papel): resumen, expertos y sus pesos, posiciones combinadas, curva diaria frente a Bitcoin, carteras seguidas con su habilidad, avisos, lo que propone el laboratorio y el bot de pruebas (50, 200 y 1000 € en papel en Kraken Futuros).', inputSchema: { type: 'object', properties: { vista: { type: 'string', enum: ['resumen', 'expertos', 'posiciones', 'curva', 'carteras', 'alertas', 'laboratorio', 'bot', 'ml', 'semana', 'semana_resumen', 'semana_fuerza', 'avisos', 'avisos_prueba', 'practicas', 'practicas_lecciones', 'practicas_retirados', 'cazadores', 'cazadores_mercado'], description: 'Qué parte ver. Por defecto, resumen. bot: carteras en papel de 50, 200 y 1000 € que siguen al sistema en Kraken Futuros con costes y mínimos reales. ml: la señal diaria del aprendizaje automático y cómo le va a su experto. semana: unos 25 mercados ordenados por su tendencia de 12 semanas, con su historial; semana_resumen: cómo le fue a comprar cada semana las 3 mejores; semana_fuerza: la semana siguiente según la fuerza de la señal. avisos: el canal de ntfy para recibir avisos en el móvil y los últimos enviados; avisos_prueba: manda un aviso de prueba (uno cada 10 minutos como mucho). practicas: la zona de prácticas (alumnos que prueban variantes de las estrategias con riesgo ×1, ×2 o ×3, en papel); practicas_lecciones: qué decisiones funcionan mejor; practicas_retirados: los que se retiraron o quebraron y por qué. cazadores: los 8 cazadores de funding (cubiertos y sin cubrir) y su equipo; cazadores_mercado: los mercados que más funding pagan ahora.' } }, additionalProperties: false }, fn: aprendizaje },
   { name: 'mercados', title: 'Mercados disponibles', description: 'Lista de símbolos del radar, de dónde sale cada uno y qué otros mercados (acciones de EE. UU., etc.) hay disponibles.', inputSchema: { type: 'object', properties: {}, additionalProperties: false }, fn: mercados },
   { name: 'estado_fuentes', title: 'Estado de las fuentes', description: 'Comprueba si Hyperliquid, Kraken y Binance responden y cuánto tardan.', inputSchema: { type: 'object', properties: {}, additionalProperties: false }, fn: estadoFuentes },
 ];

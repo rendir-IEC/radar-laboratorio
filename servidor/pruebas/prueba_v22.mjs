@@ -94,6 +94,8 @@ check(maxVivo <= 50, 'peticiones externas por minuto en vivo: máximo ' + maxViv
 { const E = estado(); const fp = db.prepare("SELECT json FROM ap_estado WHERE id = 'practicas'").get(); const P1 = JSON.parse(fp.json);
   const X = E.expertos.equipo_practicas;
   check(P1.equipo && P1.equipo.st.n >= 6 && E.equipo && X && X.activo && X.st.n >= 5 && Object.keys(X.pos).length > 0, 'el equipo de alumnos vota cada hora y compite en el sistema: ' + P1.equipo.st.n + ' h de equipo, ' + X.st.n + ' h como experto, ' + Object.keys(X.pos).length + ' posiciones'); }
+{ const fc = db.prepare("SELECT json FROM ap_estado WHERE id = 'cazadores'").get(); const C = fc ? JSON.parse(fc.json) : null;
+  check(C && Object.keys(C.cz).length === 8 && Object.values(C.cz).every((X) => X.tUlt != null) && Object.keys(C.e24).length >= 20, 'los 8 cazadores de funding miran cada hora ' + (C ? Object.keys(C.e24).length : 0) + ' mercados sin peticiones de más'); }
 { const fp = db.prepare("SELECT json FROM ap_estado WHERE id = 'practicas'").get(); const P0 = fp ? JSON.parse(fp.json) : null;
   check(P0 && P0.alumnos.some((A) => Object.keys(A.pos).some((m) => m.startsWith('xyz:'))), 'los alumnos de la zona de prácticas también operan oro, petróleo, índices o divisas'); }
 { const fp = db.prepare("SELECT json FROM ap_estado WHERE id = 'practicas'").get(); const P = fp ? JSON.parse(fp.json) : null;
