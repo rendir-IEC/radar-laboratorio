@@ -50,7 +50,7 @@ globalThis.fetch = async (url, op = {}) => {
   otras++; throw new Error('inesperado ' + url);
 };
 
-check(/^2\.5\.2$/.test(W.VERSION), 'versión ' + W.VERSION);
+check(/^2\.(5\.2|([6-9]|\d\d)\.\d+)$/.test(W.VERSION), 'versión 2.5.2 o posterior: ' + W.VERSION);
 check(W.madrid(Date.UTC(2026, 10, 26, 7, 47)).hora === 8 && W.madrid(Date.UTC(2026, 6, 1, 6, 47)).hora === 8, 'Madrid: 8:47 en invierno (7:47 UTC) y en verano (6:47 UTC)');
 check(W.madrid(Date.UTC(2026, 10, 30, 8, 47)).dia === 'Mon' && W.madrid(Date.UTC(2026, 10, 28, 9)).laborable === false, 'lunes 30-11 y sábado 28-11 bien identificados');
 check(W.fmtPx(94800) === '94.800' && W.fmtPx(3.456) === '3,46' && W.fmtPx(0.0123) === '0,0123', 'formato de precios: ' + [W.fmtPx(94800), W.fmtPx(3.456), W.fmtPx(0.0123)].join(' · '));

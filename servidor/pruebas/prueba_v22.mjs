@@ -83,6 +83,8 @@ while (AHORA < t0 + 8 * H) {
   const r = await ejecutar(); maxVivo = Math.max(maxVivo, r.llamadas); cpuMin.push(r.ms);
 }
 check(maxVivo <= 50, 'peticiones externas por minuto en vivo: máximo ' + maxVivo + ' (la hora en vivo usa 31; el flujo, 20)');
+{ const fp = db.prepare("SELECT json FROM ap_estado WHERE id = 'practicas'").get(); const P = fp ? JSON.parse(fp.json) : null;
+  check(P && P.alumnos.length === 24 && P.alumnos.every((A) => A.st.n >= 6), 'zona de prácticas en vivo: ' + (P ? P.alumnos.length + ' alumnos, ' + Math.min(...P.alumnos.map((A) => A.st.n)) + '–' + Math.max(...P.alumnos.map((A) => A.st.n)) + ' h, ' + Math.round(fp.json.length / 1024) + ' KB' : 'no existe')); }
 const exp = (await herramienta('aprendizaje', { vista: 'expertos' })).rows;
 const flujo = exp.filter((x) => x.familia === 'flujo de órdenes');
 check(flujo.length === 4 && flujo.every((x) => x.horas > 0), 'los 4 expertos de flujo de órdenes aprenden en vivo: ' + flujo.map((x) => x.id + ' ' + x.horas + ' h').join(', '));

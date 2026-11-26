@@ -16,7 +16,7 @@
 // y un disparador Cron cada minuto (* * * * *). Primero repasa unas 5000 horas de historia, 16 por minuto;
 // después aprende cada hora en vivo. Todo en papel: no mueve dinero.
 
-const VERSION = '2.5.2';
+const VERSION = '2.6.0';
 const HL = 'https://api.hyperliquid.xyz/info';
 const BINANCE = 'https://data-api.binance.vision/api/v3';
 const KRAKEN = 'https://api.kraken.com/0/public';
@@ -403,8 +403,10 @@ const AVISO = {
 const PLAN_BTC = { CAPITAL: 962, SEMANAS_BASE: 12, MEDIA: 200, TRAMOS: [[0.8, 2], [1.0, 1.5], [1.5, 1], [2.4, 0.5], [Infinity, 0]] };
 function apListaExpertos(E) {
   const lab = (E && E.lab && E.lab.specs) || [];
-  if (!lab.length) return AP_EXPERTOS;
-  return AP_EXPERTOS.concat(lab.map((s) => ({ id: s.id, nombre: 'Laboratorio: ' + s.nombre, familia: 'laboratorio', tipo: 'lab', spec: s.spec, aprobadaLab: !!s.aprobada })));
+  const grad = (E && E.graduados) || []; // graduados de la zona de prácticas (v2.6.0): compiten como candidatas, con poco peso
+  if (!lab.length && !grad.length) return AP_EXPERTOS;
+  return AP_EXPERTOS.concat(lab.map((s) => ({ id: s.id, nombre: 'Laboratorio: ' + s.nombre, familia: 'laboratorio', tipo: 'lab', spec: s.spec, aprobadaLab: !!s.aprobada })),
+    grad.map((g) => ({ id: g.id, nombre: 'Graduado en prácticas: ' + g.nombre, familia: 'zona de prácticas', tipo: 'lab', spec: g.spec, aprobadaLab: false })));
 }
 function apLabValida(sp) {
   if (!sp || typeof sp !== 'object') return false;
@@ -1091,10 +1093,16 @@ async function apCiclo(env) {
     carteras[seguidas[i]] = { av: num(r.value.marginSummary.accountValue), pos };
   });
   const flujo = await apFlujoDeLaHora(env, horaActual - H1);
+  const antes = prFoto(E);
   apPaso(E, { t: horaActual, px: p, f, carteras, pxTodos: todos, flujo });
+  // zona de prácticas: sin peticiones de más; si falla, el sistema sigue
+  let P = null, pr = null;
+  try { P = (await prCargar(env)) || prNuevo(horaActual); pr = prPaso(E, P, { t: horaActual, px: p }, antes); } catch (e) { console.log('prácticas: ' + (e.message || e)); P = null; }
   curva.push([horaActual, E.sistema.log, E.btcLog, E.sistema.n]);
   await apGuardar(env, E, curva);
-  return { ok: true, modo: 'en vivo', hora: iso(horaActual), carteras: Object.keys(carteras).length };
+  if (P) await prGuardar(env, P).catch((e) => console.log('prácticas: ' + (e.message || e)));
+  if (pr && pr.graduados.length) await avisosGraduados(env, pr.graduados, horaActual).catch((e) => console.log('avisos: ' + (e.message || e)));
+  return { ok: true, modo: 'en vivo', hora: iso(horaActual), carteras: Object.keys(carteras).length, practicas: pr ? { quiebras: pr.quiebras.length, retirados: pr.retirados, graduados: pr.graduados.length } : null };
 }
 
 // Lo que ve el panel.
@@ -1502,6 +1510,12 @@ function avisoTextoMovimientos(movs, noche) {
   const lineas = orden.slice(0, 8).map((y) => y.m + ' ' + conSigno(y.c) + ' % en ' + y.min + ' min: de ' + fmtPx(y.desde) + ' a ' + fmtPx(y.hasta) + ' $');
   return { titulo, texto: lineas.join('\n') + '\nPrecio de Hyperliquid. Es un aviso de vigilancia, no una recomendación.', prioridad: noche ? 2 : 4, etiquetas: [baja ? 'chart_with_downwards_trend' : 'chart_with_upwards_trend'] };
 }
+async function avisosGraduados(env, nombres, ahora) {
+  const A = await avisosCargar(env);
+  await avisoMandar(A, { titulo: nombres.length > 1 ? 'Se gradúan ' + nombres.length + ' alumnos de la zona de prácticas' : 'Se gradúa un alumno de la zona de prácticas',
+    texto: nombres.join('\n') + '\nGanó un mes en vivo pasando la prueba contra la suerte. Entra a competir en el sistema con poco peso; sigue en papel.', prioridad: deNoche(madrid(ahora).hora) ? 2 : 3, etiquetas: ['mortar_board'] }, ahora);
+  await avisosGuardar(env, A);
+}
 async function avisosMovimientos(env, movs, ahora) {
   const A = await avisosCargar(env);
   await avisoMandar(A, avisoTextoMovimientos(movs, deNoche(madrid(ahora).hora)), ahora);
@@ -1595,6 +1609,289 @@ async function avisosVista(env, prueba) {
   };
 }
 
+// ---------- zona de prácticas (v2.6.0) ----------
+// Cada estrategia del sistema tiene alumnos que practican en papel, cada uno con su propio dinero de prácticas: variantes
+// de sus parámetros y de su riesgo (×1, ×2 y ×3 la exposición). Arriesgan, pierden y se retiran; los mejores tienen hijos
+// con un cambio; la curiosidad prueba ideas nuevas lejos de lo ya probado. Solo se gradúa (y entra a competir en el sistema,
+// con poco peso y solo sube si gana) quien gana en vivo al menos un mes con un Sharpe deflactado que cuenta TODAS las
+// pruebas hechas: probar mucho sube el listón. Nada de esto mueve dinero.
+const PR = {
+  ALUMNOS: 24,
+  RONDA_H: 72,               // cada 3 días: se retiran los peores y nacen nuevos
+  JUZGAR_H: 72,              // horas mínimas para juzgar a un alumno
+  RETIRA: 0.25,              // parte de los juzgados que se retira en cada ronda (los de peor t)
+  SALVA_T: 1,                // quien va con t ≥ 1 no se retira aunque esté entre los peores
+  CURIOSIDAD: 1 / 3,         // de las plazas libres, cuántas van a ideas nuevas (el resto, hijos de los mejores)
+  QUIEBRA: Math.log(0.5),    // pierde la mitad de su dinero de prácticas: se retira por quiebra
+  GRADUA_H: 720,
+  GRADUA_DSR: 0.95,
+  MAX_GRADUADOS: 4,
+  MAX_RETIRADOS: 80,
+};
+// las estrategias del sistema en la gramática común (la del laboratorio): de ahí parten los primeros alumnos
+const PR_BASES = [
+  { senal: 'cruce', a: 12, b: 72 }, { senal: 'cruce', a: 24, b: 168 }, { senal: 'cruce', a: 72, b: 336 }, { senal: 'cruce', a: 168, b: 720 },
+  { senal: 'cruce', a: 24, b: 168, lado: 'largos' }, { senal: 'cruce', a: 168, b: 720, lado: 'largos' },
+  { senal: 'impulso', a: 24 }, { senal: 'impulso', a: 168 }, { senal: 'impulso', a: 720 },
+  { senal: 'rebote', a: 12 }, { senal: 'rebote', a: 24, forma: 'continua', k: 2 },
+  { senal: 'funding_contra', a: 24 }, { senal: 'tendencia_mixta', a: 12, b: 720 },
+].map((x) => ({ forma: 'signo', modo: 'serie', lado: 'ambos', filtro: 'ninguno', cada: 1, ...x }));
+
+function prRng(P) { // mulberry32 con el estado guardado: la misma historia da los mismos alumnos
+  const a = (P.semilla = (P.semilla + 0x6D2B79F5) >>> 0);
+  let t = Math.imul(a ^ (a >>> 15), 1 | a);
+  t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+  return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+}
+const prElige = (P, xs) => xs[Math.min(xs.length - 1, Math.floor(prRng(P) * xs.length))];
+function prLimpia(sp) {
+  const o = { senal: sp.senal, a: sp.a, forma: sp.forma, modo: sp.modo, lado: sp.lado, filtro: sp.filtro, cada: sp.cada };
+  if (sp.b != null) o.b = sp.b;
+  if (sp.forma === 'continua') o.k = sp.k;
+  return o;
+}
+const prClave = (sp, r) => apLabIdent(sp) + '_x' + r;
+const prNombre = (A) => apLabNombre(A.spec) + ' ×' + A.riesgo;
+const prVecindario = (sp) => [sp.senal, sp.a, sp.b || '', sp.lado, sp.filtro].join('_');
+function prT(A) { const m = apMomentos(A.st); return m.sr * Math.sqrt(m.n); }
+function prAzar(P) {
+  const senal = prElige(P, ['cruce', 'cruce', 'impulso', 'rebote', 'funding_contra', 'funding_sigue', 'tendencia_mixta']);
+  const sp = { senal, forma: prRng(P) < 0.6 ? 'signo' : 'continua', modo: prElige(P, ['serie', 'seccion']), lado: prElige(P, ['ambos', 'largos', 'cortos']),
+    filtro: prElige(P, ['ninguno', 'ninguno', 'btc_alcista', 'btc_bajista']), cada: prRng(P) < 0.7 ? 1 : 24 };
+  if (senal === 'tendencia_mixta') { sp.a = 12; sp.b = 720; }
+  else if (senal.startsWith('funding')) sp.a = prElige(P, [24, 168]);
+  else if (senal === 'cruce') { const i = Math.floor(prRng(P) * (AP.SPANS.length - 1)); sp.a = AP.SPANS[i]; sp.b = prElige(P, AP.SPANS.slice(i + 1)); }
+  else sp.a = prElige(P, AP.SPANS);
+  if (sp.forma === 'continua') sp.k = prElige(P, [0.5, 1, 2]);
+  return prLimpia(sp);
+}
+function prMuta(P, sp0) { // un solo cambio respecto al padre
+  const sp = { ...sp0 };
+  const vecino = (lista, x, d) => lista[Math.max(0, Math.min(lista.length - 1, lista.indexOf(x) + d))];
+  const d = prElige(P, ['a', 'b', 'forma', 'modo', 'lado', 'filtro', 'cada']);
+  const paso = prRng(P) < 0.5 ? -1 : 1;
+  if (d === 'a') {
+    if (sp.senal.startsWith('funding')) sp.a = sp.a === 24 ? 168 : 24;
+    else if (sp.senal !== 'tendencia_mixta') { sp.a = vecino(AP.SPANS, sp.a, paso); if (sp.senal === 'cruce' && !(sp.b > sp.a)) sp.b = vecino(AP.SPANS, sp.a, 1); }
+  } else if (d === 'b' && sp.senal === 'cruce') { const b = vecino(AP.SPANS, sp.b, paso); if (b > sp.a) sp.b = b; }
+  else if (d === 'forma') { if (sp.forma === 'signo') { sp.forma = 'continua'; sp.k = prElige(P, [0.5, 1, 2]); } else if (prRng(P) < 0.5) { sp.forma = 'signo'; delete sp.k; } else sp.k = prElige(P, [0.5, 1, 2].filter((k) => k !== sp.k)); }
+  else if (d === 'modo') sp.modo = sp.modo === 'serie' ? 'seccion' : 'serie';
+  else if (d === 'lado') sp.lado = prElige(P, ['ambos', 'largos', 'cortos'].filter((x) => x !== sp.lado));
+  else if (d === 'filtro') sp.filtro = prElige(P, ['ninguno', 'btc_alcista', 'btc_bajista'].filter((x) => x !== sp.filtro));
+  else if (d === 'cada') sp.cada = sp.cada === 1 ? 24 : 1;
+  return prLimpia(sp);
+}
+function prNace(P, spec, riesgo, t, padre, origen) {
+  const sp = prLimpia(spec);
+  const A = { id: 'p' + (++P.serie), spec: sp, riesgo, nace: t, padre: padre ? padre.id : null, padreNombre: padre ? prNombre(padre) : null,
+    gen: padre ? (padre.gen || 1) + 1 : 1, origen, st: apStats(), pos: {}, coste: 0, tUlt: null };
+  P.alumnos.push(A); P.probadas++;
+  const v = prVecindario(sp); P.mapa[v] = (P.mapa[v] || 0) + 1;
+  return A;
+}
+// una plaza libre: hijo de uno de los mejores (con un cambio o con otro riesgo) o una idea nueva lejos de lo ya probado
+function prUnoNuevo(P, t, maestros) {
+  const vivas = new Set(P.alumnos.map((A) => prClave(A.spec, A.riesgo)));
+  for (let intento = 0; intento < 30; intento++) {
+    if (maestros.length && prRng(P) >= PR.CURIOSIDAD) {
+      const padre = prElige(P, maestros);
+      const riesgo = prRng(P) < 0.25 ? prElige(P, [1, 2, 3].filter((r) => r !== padre.riesgo)) : padre.riesgo;
+      const sp = riesgo !== padre.riesgo && prRng(P) < 0.5 ? padre.spec : prMuta(P, padre.spec);
+      if (!apLabValida(sp) || vivas.has(prClave(sp, riesgo))) continue;
+      return prNace(P, sp, riesgo, t, padre, 'hijo');
+    }
+    let mejor = null, menos = Infinity; // curiosidad: de 12 ideas al azar, la del vecindario menos probado
+    for (let k = 0; k < 12; k++) {
+      const sp = prAzar(P), r = prElige(P, [1, 2, 3]);
+      if (!apLabValida(sp) || vivas.has(prClave(sp, r))) continue;
+      const n = (P.mapa[prVecindario(sp)] || 0) + prRng(P) * 0.5;
+      if (n < menos) { menos = n; mejor = [sp, r]; }
+    }
+    if (mejor) return prNace(P, mejor[0], mejor[1], t, null, 'curiosidad');
+  }
+  return null;
+}
+function prNuevo(t) {
+  const P = { v: 1, creado: t, semilla: (t / H1) >>> 0, serie: 0, probadas: 0, rondas: 0, ronda: t, t: null, alumnos: [], retirados: [],
+    cuenta: { retirados: 0, quiebras: 0 }, lecciones: {}, mapa: {}, graduados: [] };
+  for (const b of PR_BASES) prNace(P, b, 1, t, null, 'base');
+  const bases = P.alumnos.slice();
+  for (let i = 0; i < 6; i++) { // las mismas estrategias, arriesgando más
+    const b = prElige(P, bases), r = prElige(P, [2, 3]);
+    if (!P.alumnos.some((A) => prClave(A.spec, A.riesgo) === prClave(b.spec, r))) prNace(P, b.spec, r, t, b, 'más riesgo');
+  }
+  while (P.alumnos.length < PR.ALUMNOS) if (!prUnoNuevo(P, t, [])) break;
+  return P;
+}
+const PR_ASPECTOS = {
+  riesgo: ['Riesgo', (A) => A.riesgo, { 1: '×1 (prudente)', 2: '×2', 3: '×3 (arriesgado)' }],
+  senal: ['Idea', (A) => A.spec.senal, { cruce: 'Cruce de medias', impulso: 'Impulso', rebote: 'Rebote', funding_contra: 'Contra el funding', funding_sigue: 'A favor del funding', tendencia_mixta: 'Tendencia mixta' }],
+  plazo: ['Plazo', (A) => A.spec.a, { 12: '12 h', 24: '1 día', 72: '3 días', 168: '1 semana', 336: '2 semanas', 720: '1 mes' }],
+  lado: ['Lado', (A) => A.spec.lado, { ambos: 'Compra y vende', largos: 'Solo compras', cortos: 'Solo ventas' }],
+  filtro: ['Filtro', (A) => A.spec.filtro, { ninguno: 'Siempre', btc_alcista: 'Solo si BTC sube', btc_bajista: 'Solo si BTC baja' }],
+  modo: ['Modo', (A) => A.spec.modo, { serie: 'Cada moneda por su cuenta', seccion: 'Relativa entre monedas' }],
+  forma: ['Forma', (A) => A.spec.forma, { signo: 'Todo o nada', continua: 'Graduada' }],
+  cada: ['Reajuste', (A) => A.spec.cada, { 1: 'Cada hora', 24: 'Una vez al día' }],
+};
+function prAnota(L, A, quiebra) { // lo que deja cada alumno juzgado al retirarse
+  const tt = prT(A);
+  for (const [k, [, f]] of Object.entries(PR_ASPECTOS)) {
+    const v = String(f(A));
+    const x = ((L[k] = L[k] || {})[v] = L[k][v] || { n: 0, sumaT: 0, quiebras: 0, horas: 0 });
+    x.n++; x.sumaT += tt; x.horas += A.st.n; if (quiebra) x.quiebras++;
+  }
+}
+function prFicha(A, t) {
+  const m = apMomentos(A.st);
+  return { id: A.id, alumno: prNombre(A), riesgo: A.riesgo, origen: A.origen, generacion: A.gen || 1, padre: A.padreNombre || null, nace: iso(A.nace), fin: t != null ? iso(t) : null,
+    horas: m.n, rentPct: (Math.exp(A.st.log) - 1) * 100, tStat: m.sr * Math.sqrt(m.n), caidaMaxPct: A.st.dd * 100 };
+}
+function prRetira(P, A, t, motivo) {
+  P.alumnos = P.alumnos.filter((x) => x !== A);
+  const quiebra = motivo === 'quiebra';
+  if (quiebra || A.st.n >= PR.JUZGAR_H) prAnota(P.lecciones, A, quiebra);
+  P.retirados.push({ ...prFicha(A, t), spec: A.spec, motivo });
+  if (P.retirados.length > PR.MAX_RETIRADOS) P.retirados.splice(0, P.retirados.length - PR.MAX_RETIRADOS);
+  P.cuenta.retirados++; if (quiebra) P.cuenta.quiebras++;
+}
+function prMaestros(P) {
+  const j = P.alumnos.filter((A) => A.st.n >= PR.JUZGAR_H).sort((a, b) => prT(b) - prT(a));
+  if (!j.length) return P.alumnos.slice();
+  const top = j.slice(0, Math.max(1, Math.ceil(j.length / 4)));
+  return top.some((A) => prT(A) > 0) ? top.filter((A) => prT(A) > 0) : top;
+}
+function prRellena(P, t) {
+  const maestros = prMaestros(P);
+  while (P.alumnos.length < PR.ALUMNOS) if (!prUnoNuevo(P, t, maestros)) break;
+}
+function prRonda(P, t) {
+  const juzgados = P.alumnos.filter((A) => A.st.n >= PR.JUZGAR_H).sort((a, b) => prT(a) - prT(b));
+  let fuera = 0;
+  if (juzgados.length >= 4) {
+    const n = Math.max(1, Math.floor(juzgados.length * PR.RETIRA));
+    for (const A of juzgados.slice(0, n)) if (prT(A) < PR.SALVA_T && !A.graduado) { prRetira(P, A, t, 'ronda'); fuera++; }
+  }
+  P.rondas++; P.ronda = t;
+  return fuera;
+}
+// Sharpe deflactado de los alumnos con más de un mes: el listón sube con el nº total de alumnos que han existido.
+function prGraduar(E, P, t) {
+  const salen = [];
+  const juzgados = P.alumnos.filter((A) => A.st.n > PR.JUZGAR_H);
+  if (!juzgados.some((A) => A.st.n >= PR.GRADUA_H)) return salen;
+  const srs = juzgados.map((A) => apMomentos(A.st).sr);
+  const ms = srs.reduce((a, b) => a + b, 0) / srs.length;
+  const V = srs.length > 1 ? srs.reduce((a, b) => a + (b - ms) * (b - ms), 0) / (srs.length - 1) : 0;
+  const N = Math.max(P.probadas, AP.PRUEBAS, 2), g = 0.5772156649;
+  const eMax = (1 - g) * apPhiInv(1 - 1 / N) + g * apPhiInv(1 - 1 / (N * Math.E)); // máximo esperado de N pruebas sin ventaja
+  const sr0 = Math.sqrt(V) * eMax;
+  for (const A of juzgados) {
+    if (A.graduado || A.st.n < PR.GRADUA_H) continue;
+    const { n, sr, sk, ku } = apMomentos(A.st);
+    const den = Math.sqrt(Math.max(1e-12, 1 - sk * sr + ((ku - 1) / 4) * sr * sr));
+    // los vivos son supervivientes de las rondas: su dispersión infravalora la de todas las pruebas; como mínimo, la del
+    // Sharpe estimado de un alumno sin ventaja con estas horas (1/n)
+    const liston = Math.max(sr0, Math.sqrt(1 / n) * eMax);
+    const dsr = apPhi(((sr - liston) * Math.sqrt(n - 1)) / den);
+    A.dsr = dsr;
+    if (!(dsr > PR.GRADUA_DSR && sr > 0)) continue;
+    A.graduado = t;
+    const id = 'grad_' + apLabIdent(A.spec);
+    P.graduados.push({ id, alumno: prNombre(A), t: iso(t), dsr, horas: n });
+    E.graduados = E.graduados || [];
+    const ocupado = AP_EXPERTOS.some((ex) => ex.id === id) || E.graduados.some((x) => x.id === id) || ((E.lab && E.lab.specs) || []).some((x) => x.spec && apLabIdent(x.spec) === apLabIdent(A.spec));
+    if (!ocupado && E.graduados.length < PR.MAX_GRADUADOS) {
+      E.graduados.push({ id, nombre: apLabNombre(A.spec), spec: A.spec, t });
+      apAlerta(E, t, 'graduado', id, 'Se gradúa en la zona de prácticas y entra a competir con poco peso: ' + prNombre(A) + ' (Sharpe deflactado ' + dsr.toFixed(2) + ' con ' + n + ' h; ' + P.probadas + ' alumnos probados)');
+    }
+    salen.push(prNombre(A));
+  }
+  return salen;
+}
+function prFoto(E) {
+  const px = {}, f = {};
+  for (const [m, c] of Object.entries(E.monedas || {})) { if (c.px > 0) px[m] = c.px; f[m] = c.f || 0; }
+  return { t: E.t, px, f };
+}
+// Una hora en vivo, después de apPaso. antes = precios y funding con los que empezó la hora (prFoto antes de apPaso).
+function prPaso(E, P, snap, antes) {
+  const t = snap.t;
+  const horas = antes.t == null ? 1 : Math.max(1, Math.round((t - antes.t) / H1));
+  const out = { quiebras: [], graduados: [], retirados: 0 };
+  for (const A of P.alumnos) { // 1) cobrar o pagar la hora que acaba
+    if (A.tUlt == null) continue;
+    let r = 0;
+    for (const [m, q] of Object.entries(A.pos)) { const a = antes.px[m], b = snap.px[m]; if (a > 0 && b > 0) r += q * (b / a - 1 - (antes.f[m] || 0) * horas); }
+    r -= A.coste || 0; A.coste = 0;
+    apSuma(A.st, Math.max(-0.99, r));
+  }
+  for (const A of P.alumnos.slice()) if (A.st.log <= PR.QUIEBRA) { out.quiebras.push(prNombre(A)); prRetira(P, A, t, 'quiebra'); } // 2) quiebras
+  if (t - P.ronda >= PR.RONDA_H * H1) out.retirados = prRonda(P, t); // 3) ronda
+  prRellena(P, t);
+  const listas = AP.MONEDAS.filter((m) => E.monedas[m] && E.monedas[m].n >= AP.HORAS_MIN && snap.px[m] > 0);
+  for (const A of P.alumnos) { // 4) posiciones nuevas
+    const sp = A.spec;
+    let nueva;
+    if (sp.cada > 1 && A.tUlt != null && Math.floor(t / H1) % sp.cada !== 0) nueva = A.pos;
+    else {
+      const base = apLabPosiciones(E, { id: '__practicas', spec: sp }, listas, t) || {};
+      nueva = {};
+      for (const [m, q] of Object.entries(base)) nueva[m] = q * A.riesgo;
+      const objetivo = { ...nueva };
+      for (const m of Object.keys(nueva)) { const o = A.pos[m]; if (o && Math.sign(o) === Math.sign(nueva[m]) && Math.abs(nueva[m] - o) < AP.BANDA * Math.abs(o)) nueva[m] = o; }
+      if (Object.values(nueva).reduce((a, b) => a + Math.abs(b), 0) > A.riesgo + 1e-9) Object.assign(nueva, objetivo);
+    }
+    A.coste = apGiro(nueva, A.pos) * AP.COMISION;
+    A.pos = nueva; A.tUlt = t;
+  }
+  out.graduados = prGraduar(E, P, t); // 5) graduación
+  P.t = t;
+  return out;
+}
+async function prCargar(env) {
+  const fila = await env.DB.prepare('SELECT json FROM ap_estado WHERE id = ?1').bind('practicas').first();
+  return fila ? JSON.parse(fila.json) : null;
+}
+async function prGuardar(env, P) {
+  await env.DB.prepare('INSERT INTO ap_estado (id, json, t) VALUES (?1, ?2, ?3) ON CONFLICT(id) DO UPDATE SET json = excluded.json, t = excluded.t').bind('practicas', JSON.stringify(P), P.t || Date.now()).run();
+}
+const PR_MOTIVOS = { quiebra: 'Quebró: perdió la mitad de su dinero de prácticas', ronda: 'Retirado: de los peores de su ronda' };
+function prEstado(A) {
+  if (A.graduado) return 'graduado';
+  if (A.st.n < PR.JUZGAR_H) return 'empezando';
+  const tt = prT(A);
+  return tt >= 1 ? 'va bien' : tt <= -1 ? 'va mal' : 'sin ventaja clara';
+}
+function prLecciones(P) {
+  const L = JSON.parse(JSON.stringify(P.lecciones || {}));
+  for (const A of P.alumnos) if (A.st.n >= PR.JUZGAR_H) prAnota(L, A, false);
+  const rows = [];
+  for (const [k, [aspecto, , nombres]] of Object.entries(PR_ASPECTOS)) {
+    for (const [v, x] of Object.entries(L[k] || {})) rows.push({ aspecto, valor: nombres[v] || v, alumnos: x.n, tMedia: x.n ? x.sumaT / x.n : 0, quiebras: x.quiebras, horas: x.horas });
+  }
+  const frases = [];
+  for (const [, [aspecto]] of Object.entries(PR_ASPECTOS)) {
+    const xs = rows.filter((r) => r.aspecto === aspecto && r.alumnos >= 3).sort((a, b) => b.tMedia - a.tMedia);
+    if (xs.length < 2) continue;
+    const a = xs[0], b = xs[xs.length - 1];
+    frases.push({ aspecto, diferencia: a.tMedia - b.tMedia, texto: aspecto + ': «' + a.valor + '» va mejor (t media ' + conSigno(a.tMedia, 1) + ' en ' + a.alumnos + ') que «' + b.valor + '» (' + conSigno(b.tMedia, 1) + ' en ' + b.alumnos + (b.quiebras ? '; ' + b.quiebras + ' quiebras' : '') + ').' });
+  }
+  frases.sort((a, b) => b.diferencia - a.diferencia);
+  rows.sort((a, b) => (a.aspecto === b.aspecto ? b.tMedia - a.tMedia : 0));
+  return { rows, frases: frases.slice(0, 5).map((f) => f.texto) };
+}
+async function prVista(env, v) {
+  await apTablas(env);
+  const P = await prCargar(env);
+  if (!P) return { rows: [], nota: 'La zona de prácticas abre en la próxima hora en vivo.' };
+  const nota = 'Zona de prácticas, en papel: ' + PR.ALUMNOS + ' alumnos (variantes de las estrategias del sistema, con riesgo ×1, ×2 o ×3) practican cada hora con su propio dinero de prácticas, con comisiones y funding. Cada ' + PR.RONDA_H + ' h se retira la cuarta parte peor de los que llevan ' + PR.JUZGAR_H + ' h (salvo los que van con t ≥ ' + PR.SALVA_T + '); quien pierde la mitad, quiebra. Las plazas libres son para hijos de los mejores (un cambio) o para ideas nuevas lejos de lo ya probado. Se gradúa quien gana un mes en vivo con un Sharpe deflactado de más de ' + PR.GRADUA_DSR + ' contando todos los alumnos que han existido; entonces entra en el sistema con poco peso. tStat: t de su rentabilidad hora a hora (por encima de 2, poco probable que sea suerte). No mueve dinero ni es una recomendación.';
+  if (v === 'practicas_retirados') return { rows: P.retirados.slice().reverse().map((r) => ({ ...r, motivo: PR_MOTIVOS[r.motivo] || r.motivo, spec: undefined })), nota };
+  if (v === 'practicas_lecciones') { const L = prLecciones(P); return { rows: L.rows, frases: L.frases, nota: 'Lo que dejan los alumnos juzgados (al menos ' + PR.JUZGAR_H + ' h), vivos y retirados, agrupado por cada decisión. Con pocos alumnos o pocas horas, las diferencias pueden ser suerte.' }; }
+  const filas = P.alumnos.map((A) => ({ ...prFicha(A, null), estado: prEstado(A), dsr: A.dsr == null ? null : A.dsr })).sort((a, b) => (b.horas >= PR.JUZGAR_H) - (a.horas >= PR.JUZGAR_H) || b.tStat - a.tStat);
+  const proxima = P.ronda + PR.RONDA_H * H1;
+  return { rows: filas, resumen: { alumnos: P.alumnos.length, probadas: P.probadas, rondas: P.rondas, proximaRonda: iso(proxima), retirados: P.cuenta.retirados, quiebras: P.cuenta.quiebras, graduados: P.graduados, abierta: iso(P.creado), hasta: P.t ? iso(P.t) : null }, nota };
+}
+
 async function aprendizaje({ vista } = {}, env) {
   const vs = vista || 'resumen';
   if (vs === 'semana' || vs === 'semana_resumen' || vs === 'semana_fuerza') {
@@ -1606,6 +1903,7 @@ async function aprendizaje({ vista } = {}, env) {
   if (!env || !env.DB) throw new Error('Falta conectar la base de datos D1 (variable DB) al Worker.');
   const v = vista || 'resumen';
   if (v === 'avisos' || v === 'avisos_prueba') return avisosVista(env, v === 'avisos_prueba');
+  if (v === 'practicas' || v === 'practicas_lecciones' || v === 'practicas_retirados') return prVista(env, v);
   const E = await apCargar(env);
   if (v === 'bot') return botVista(env);
   if (v === 'ml') {
@@ -1818,7 +2116,7 @@ const HERRAMIENTAS = [
   { name: 'historico_diario', title: 'Historial diario largo', description: 'Velas diarias (UTC) de un activo desde una fecha: BTC desde 2015 y ETH desde 2016 vía Bitstamp; el resto, lo que haya en Kraken (hasta 720 días) o Hyperliquid. Una fila por día.', inputSchema: { type: 'object', properties: { simbolo: { type: 'string', description: 'p. ej. BTC, ETH, ORO, SP500' }, desde: { type: 'string', description: 'Fecha AAAA-MM-DD. Por defecto, la más antigua disponible.' } }, required: ['simbolo'], additionalProperties: false }, fn: historicoDiario },
   { name: 'derivados', title: 'Financiación y posiciones abiertas', description: 'Funding de los perpetuos cripto de Hyperliquid (ahora, media de 7 días y percentil de 30 días, anualizados), posiciones abiertas en dólares y prima frente al oráculo. Sirve para detectar exceso de apalancamiento.', inputSchema: { type: 'object', properties: { simbolos: S_SIMBOLOS }, additionalProperties: false }, fn: derivados },
   { name: 'funding_diario', title: 'Funding diario', description: 'Funding diario (suma de las 24 tasas horarias, UTC) de los perpetuos cripto de Hyperliquid en los últimos días cerrados (7 a 90). Una fila por símbolo y día. Sirve para el motor de cobro del funding.', inputSchema: { type: 'object', properties: { simbolos: S_SIMBOLOS, dias: { type: 'integer', minimum: 7, maximum: 90, description: 'Días cerrados hacia atrás (por defecto 60).' } }, additionalProperties: false }, fn: fundingDiario },
-  { name: 'aprendizaje', title: 'Sistema que aprende', description: 'Estado del sistema que aprende cada hora (en papel): resumen, expertos y sus pesos, posiciones combinadas, curva diaria frente a Bitcoin, carteras seguidas con su habilidad, avisos, lo que propone el laboratorio y el bot de pruebas (50, 200 y 1000 € en papel en Kraken Futuros).', inputSchema: { type: 'object', properties: { vista: { type: 'string', enum: ['resumen', 'expertos', 'posiciones', 'curva', 'carteras', 'alertas', 'laboratorio', 'bot', 'ml', 'semana', 'semana_resumen', 'semana_fuerza', 'avisos', 'avisos_prueba'], description: 'Qué parte ver. Por defecto, resumen. bot: carteras en papel de 50, 200 y 1000 € que siguen al sistema en Kraken Futuros con costes y mínimos reales. ml: la señal diaria del aprendizaje automático y cómo le va a su experto. semana: unos 25 mercados ordenados por su tendencia de 12 semanas, con su historial; semana_resumen: cómo le fue a comprar cada semana las 3 mejores; semana_fuerza: la semana siguiente según la fuerza de la señal. avisos: el canal de ntfy para recibir avisos en el móvil y los últimos enviados; avisos_prueba: manda un aviso de prueba (uno cada 10 minutos como mucho).' } }, additionalProperties: false }, fn: aprendizaje },
+  { name: 'aprendizaje', title: 'Sistema que aprende', description: 'Estado del sistema que aprende cada hora (en papel): resumen, expertos y sus pesos, posiciones combinadas, curva diaria frente a Bitcoin, carteras seguidas con su habilidad, avisos, lo que propone el laboratorio y el bot de pruebas (50, 200 y 1000 € en papel en Kraken Futuros).', inputSchema: { type: 'object', properties: { vista: { type: 'string', enum: ['resumen', 'expertos', 'posiciones', 'curva', 'carteras', 'alertas', 'laboratorio', 'bot', 'ml', 'semana', 'semana_resumen', 'semana_fuerza', 'avisos', 'avisos_prueba', 'practicas', 'practicas_lecciones', 'practicas_retirados'], description: 'Qué parte ver. Por defecto, resumen. bot: carteras en papel de 50, 200 y 1000 € que siguen al sistema en Kraken Futuros con costes y mínimos reales. ml: la señal diaria del aprendizaje automático y cómo le va a su experto. semana: unos 25 mercados ordenados por su tendencia de 12 semanas, con su historial; semana_resumen: cómo le fue a comprar cada semana las 3 mejores; semana_fuerza: la semana siguiente según la fuerza de la señal. avisos: el canal de ntfy para recibir avisos en el móvil y los últimos enviados; avisos_prueba: manda un aviso de prueba (uno cada 10 minutos como mucho). practicas: la zona de prácticas (alumnos que prueban variantes de las estrategias con riesgo ×1, ×2 o ×3, en papel); practicas_lecciones: qué decisiones funcionan mejor; practicas_retirados: los que se retiraron o quebraron y por qué.' } }, additionalProperties: false }, fn: aprendizaje },
   { name: 'mercados', title: 'Mercados disponibles', description: 'Lista de símbolos del radar, de dónde sale cada uno y qué otros mercados (acciones de EE. UU., etc.) hay disponibles.', inputSchema: { type: 'object', properties: {}, additionalProperties: false }, fn: mercados },
   { name: 'estado_fuentes', title: 'Estado de las fuentes', description: 'Comprueba si Hyperliquid, Kraken y Binance responden y cuánto tardan.', inputSchema: { type: 'object', properties: {}, additionalProperties: false }, fn: estadoFuentes },
 ];

@@ -27,7 +27,7 @@ globalThis.fetch = async (url) => {
 const seleccion = (n, extra = {}) => ({ version: 1, generado: '2026-11-25T04:40:00Z', usar_previa: true, carteras: Array.from({ length: n }, (_, i) => ({ direccion: dir(i + 1), t: 4 - i * 0.05, quincenas: 26, tipo: i % 5 ? 'cuenta' : 'vault' })), ...extra });
 const nuevoE = () => ({ t: AHORA, carteras: {}, alertas: [] });
 
-check(/^2\.5\./.test(W.VERSION), 'versión 2.5.x: ' + W.VERSION);
+check(/^2\.([5-9]|\d\d)\./.test(W.VERSION), 'versión 2.5 o posterior: ' + W.VERSION);
 
 // 1) lectura de la selección
 {

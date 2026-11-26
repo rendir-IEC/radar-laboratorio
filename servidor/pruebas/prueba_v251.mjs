@@ -21,7 +21,7 @@ globalThis.fetch = async (url, op) => {
   return new Response(typeof RESP === 'string' ? RESP : JSON.stringify(RESP), { status: 200 });
 };
 
-check(/^2\.5\./.test(W.VERSION), 'versión 2.5.x: ' + W.VERSION);
+check(/^2\.([5-9]|\d\d)\./.test(W.VERSION), 'versión 2.5 o posterior: ' + W.VERSION);
 RESP = null;
 let r = await W.aprendizaje({ vista: 'semana' }, {});
 check(Array.isArray(r.rows) && r.rows.length === 0 && /no ha publicado/.test(r.nota), 'sin archivo: vacío y lo explica (sin pedir la base de datos)');
