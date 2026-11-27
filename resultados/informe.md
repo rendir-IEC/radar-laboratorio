@@ -23,18 +23,18 @@ Cada 91 días se eligen las 5 mejores con la historia de ese momento y se mantie
 
 | Estrategia | Aprobada | Sharpe | Deflactado | Rent. anual | Caída máx. | 1ª mitad | 2ª mitad | Último año | Amplio |
 |---|---|---|---|---|---|---|---|---|---|
-| Tendencia 1 día / 2 semanas (relativa entre monedas, graduada) | no | 1.37 | 0.43 | 1.8 % | 1.6 % | 0.54 | 2.13 | 2.12 | -0.41 |
-| Tendencia 1 día / 1 semana (solo compras, si BTC sube, graduada, reajuste diario) | no | 1.32 | 0.38 | 4.9 % | 4.2 % | 1.70 | 1.00 | 0.72 | 1.25 |
-| Tendencia 12 h / 2 semanas (si BTC sube) | no | 1.27 | 0.34 | 27.0 % | 19.9 % | 1.31 | 1.24 | 0.81 | 1.35 |
-| Impulso de 3 días (solo compras, si BTC sube, graduada, reajuste diario) | no | 1.18 | 0.24 | 5.5 % | 7.6 % | 1.00 | 1.34 | 1.10 | 1.13 |
+| Tendencia 1 día / 2 semanas (relativa entre monedas, graduada) | no | 1.37 | 0.43 | 1.8 % | 1.6 % | 0.54 | 2.13 | 2.12 | -0.39 |
+| Tendencia 1 día / 1 semana (solo compras, si BTC sube, graduada, reajuste diario) | no | 1.32 | 0.38 | 4.9 % | 4.2 % | 1.70 | 1.00 | 0.72 | 1.23 |
+| Tendencia 12 h / 2 semanas (si BTC sube) | no | 1.27 | 0.34 | 27.0 % | 19.9 % | 1.31 | 1.24 | 0.81 | 1.38 |
+| Impulso de 3 días (solo compras, si BTC sube, graduada, reajuste diario) | no | 1.18 | 0.24 | 5.5 % | 7.6 % | 1.00 | 1.34 | 1.10 | 1.09 |
 | Tendencia 1 día / 2 semanas (si BTC sube, graduada, reajuste diario) | no | 1.12 | 0.21 | 5.1 % | 4.0 % | 1.48 | 0.79 | 0.29 | 1.13 |
-| Impulso de 1 mes (solo compras, graduada, reajuste diario) | no | 1.11 | 0.21 | 17.0 % | 21.4 % | 1.25 | 0.97 | 0.72 | 1.02 |
-| Tendencia 1 día / 1 mes (si BTC sube) | no | 1.09 | 0.20 | 21.6 % | 22.4 % | 1.23 | 0.96 | 0.40 | 1.18 |
-| Tendencia 1 día / 1 mes (relativa entre monedas, graduada, reajuste diario) | no | 1.09 | 0.19 | 6.3 % | 8.2 % | 0.28 | 1.78 | 1.34 | 0.08 |
-| Tendencia 12 h / 2 semanas | no | 1.09 | 0.19 | 33.2 % | 29.5 % | 1.31 | 0.86 | 0.65 | 1.05 |
+| Impulso de 1 mes (solo compras, graduada, reajuste diario) | no | 1.11 | 0.21 | 17.0 % | 21.4 % | 1.25 | 0.97 | 0.72 | 1.00 |
+| Tendencia 1 día / 1 mes (si BTC sube) | no | 1.09 | 0.20 | 21.6 % | 22.4 % | 1.23 | 0.96 | 0.40 | 1.19 |
+| Tendencia 1 día / 1 mes (relativa entre monedas, graduada, reajuste diario) | no | 1.09 | 0.19 | 6.3 % | 8.2 % | 0.28 | 1.78 | 1.34 | 0.12 |
+| Tendencia 12 h / 2 semanas | no | 1.09 | 0.19 | 33.2 % | 29.5 % | 1.31 | 0.86 | 0.65 | 1.08 |
 | Tendencia 1 día / 3 días (solo compras, si BTC sube) | no | 1.04 | 0.16 | 18.9 % | 21.2 % | 1.18 | 0.94 | 0.67 | 1.03 |
-| Tendencia 12 h / 1 semana (solo compras, graduada) | no | 1.05 | 0.15 | 4.8 % | 6.2 % | 0.95 | 1.14 | 0.53 | 0.96 |
-| Contra el funding (1 semana) (si BTC baja) | no | 1.04 | 0.15 | 18.8 % | 21.8 % | 1.46 | 0.56 | 1.73 | 0.95 |
+| Contra el funding (1 semana) (si BTC baja) | no | 1.04 | 0.15 | 18.9 % | 21.8 % | 1.46 | 0.57 | 1.75 | 1.00 |
+| Tendencia 12 h / 1 semana (solo compras, graduada) | no | 1.05 | 0.15 | 4.8 % | 6.2 % | 0.95 | 1.14 | 0.53 | 0.92 |
 
 Para el servidor: lab_cruce_24_336_c2_sec_amb_nf_h1, lab_cruce_24_168_c2_ser_lar_ba_h24, lab_cruce_12_336_s_ser_amb_ba_h1 (candidatas en prueba (ninguna pasa la prueba contra la suerte)).
 
@@ -65,5 +65,5 @@ BTC en fechas conocidas: 2021-11-10 67010.0, 2022-06-18 20457.3, 2022-11-21 1627
 
 **El sistema del servidor desde 2021-01-31 (ETA 10 y con las candidatas del laboratorio, elegidas con estos mismos datos: dentro de muestra, no prueba que mejoren el sistema)**: 2.2 % al año, Sharpe 0.21, caída máxima 36.5 %, semanas en positivo 35 %. Por año: 2021 +0.9 %, 2022 -8.2 %, 2023 +15.1 %, 2024 +28.6 %, 2025 -17.3 %, 2026 +0.0 %.
 
-Monedas con algún movimiento horario de más del 40 % (revisar empalmes): DOGE (+52 % el 2021-01-29 04:00 UTC), ZEC (+46 % el 2021-05-19 13:00 UTC), UNI (+44 % el 2024-02-23 15:00 UTC), TRUMP (+42 % el 2025-01-19 22:00 UTC), CRV (+42 % el 2021-05-19 13:00 UTC), DOT (+41 % el 2021-05-19 13:00 UTC), 2Z (+57 % el 2025-10-02 14:00 UTC).
+Monedas con algún movimiento horario de más del 40 % (revisar empalmes): DOGE (+52 % el 2021-01-29 04:00 UTC), ZEC (+46 % el 2021-05-19 13:00 UTC), UNI (+44 % el 2024-02-23 15:00 UTC), TRUMP (+42 % el 2025-01-19 22:00 UTC), DOT (+41 % el 2021-05-19 13:00 UTC), CRV (+42 % el 2021-05-19 13:00 UTC), 2Z (+57 % el 2025-10-02 14:00 UTC).
 
