@@ -1,71 +1,71 @@
 {
- "generado": "2026-11-25T11:52:40Z",
+ "generado": "2026-11-27T16:58:51Z",
  "mercados": 210,
- "activas_vistas": 2505,
+ "activas_vistas": 1904,
  "activas": 1200,
  "azar": 600,
- "maximo": 772126,
- "historiales": 1225,
+ "maximo": 772791,
+ "historiales": 1157,
  "min_valor": 1000.0,
  "estudio": {
   "meses": [
    {
     "mes_eleccion": "2026-07",
-    "cuentas": 40,
-    "correlacion_rangos": -0.384,
-    "mejores_10pct_mes_siguiente_pct": -31.02,
-    "resto_mes_siguiente_pct": -4.69,
-    "mejores_10pct_ganan_siguiente_pct": 0.0,
-    "resto_ganan_siguiente_pct": 55.6,
-    "todos_ganan_este_mes_pct": 72.5
+    "cuentas": 41,
+    "correlacion_rangos": -0.143,
+    "mejores_10pct_mes_siguiente_pct": -10.47,
+    "resto_mes_siguiente_pct": -6.16,
+    "mejores_10pct_ganan_siguiente_pct": 20.0,
+    "resto_ganan_siguiente_pct": 52.8,
+    "todos_ganan_este_mes_pct": 56.1
    },
    {
     "mes_eleccion": "2026-08",
-    "cuentas": 50,
-    "correlacion_rangos": 0.252,
-    "mejores_10pct_mes_siguiente_pct": 46.88,
-    "resto_mes_siguiente_pct": -8.4,
-    "mejores_10pct_ganan_siguiente_pct": 60.0,
-    "resto_ganan_siguiente_pct": 37.8,
-    "todos_ganan_este_mes_pct": 48.0
+    "cuentas": 49,
+    "correlacion_rangos": 0.365,
+    "mejores_10pct_mes_siguiente_pct": -9.75,
+    "resto_mes_siguiente_pct": -14.18,
+    "mejores_10pct_ganan_siguiente_pct": 20.0,
+    "resto_ganan_siguiente_pct": 34.1,
+    "todos_ganan_este_mes_pct": 46.9
    },
    {
     "mes_eleccion": "2026-09",
-    "cuentas": 49,
-    "correlacion_rangos": 0.443,
-    "mejores_10pct_mes_siguiente_pct": 9.28,
-    "resto_mes_siguiente_pct": 0.86,
-    "mejores_10pct_ganan_siguiente_pct": 80.0,
-    "resto_ganan_siguiente_pct": 50.0,
-    "todos_ganan_este_mes_pct": 40.8
+    "cuentas": 52,
+    "correlacion_rangos": 0.553,
+    "mejores_10pct_mes_siguiente_pct": 22.4,
+    "resto_mes_siguiente_pct": -13.29,
+    "mejores_10pct_ganan_siguiente_pct": 83.3,
+    "resto_ganan_siguiente_pct": 47.8,
+    "todos_ganan_este_mes_pct": 34.6
    },
    {
     "mes_eleccion": "2026-10",
-    "cuentas": 67,
-    "correlacion_rangos": -0.231,
-    "mejores_10pct_mes_siguiente_pct": 11.6,
-    "resto_mes_siguiente_pct": 14.54,
-    "mejores_10pct_ganan_siguiente_pct": 42.9,
-    "resto_ganan_siguiente_pct": 66.7,
-    "todos_ganan_este_mes_pct": 55.2
+    "cuentas": 75,
+    "correlacion_rangos": -0.211,
+    "mejores_10pct_mes_siguiente_pct": 22.24,
+    "resto_mes_siguiente_pct": 10.44,
+    "mejores_10pct_ganan_siguiente_pct": 50.0,
+    "resto_ganan_siguiente_pct": 62.7,
+    "todos_ganan_este_mes_pct": 50.7
    }
   ],
   "resumen": {
    "meses_estudiados": 4,
-   "correlacion_media": 0.02,
-   "t_correlacion": 0.1,
-   "ventaja_mejores_vs_resto_pct_mes": 8.61,
-   "t_ventaja": 0.5,
-   "meses_con_ventaja_pct": 50.0
+   "correlacion_media": 0.141,
+   "t_correlacion": 0.75,
+   "ventaja_mejores_vs_resto_pct_mes": 11.9,
+   "t_ventaja": 1.39,
+   "meses_con_ventaja_pct": 75.0
   }
  },
  "diagnostico": {
-  "filas_mediana": 53.0,
+  "filas_mediana": 55.0,
   "filas_max": 421,
   "primer_dia_mediana": "2026-10-05",
-  "valor_hoy_p50": 16.713940000000015,
-  "valor_hoy_p90": 4759.216073800024,
-  "con_mas_de_min_valor_hoy": 215
+  "valor_hoy_p50": 18.64837300000002,
+  "valor_hoy_p90": 8458.620496000014,
+  "con_mas_de_min_valor_hoy": 257
  },
- "segundos": 1595.0
+ "segundos": 1579.0
 }
