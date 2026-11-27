@@ -1,665 +1,665 @@
 {
- "generado": "2026-11-26T14:10:12Z",
+ "generado": "2026-11-27T00:50:42Z",
  "monedas": {
   "BTC": {
    "desde": "2021-01-01",
-   "hasta": "2026-11-26 13:00",
-   "horas": 51733,
+   "hasta": "2026-11-27 00:00",
+   "horas": 51744,
    "huecos_internos": 0,
    "max_mov_horario_pct": 11.93,
    "max_mov_hora": "2021-01-29 09:00",
    "vol_anual_pct": 57.8,
-   "funding_anual_medio_pct": 10.66,
-   "fuente": "binance + funding binance + hyperliquid (13 h) + funding hyperliquid"
+   "funding_anual_medio_pct": 10.65,
+   "fuente": "binance + funding binance + hyperliquid (24 h) + funding hyperliquid"
   },
   "ETH": {
    "desde": "2021-01-01",
-   "hasta": "2026-11-26 13:00",
-   "horas": 51733,
+   "hasta": "2026-11-27 00:00",
+   "horas": 51744,
    "huecos_internos": 0,
    "max_mov_horario_pct": 15.45,
    "max_mov_hora": "2021-05-19 13:00",
    "vol_anual_pct": 75.9,
    "funding_anual_medio_pct": 11.27,
-   "fuente": "binance + funding binance + hyperliquid (13 h) + funding hyperliquid"
+   "fuente": "binance + funding binance + hyperliquid (24 h) + funding hyperliquid"
   },
   "SOL": {
    "desde": "2021-01-01",
-   "hasta": "2026-11-26 13:00",
-   "horas": 51613,
+   "hasta": "2026-11-27 00:00",
+   "horas": 51624,
    "huecos_internos": 120,
    "max_mov_horario_pct": 33.34,
    "max_mov_hora": "2021-05-19 13:00",
    "vol_anual_pct": 114.2,
-   "funding_anual_medio_pct": 0.97,
-   "fuente": "binance + funding binance + hyperliquid (13 h) + funding hyperliquid"
+   "funding_anual_medio_pct": 0.98,
+   "fuente": "binance + funding binance + hyperliquid (24 h) + funding hyperliquid"
   },
   "XRP": {
    "desde": "2021-01-01",
-   "hasta": "2026-11-26 13:00",
-   "horas": 51613,
+   "hasta": "2026-11-27 00:00",
+   "horas": 51624,
    "huecos_internos": 120,
    "max_mov_horario_pct": 23.29,
    "max_mov_hora": "2021-02-23 09:00",
    "vol_anual_pct": 96.8,
    "funding_anual_medio_pct": 12.63,
-   "fuente": "binance + funding binance + hyperliquid (13 h) + funding hyperliquid"
+   "fuente": "binance + funding binance + hyperliquid (24 h) + funding hyperliquid"
   },
   "DOGE": {
    "desde": "2021-01-01",
-   "hasta": "2026-11-26 13:00",
-   "horas": 51733,
+   "hasta": "2026-11-27 00:00",
+   "horas": 51744,
    "huecos_internos": 0,
    "max_mov_horario_pct": 51.85,
    "max_mov_hora": "2021-01-29 04:00",
-   "vol_anual_pct": 125.8,
-   "funding_anual_medio_pct": 12.39,
-   "fuente": "binance + funding binance + hyperliquid (13 h) + funding hyperliquid"
+   "vol_anual_pct": 125.7,
+   "funding_anual_medio_pct": 12.38,
+   "fuente": "binance + funding binance + hyperliquid (24 h) + funding hyperliquid"
   },
   "BNB": {
    "desde": "2021-01-01",
-   "hasta": "2026-11-26 13:00",
-   "horas": 51733,
+   "hasta": "2026-11-27 00:00",
+   "horas": 51744,
    "huecos_internos": 0,
    "max_mov_horario_pct": 17.97,
    "max_mov_hora": "2021-02-23 09:00",
    "vol_anual_pct": 75.6,
    "funding_anual_medio_pct": -0.33,
-   "fuente": "binance + funding binance + hyperliquid (13 h) + funding hyperliquid"
+   "fuente": "binance + funding binance + hyperliquid (24 h) + funding hyperliquid"
   },
   "HYPE": {
    "desde": "2025-05-30",
-   "hasta": "2026-11-26 13:00",
-   "horas": 13083,
+   "hasta": "2026-11-27 00:00",
+   "horas": 13094,
    "huecos_internos": 0,
    "max_mov_horario_pct": 12.13,
    "max_mov_hora": "2026-08-19 20:00",
    "vol_anual_pct": 94.9,
    "funding_anual_medio_pct": 8.54,
-   "fuente": "binance + funding binance + hyperliquid (13 h) + funding hyperliquid"
+   "fuente": "binance + funding binance + hyperliquid (24 h) + funding hyperliquid"
   },
   "LINK": {
    "desde": "2021-01-01",
-   "hasta": "2026-11-26 13:00",
-   "horas": 51733,
+   "hasta": "2026-11-27 00:00",
+   "horas": 51744,
    "huecos_internos": 0,
    "max_mov_horario_pct": 28.61,
    "max_mov_hora": "2021-05-19 13:00",
    "vol_anual_pct": 100.0,
    "funding_anual_medio_pct": 13.89,
-   "fuente": "binance + funding binance + hyperliquid (13 h) + funding hyperliquid"
+   "fuente": "binance + funding binance + hyperliquid (24 h) + funding hyperliquid"
   },
   "AVAX": {
    "desde": "2021-01-01",
-   "hasta": "2026-11-26 13:00",
-   "horas": 51733,
+   "hasta": "2026-11-27 00:00",
+   "horas": 51744,
    "huecos_internos": 0,
    "max_mov_horario_pct": 30.23,
    "max_mov_hora": "2021-05-19 13:00",
    "vol_anual_pct": 117.3,
    "funding_anual_medio_pct": 7.58,
-   "fuente": "binance + funding binance + hyperliquid (13 h) + funding hyperliquid"
+   "fuente": "binance + funding binance + hyperliquid (24 h) + funding hyperliquid"
   },
   "SUI": {
    "desde": "2023-05-03",
-   "hasta": "2026-11-26 13:00",
-   "horas": 31269,
+   "hasta": "2026-11-27 00:00",
+   "horas": 31280,
    "huecos_internos": 0,
    "max_mov_horario_pct": 19.83,
    "max_mov_hora": "2025-10-10 22:00",
    "vol_anual_pct": 105.7,
    "funding_anual_medio_pct": 5.34,
-   "fuente": "binance + funding binance + hyperliquid (13 h) + funding hyperliquid"
+   "fuente": "binance + funding binance + hyperliquid (24 h) + funding hyperliquid"
   },
   "ZEC": {
    "desde": "2021-01-01",
-   "hasta": "2026-11-26 13:00",
-   "horas": 51613,
+   "hasta": "2026-11-27 00:00",
+   "horas": 51624,
    "huecos_internos": 120,
    "max_mov_horario_pct": 45.63,
    "max_mov_hora": "2021-05-19 13:00",
    "vol_anual_pct": 120.7,
    "funding_anual_medio_pct": 8.38,
-   "fuente": "binance + funding binance + hyperliquid (13 h) + funding hyperliquid"
+   "fuente": "binance + funding binance + hyperliquid (24 h) + funding hyperliquid"
   },
   "NEAR": {
    "desde": "2021-01-01",
-   "hasta": "2026-11-26 13:00",
-   "horas": 51613,
+   "hasta": "2026-11-27 00:00",
+   "horas": 51624,
    "huecos_internos": 120,
    "max_mov_horario_pct": 30.02,
    "max_mov_hora": "2021-05-19 13:00",
-   "vol_anual_pct": 124.2,
+   "vol_anual_pct": 124.1,
    "funding_anual_medio_pct": 10.23,
-   "fuente": "binance + funding binance + hyperliquid (13 h) + funding hyperliquid"
+   "fuente": "binance + funding binance + hyperliquid (24 h) + funding hyperliquid"
   },
   "UNI": {
    "desde": "2021-01-01",
-   "hasta": "2026-11-26 13:00",
-   "horas": 51733,
+   "hasta": "2026-11-27 00:00",
+   "horas": 51744,
    "huecos_internos": 0,
    "max_mov_horario_pct": 43.59,
    "max_mov_hora": "2024-02-23 15:00",
-   "vol_anual_pct": 110.8,
+   "vol_anual_pct": 110.7,
    "funding_anual_medio_pct": 13.96,
-   "fuente": "binance + funding binance + hyperliquid (13 h) + funding hyperliquid"
+   "fuente": "binance + funding binance + hyperliquid (24 h) + funding hyperliquid"
   },
   "ENA": {
    "desde": "2024-04-02",
-   "hasta": "2026-11-26 13:00",
-   "horas": 23233,
+   "hasta": "2026-11-27 00:00",
+   "horas": 23244,
    "huecos_internos": 0,
    "max_mov_horario_pct": 14.05,
    "max_mov_hora": "2024-04-08 13:00",
    "vol_anual_pct": 132.6,
    "funding_anual_medio_pct": -11.85,
-   "fuente": "binance + funding binance + hyperliquid (13 h) + funding hyperliquid"
+   "fuente": "binance + funding binance + hyperliquid (24 h) + funding hyperliquid"
   },
   "AAVE": {
    "desde": "2021-01-01",
-   "hasta": "2026-11-26 13:00",
-   "horas": 51733,
+   "hasta": "2026-11-27 00:00",
+   "horas": 51744,
    "huecos_internos": 0,
    "max_mov_horario_pct": 25.72,
    "max_mov_hora": "2021-05-19 13:00",
    "vol_anual_pct": 111.2,
-   "funding_anual_medio_pct": 13.69,
-   "fuente": "binance + funding binance + hyperliquid (13 h) + funding hyperliquid"
+   "funding_anual_medio_pct": 13.68,
+   "fuente": "binance + funding binance + hyperliquid (24 h) + funding hyperliquid"
   },
   "ADA": {
    "desde": "2021-01-01",
-   "hasta": "2026-11-26 13:00",
-   "horas": 51733,
+   "hasta": "2026-11-27 00:00",
+   "horas": 51744,
    "huecos_internos": 0,
    "max_mov_horario_pct": 28.97,
    "max_mov_hora": "2025-03-02 16:00",
    "vol_anual_pct": 99.4,
    "funding_anual_medio_pct": 10.97,
-   "fuente": "binance + funding binance + hyperliquid (13 h) + funding hyperliquid"
+   "fuente": "binance + funding binance + hyperliquid (24 h) + funding hyperliquid"
   },
   "ARB": {
    "desde": "2023-03-23",
-   "hasta": "2026-11-26 13:00",
-   "horas": 32254,
+   "hasta": "2026-11-27 00:00",
+   "horas": 32265,
    "huecos_internos": 0,
    "max_mov_horario_pct": 25.25,
    "max_mov_hora": "2025-10-10 22:00",
    "vol_anual_pct": 98.9,
-   "funding_anual_medio_pct": 8.42,
-   "fuente": "binance + funding binance + hyperliquid (13 h) + funding hyperliquid"
+   "funding_anual_medio_pct": 8.41,
+   "fuente": "binance + funding binance + hyperliquid (24 h) + funding hyperliquid"
   },
   "WLD": {
    "desde": "2023-07-24",
-   "hasta": "2026-11-26 13:00",
-   "horas": 29305,
+   "hasta": "2026-11-27 00:00",
+   "horas": 29316,
    "huecos_internos": 0,
    "max_mov_horario_pct": 28.64,
    "max_mov_hora": "2025-10-10 22:00",
    "vol_anual_pct": 129.6,
-   "funding_anual_medio_pct": 3.42,
-   "fuente": "binance + funding binance + hyperliquid (13 h) + funding hyperliquid"
+   "funding_anual_medio_pct": 3.41,
+   "fuente": "binance + funding binance + hyperliquid (24 h) + funding hyperliquid"
   },
   "XMR": {
    "desde": "2021-01-01",
-   "hasta": "2026-11-26 13:00",
-   "horas": 51733,
+   "hasta": "2026-11-27 00:00",
+   "horas": 51744,
    "huecos_internos": 0,
    "max_mov_horario_pct": 36.69,
    "max_mov_hora": "2021-05-19 13:00",
-   "vol_anual_pct": 89.4,
-   "funding_anual_medio_pct": 14.03,
-   "fuente": "binance + funding binance + hyperliquid (13 h) + funding hyperliquid"
+   "vol_anual_pct": 89.5,
+   "funding_anual_medio_pct": 14.04,
+   "fuente": "binance + funding binance + hyperliquid (24 h) + funding hyperliquid"
   },
   "kPEPE": {
    "desde": "2023-05-05",
-   "hasta": "2026-11-26 13:00",
-   "horas": 31221,
+   "hasta": "2026-11-27 00:00",
+   "horas": 31232,
    "huecos_internos": 0,
    "max_mov_horario_pct": 28.37,
    "max_mov_hora": "2024-11-13 14:00",
    "vol_anual_pct": 130.7,
    "funding_anual_medio_pct": 8.4,
-   "fuente": "binance + funding binance + hyperliquid (13 h) + funding hyperliquid"
+   "fuente": "binance + funding binance + hyperliquid (24 h) + funding hyperliquid"
   },
   "VVV": {
    "desde": "2025-01-29",
-   "hasta": "2026-11-26 13:00",
-   "horas": 15989,
+   "hasta": "2026-11-27 00:00",
+   "horas": 16000,
    "huecos_internos": 0,
    "max_mov_horario_pct": 22.56,
    "max_mov_hora": "2025-02-03 19:00",
    "vol_anual_pct": 152.7,
-   "funding_anual_medio_pct": -24.39,
-   "fuente": "binance + funding binance + hyperliquid (13 h) + funding hyperliquid"
+   "funding_anual_medio_pct": -24.37,
+   "fuente": "binance + funding binance + hyperliquid (24 h) + funding hyperliquid"
   },
   "PUMP": {
    "desde": "2025-04-12",
-   "hasta": "2026-11-26 13:00",
-   "horas": 14224,
+   "hasta": "2026-11-27 00:00",
+   "horas": 14235,
    "huecos_internos": 7,
    "max_mov_horario_pct": 32.13,
    "max_mov_hora": "2025-04-23 05:00",
    "vol_anual_pct": 148.2,
    "funding_anual_medio_pct": 9.23,
-   "fuente": "binance + funding binance + hyperliquid (13 h) + funding hyperliquid"
+   "fuente": "binance + funding binance + hyperliquid (24 h) + funding hyperliquid"
   },
   "LIT": {
    "desde": "2021-02-18",
-   "hasta": "2026-11-26 13:00",
-   "horas": 50437,
+   "hasta": "2026-11-27 00:00",
+   "horas": 50448,
    "huecos_internos": 137,
    "max_mov_horario_pct": 38.97,
    "max_mov_hora": "2021-05-19 13:00",
    "vol_anual_pct": 128.3,
    "funding_anual_medio_pct": 12.5,
-   "fuente": "binance + funding binance + hyperliquid (13 h) + funding hyperliquid"
+   "fuente": "binance + funding binance + hyperliquid (24 h) + funding hyperliquid"
   },
   "ZRO": {
    "desde": "2024-06-20",
-   "hasta": "2026-11-26 13:00",
-   "horas": 21335,
+   "hasta": "2026-11-27 00:00",
+   "horas": 21346,
    "huecos_internos": 0,
    "max_mov_horario_pct": 22.27,
    "max_mov_hora": "2025-10-10 22:00",
    "vol_anual_pct": 121.6,
-   "funding_anual_medio_pct": -6.51,
-   "fuente": "binance + funding binance + hyperliquid (13 h) + funding hyperliquid"
+   "funding_anual_medio_pct": -6.5,
+   "fuente": "binance + funding binance + hyperliquid (24 h) + funding hyperliquid"
+  },
+  "INIT": {
+   "desde": "2025-04-16",
+   "hasta": "2026-11-27 00:00",
+   "horas": 14154,
+   "huecos_internos": 0,
+   "max_mov_horario_pct": 38.92,
+   "max_mov_hora": "2025-10-10 22:00",
+   "vol_anual_pct": 152.2,
+   "funding_anual_medio_pct": -32.96,
+   "fuente": "binance + funding binance + hyperliquid (24 h) + funding hyperliquid"
   },
   "TRUMP": {
    "desde": "2025-01-18",
-   "hasta": "2026-11-26 13:00",
-   "horas": 16248,
+   "hasta": "2026-11-27 00:00",
+   "horas": 16259,
    "huecos_internos": 0,
    "max_mov_horario_pct": 41.62,
    "max_mov_hora": "2025-01-19 22:00",
    "vol_anual_pct": 124.6,
    "funding_anual_medio_pct": -14.79,
-   "fuente": "binance + funding binance + hyperliquid (13 h) + funding hyperliquid"
-  },
-  "MON": {
-   "desde": "2025-10-10",
-   "hasta": "2026-11-26 13:00",
-   "horas": 9894,
-   "huecos_internos": 0,
-   "max_mov_horario_pct": 24.38,
-   "max_mov_hora": "2025-11-10 15:00",
-   "vol_anual_pct": 147.2,
-   "funding_anual_medio_pct": -1.66,
-   "fuente": "binance + funding binance + hyperliquid (13 h) + funding hyperliquid"
-  },
-  "BIGTIME": {
-   "desde": "2023-10-12",
-   "hasta": "2026-11-26 13:00",
-   "horas": 27383,
-   "huecos_internos": 0,
-   "max_mov_horario_pct": 26.72,
-   "max_mov_hora": "2026-11-25 05:00",
-   "vol_anual_pct": 135.0,
-   "funding_anual_medio_pct": 10.38,
-   "fuente": "binance + funding binance + hyperliquid (13 h) + funding hyperliquid"
-  },
-  "XPL": {
-   "desde": "2025-08-22",
-   "hasta": "2026-11-26 13:00",
-   "horas": 11068,
-   "huecos_internos": 0,
-   "max_mov_horario_pct": 26.89,
-   "max_mov_hora": "2026-04-02 22:00",
-   "vol_anual_pct": 152.6,
-   "funding_anual_medio_pct": 7.4,
-   "fuente": "binance + funding binance + hyperliquid (13 h) + funding hyperliquid"
-  },
-  "PONS": {
-   "desde": "2026-09-06",
-   "hasta": "2026-11-26 13:00",
-   "horas": 1951,
-   "huecos_internos": 0,
-   "max_mov_horario_pct": 11.39,
-   "max_mov_hora": "2026-10-08 03:00",
-   "vol_anual_pct": 183.0,
-   "funding_anual_medio_pct": 23.8,
-   "fuente": "binance + funding binance + hyperliquid (13 h) + funding hyperliquid"
-  },
-  "TRX": {
-   "desde": "2021-01-01",
-   "hasta": "2026-11-26 13:00",
-   "horas": 51613,
-   "huecos_internos": 120,
-   "max_mov_horario_pct": 27.65,
-   "max_mov_hora": "2021-01-29 14:00",
-   "vol_anual_pct": 71.0,
-   "funding_anual_medio_pct": 0.34,
-   "fuente": "binance + funding binance + hyperliquid (13 h) + funding hyperliquid"
-  },
-  "FARTCOIN": {
-   "desde": "2024-12-20",
-   "hasta": "2026-11-26 13:00",
-   "horas": 16939,
-   "huecos_internos": 0,
-   "max_mov_horario_pct": 24.2,
-   "max_mov_hora": "2025-01-19 23:00",
-   "vol_anual_pct": 183.0,
-   "funding_anual_medio_pct": 14.05,
-   "fuente": "binance + funding binance + hyperliquid (13 h) + funding hyperliquid"
-  },
-  "INIT": {
-   "desde": "2025-04-16",
-   "hasta": "2026-11-26 13:00",
-   "horas": 14143,
-   "huecos_internos": 0,
-   "max_mov_horario_pct": 38.92,
-   "max_mov_hora": "2025-10-10 22:00",
-   "vol_anual_pct": 151.9,
-   "funding_anual_medio_pct": -32.6,
-   "fuente": "binance + funding binance + hyperliquid (13 h) + funding hyperliquid"
-  },
-  "MOVE": {
-   "desde": "2024-12-09",
-   "hasta": "2026-11-26 13:00",
-   "horas": 17207,
-   "huecos_internos": 0,
-   "max_mov_horario_pct": 34.37,
-   "max_mov_hora": "2025-10-10 22:00",
-   "vol_anual_pct": 123.3,
-   "funding_anual_medio_pct": -84.98,
-   "fuente": "binance + funding binance + hyperliquid (13 h) + funding hyperliquid"
-  },
-  "CRV": {
-   "desde": "2021-01-01",
-   "hasta": "2026-11-26 13:00",
-   "horas": 51733,
-   "huecos_internos": 0,
-   "max_mov_horario_pct": 42.27,
-   "max_mov_hora": "2021-05-19 13:00",
-   "vol_anual_pct": 130.3,
-   "funding_anual_medio_pct": 6.21,
-   "fuente": "binance + funding binance + hyperliquid (13 h) + funding hyperliquid"
+   "fuente": "binance + funding binance + hyperliquid (24 h) + funding hyperliquid"
   },
   "LTC": {
    "desde": "2021-01-01",
-   "hasta": "2026-11-26 13:00",
-   "horas": 51613,
+   "hasta": "2026-11-27 00:00",
+   "horas": 51624,
    "huecos_internos": 120,
    "max_mov_horario_pct": 29.89,
    "max_mov_hora": "2021-05-19 13:00",
    "vol_anual_pct": 89.2,
    "funding_anual_medio_pct": 12.75,
-   "fuente": "binance + funding binance + hyperliquid (13 h) + funding hyperliquid"
+   "fuente": "binance + funding binance + hyperliquid (24 h) + funding hyperliquid"
   },
-  "GRAM": {
-   "desde": "2026-07-02",
-   "hasta": "2026-11-26 13:00",
-   "horas": 3533,
+  "MOVE": {
+   "desde": "2024-12-09",
+   "hasta": "2026-11-27 00:00",
+   "horas": 17218,
    "huecos_internos": 0,
-   "max_mov_horario_pct": 7.95,
-   "max_mov_hora": "2026-08-04 01:00",
-   "vol_anual_pct": 69.3,
-   "funding_anual_medio_pct": -0.4,
-   "fuente": "binance + funding binance + hyperliquid (13 h) + funding hyperliquid"
-  },
-  "PAXG": {
-   "desde": "2025-03-27",
-   "hasta": "2026-11-26 13:00",
-   "horas": 14619,
-   "huecos_internos": 0,
-   "max_mov_horario_pct": 5.13,
-   "max_mov_hora": "2026-01-29 16:00",
-   "vol_anual_pct": 25.0,
-   "funding_anual_medio_pct": 5.04,
-   "fuente": "binance + funding binance + hyperliquid (13 h) + funding hyperliquid"
-  },
-  "INJ": {
-   "desde": "2022-08-17",
-   "hasta": "2026-11-26 13:00",
-   "horas": 37499,
-   "huecos_internos": 0,
-   "max_mov_horario_pct": 29.71,
+   "max_mov_horario_pct": 34.37,
    "max_mov_hora": "2025-10-10 22:00",
-   "vol_anual_pct": 113.8,
-   "funding_anual_medio_pct": -1.86,
-   "fuente": "binance + funding binance + hyperliquid (13 h) + funding hyperliquid"
-  },
-  "DOT": {
-   "desde": "2021-01-01",
-   "hasta": "2026-11-26 13:00",
-   "horas": 51733,
-   "huecos_internos": 0,
-   "max_mov_horario_pct": 40.65,
-   "max_mov_hora": "2021-05-19 13:00",
-   "vol_anual_pct": 102.3,
-   "funding_anual_medio_pct": 6.57,
-   "fuente": "binance + funding binance + hyperliquid (13 h) + funding hyperliquid"
+   "vol_anual_pct": 123.3,
+   "funding_anual_medio_pct": -87.09,
+   "fuente": "binance + funding binance + hyperliquid (24 h) + funding hyperliquid"
   },
   "TAO": {
    "desde": "2024-04-11",
-   "hasta": "2026-11-26 13:00",
-   "horas": 23015,
+   "hasta": "2026-11-27 00:00",
+   "horas": 23026,
    "huecos_internos": 0,
    "max_mov_horario_pct": 16.63,
    "max_mov_hora": "2025-02-03 02:00",
-   "vol_anual_pct": 110.9,
+   "vol_anual_pct": 110.8,
    "funding_anual_medio_pct": 3.62,
-   "fuente": "binance + funding binance + hyperliquid (13 h) + funding hyperliquid"
+   "fuente": "binance + funding binance + hyperliquid (24 h) + funding hyperliquid"
   },
-  "JUP": {
-   "desde": "2024-01-31",
-   "hasta": "2026-11-26 13:00",
-   "horas": 24715,
+  "MON": {
+   "desde": "2025-10-10",
+   "hasta": "2026-11-27 00:00",
+   "horas": 9905,
    "huecos_internos": 0,
-   "max_mov_horario_pct": 27.2,
-   "max_mov_hora": "2025-01-26 13:00",
-   "vol_anual_pct": 114.5,
-   "funding_anual_medio_pct": -0.69,
-   "fuente": "binance + funding binance + hyperliquid (13 h) + funding hyperliquid"
+   "max_mov_horario_pct": 24.38,
+   "max_mov_hora": "2025-11-10 15:00",
+   "vol_anual_pct": 147.1,
+   "funding_anual_medio_pct": -1.65,
+   "fuente": "binance + funding binance + hyperliquid (24 h) + funding hyperliquid"
   },
-  "ONDO": {
-   "desde": "2024-01-20",
-   "hasta": "2026-11-26 13:00",
-   "horas": 24984,
+  "FARTCOIN": {
+   "desde": "2024-12-20",
+   "hasta": "2026-11-27 00:00",
+   "horas": 16950,
    "huecos_internos": 0,
-   "max_mov_horario_pct": 21.07,
-   "max_mov_hora": "2025-10-10 22:00",
-   "vol_anual_pct": 118.7,
-   "funding_anual_medio_pct": 5.74,
-   "fuente": "binance + funding binance + hyperliquid (13 h) + funding hyperliquid"
+   "max_mov_horario_pct": 24.2,
+   "max_mov_hora": "2025-01-19 23:00",
+   "vol_anual_pct": 182.9,
+   "funding_anual_medio_pct": 14.04,
+   "fuente": "binance + funding binance + hyperliquid (24 h) + funding hyperliquid"
+  },
+  "GRAM": {
+   "desde": "2026-07-02",
+   "hasta": "2026-11-27 00:00",
+   "horas": 3544,
+   "huecos_internos": 0,
+   "max_mov_horario_pct": 7.95,
+   "max_mov_hora": "2026-08-04 01:00",
+   "vol_anual_pct": 69.4,
+   "funding_anual_medio_pct": -0.56,
+   "fuente": "binance + funding binance + hyperliquid (24 h) + funding hyperliquid"
   },
   "SKY": {
    "desde": "2025-09-09",
-   "hasta": "2026-11-26 13:00",
-   "horas": 10638,
+   "hasta": "2026-11-27 00:00",
+   "horas": 10649,
    "huecos_internos": 0,
    "max_mov_horario_pct": 15.44,
    "max_mov_hora": "2026-11-19 20:00",
    "vol_anual_pct": 80.7,
-   "funding_anual_medio_pct": 3.44,
-   "fuente": "binance + funding binance + hyperliquid (13 h) + funding hyperliquid"
+   "funding_anual_medio_pct": 3.43,
+   "fuente": "binance + funding binance + hyperliquid (24 h) + funding hyperliquid"
   },
-  "AERO": {
-   "desde": "2024-12-04",
-   "hasta": "2026-11-26 13:00",
-   "horas": 17327,
+  "TRX": {
+   "desde": "2021-01-01",
+   "hasta": "2026-11-27 00:00",
+   "horas": 51624,
+   "huecos_internos": 120,
+   "max_mov_horario_pct": 27.65,
+   "max_mov_hora": "2021-01-29 14:00",
+   "vol_anual_pct": 71.0,
+   "funding_anual_medio_pct": 0.33,
+   "fuente": "binance + funding binance + hyperliquid (24 h) + funding hyperliquid"
+  },
+  "SEI": {
+   "desde": "2023-08-17",
+   "hasta": "2026-11-27 00:00",
+   "horas": 28750,
    "huecos_internos": 0,
-   "max_mov_horario_pct": 19.93,
+   "max_mov_horario_pct": 18.92,
    "max_mov_hora": "2025-10-10 22:00",
-   "vol_anual_pct": 115.9,
-   "funding_anual_medio_pct": -13.38,
-   "fuente": "binance + funding binance + hyperliquid (13 h) + funding hyperliquid"
+   "vol_anual_pct": 111.0,
+   "funding_anual_medio_pct": -4.43,
+   "fuente": "binance + funding binance + hyperliquid (24 h) + funding hyperliquid"
   },
-  "BLUR": {
-   "desde": "2023-04-28",
-   "hasta": "2026-11-26 13:00",
-   "horas": 31393,
+  "JUP": {
+   "desde": "2024-01-31",
+   "hasta": "2026-11-27 00:00",
+   "horas": 24726,
    "huecos_internos": 0,
-   "max_mov_horario_pct": 34.09,
-   "max_mov_hora": "2025-10-10 22:00",
-   "vol_anual_pct": 113.2,
-   "funding_anual_medio_pct": -15.08,
-   "fuente": "binance + funding binance + hyperliquid (13 h) + funding hyperliquid"
+   "max_mov_horario_pct": 27.2,
+   "max_mov_hora": "2025-01-26 13:00",
+   "vol_anual_pct": 114.4,
+   "funding_anual_medio_pct": -0.7,
+   "fuente": "binance + funding binance + hyperliquid (24 h) + funding hyperliquid"
   },
-  "kSHIB": {
-   "desde": "2021-05-10",
-   "hasta": "2026-11-26 13:00",
-   "horas": 48620,
+  "BIGTIME": {
+   "desde": "2023-10-12",
+   "hasta": "2026-11-27 00:00",
+   "horas": 27394,
    "huecos_internos": 0,
-   "max_mov_horario_pct": 38.75,
-   "max_mov_hora": "2021-05-19 13:00",
-   "vol_anual_pct": 114.2,
-   "funding_anual_medio_pct": 3.62,
-   "fuente": "binance + funding binance + hyperliquid (13 h) + funding hyperliquid"
-  },
-  "STBL": {
-   "desde": "2025-09-17",
-   "hasta": "2026-11-26 13:00",
-   "horas": 10448,
-   "huecos_internos": 0,
-   "max_mov_horario_pct": 26.78,
-   "max_mov_hora": "2026-10-16 01:00",
-   "vol_anual_pct": 170.5,
-   "funding_anual_medio_pct": 17.36,
-   "fuente": "binance + funding binance + hyperliquid (13 h) + funding hyperliquid"
-  },
-  "CASHCAT": {
-   "desde": "2026-07-11",
-   "hasta": "2026-11-26 13:00",
-   "horas": 3321,
-   "huecos_internos": 0,
-   "max_mov_horario_pct": 37.49,
-   "max_mov_hora": "2026-07-17 23:00",
-   "vol_anual_pct": 327.3,
-   "funding_anual_medio_pct": 58.39,
-   "fuente": "hyperliquid (3321 h) + funding hyperliquid"
+   "max_mov_horario_pct": 26.72,
+   "max_mov_hora": "2026-11-25 05:00",
+   "vol_anual_pct": 135.0,
+   "funding_anual_medio_pct": 9.96,
+   "fuente": "binance + funding binance + hyperliquid (24 h) + funding hyperliquid"
   },
   "FET": {
    "desde": "2023-01-17",
-   "hasta": "2026-11-26 13:00",
-   "horas": 33827,
+   "hasta": "2026-11-27 00:00",
+   "horas": 33838,
    "huecos_internos": 0,
    "max_mov_horario_pct": 21.58,
    "max_mov_hora": "2025-10-10 22:00",
    "vol_anual_pct": 118.2,
    "funding_anual_medio_pct": 3.55,
-   "fuente": "binance + funding binance + hyperliquid (13 h) + funding hyperliquid"
+   "fuente": "binance + funding binance + hyperliquid (24 h) + funding hyperliquid"
   },
-  "ETHFI": {
-   "desde": "2024-03-18",
-   "hasta": "2026-11-26 13:00",
-   "horas": 23590,
+  "STBL": {
+   "desde": "2025-09-17",
+   "hasta": "2026-11-27 00:00",
+   "horas": 10459,
    "huecos_internos": 0,
-   "max_mov_horario_pct": 22.9,
+   "max_mov_horario_pct": 26.78,
+   "max_mov_hora": "2026-10-16 01:00",
+   "vol_anual_pct": 170.6,
+   "funding_anual_medio_pct": 17.36,
+   "fuente": "binance + funding binance + hyperliquid (24 h) + funding hyperliquid"
+  },
+  "PONS": {
+   "desde": "2026-09-06",
+   "hasta": "2026-11-27 00:00",
+   "horas": 1962,
+   "huecos_internos": 0,
+   "max_mov_horario_pct": 11.39,
+   "max_mov_hora": "2026-10-08 03:00",
+   "vol_anual_pct": 182.6,
+   "funding_anual_medio_pct": 23.7,
+   "fuente": "binance + funding binance + hyperliquid (24 h) + funding hyperliquid"
+  },
+  "INJ": {
+   "desde": "2022-08-17",
+   "hasta": "2026-11-27 00:00",
+   "horas": 37510,
+   "huecos_internos": 0,
+   "max_mov_horario_pct": 29.71,
    "max_mov_hora": "2025-10-10 22:00",
-   "vol_anual_pct": 126.5,
-   "funding_anual_medio_pct": 2.14,
-   "fuente": "binance + funding binance + hyperliquid (13 h) + funding hyperliquid"
+   "vol_anual_pct": 113.8,
+   "funding_anual_medio_pct": -1.86,
+   "fuente": "binance + funding binance + hyperliquid (24 h) + funding hyperliquid"
   },
-  "PURR": {
-   "desde": "2026-05-02",
-   "hasta": "2026-11-26 13:00",
-   "horas": 4998,
+  "kSHIB": {
+   "desde": "2021-05-10",
+   "hasta": "2026-11-27 00:00",
+   "horas": 48631,
    "huecos_internos": 0,
-   "max_mov_horario_pct": 27.79,
-   "max_mov_hora": "2026-06-04 08:00",
-   "vol_anual_pct": 171.6,
-   "funding_anual_medio_pct": 25.0,
-   "fuente": "hyperliquid (4998 h) + funding hyperliquid"
-  },
-  "XLM": {
-   "desde": "2021-01-01",
-   "hasta": "2026-11-26 13:00",
-   "horas": 51613,
-   "huecos_internos": 120,
-   "max_mov_horario_pct": 66.99,
+   "max_mov_horario_pct": 38.75,
    "max_mov_hora": "2021-05-19 13:00",
-   "vol_anual_pct": 102.7,
-   "funding_anual_medio_pct": 11.39,
-   "fuente": "binance + funding binance + hyperliquid (13 h) + funding hyperliquid"
+   "vol_anual_pct": 114.2,
+   "funding_anual_medio_pct": 3.63,
+   "fuente": "binance + funding binance + hyperliquid (24 h) + funding hyperliquid"
+  },
+  "XPL": {
+   "desde": "2025-08-22",
+   "hasta": "2026-11-27 00:00",
+   "horas": 11079,
+   "huecos_internos": 0,
+   "max_mov_horario_pct": 26.89,
+   "max_mov_hora": "2026-04-02 22:00",
+   "vol_anual_pct": 152.5,
+   "funding_anual_medio_pct": 7.4,
+   "fuente": "binance + funding binance + hyperliquid (24 h) + funding hyperliquid"
+  },
+  "PAXG": {
+   "desde": "2025-03-27",
+   "hasta": "2026-11-27 00:00",
+   "horas": 14630,
+   "huecos_internos": 0,
+   "max_mov_horario_pct": 5.13,
+   "max_mov_hora": "2026-01-29 16:00",
+   "vol_anual_pct": 24.9,
+   "funding_anual_medio_pct": 5.04,
+   "fuente": "binance + funding binance + hyperliquid (24 h) + funding hyperliquid"
   },
   "ME": {
    "desde": "2024-12-10",
-   "hasta": "2026-11-26 13:00",
-   "horas": 17180,
+   "hasta": "2026-11-27 00:00",
+   "horas": 17191,
    "huecos_internos": 0,
    "max_mov_horario_pct": 27.48,
    "max_mov_hora": "2025-10-10 22:00",
    "vol_anual_pct": 105.8,
-   "funding_anual_medio_pct": -56.58,
-   "fuente": "binance + funding binance + hyperliquid (13 h) + funding hyperliquid"
+   "funding_anual_medio_pct": -58.33,
+   "fuente": "binance + funding binance + hyperliquid (24 h) + funding hyperliquid"
   },
-  "STRK": {
-   "desde": "2024-02-20",
-   "hasta": "2026-11-26 13:00",
-   "horas": 24236,
-   "huecos_internos": 0,
-   "max_mov_horario_pct": 30.98,
-   "max_mov_hora": "2025-10-10 22:00",
-   "vol_anual_pct": 122.1,
-   "funding_anual_medio_pct": 4.22,
-   "fuente": "binance + funding binance + hyperliquid (13 h) + funding hyperliquid"
-  },
-  "MOODENG": {
-   "desde": "2024-10-25",
-   "hasta": "2026-11-26 13:00",
-   "horas": 18291,
-   "huecos_internos": 0,
-   "max_mov_horario_pct": 64.22,
-   "max_mov_hora": "2024-12-02 16:00",
-   "vol_anual_pct": 165.5,
-   "funding_anual_medio_pct": -8.62,
-   "fuente": "binance + funding binance + hyperliquid (13 h) + funding hyperliquid"
-  },
-  "BCH": {
+  "CRV": {
    "desde": "2021-01-01",
-   "hasta": "2026-11-26 13:00",
-   "horas": 51733,
+   "hasta": "2026-11-27 00:00",
+   "horas": 51744,
    "huecos_internos": 0,
-   "max_mov_horario_pct": 35.97,
-   "max_mov_hora": "2021-05-19 15:00",
-   "vol_anual_pct": 92.7,
-   "funding_anual_medio_pct": 2.2,
-   "fuente": "binance + funding binance + hyperliquid (13 h) + funding hyperliquid"
+   "max_mov_horario_pct": 42.27,
+   "max_mov_hora": "2021-05-19 13:00",
+   "vol_anual_pct": 130.3,
+   "funding_anual_medio_pct": 6.21,
+   "fuente": "binance + funding binance + hyperliquid (24 h) + funding hyperliquid"
+  },
+  "DOT": {
+   "desde": "2021-01-01",
+   "hasta": "2026-11-27 00:00",
+   "horas": 51744,
+   "huecos_internos": 0,
+   "max_mov_horario_pct": 40.65,
+   "max_mov_hora": "2021-05-19 13:00",
+   "vol_anual_pct": 102.3,
+   "funding_anual_medio_pct": 6.56,
+   "fuente": "binance + funding binance + hyperliquid (24 h) + funding hyperliquid"
+  },
+  "ONDO": {
+   "desde": "2024-01-20",
+   "hasta": "2026-11-27 00:00",
+   "horas": 24995,
+   "huecos_internos": 0,
+   "max_mov_horario_pct": 21.07,
+   "max_mov_hora": "2025-10-10 22:00",
+   "vol_anual_pct": 118.7,
+   "funding_anual_medio_pct": 5.74,
+   "fuente": "binance + funding binance + hyperliquid (24 h) + funding hyperliquid"
+  },
+  "WIF": {
+   "desde": "2024-01-18",
+   "hasta": "2026-11-27 00:00",
+   "horas": 25042,
+   "huecos_internos": 0,
+   "max_mov_horario_pct": 35.95,
+   "max_mov_hora": "2025-10-10 22:00",
+   "vol_anual_pct": 149.2,
+   "funding_anual_medio_pct": 10.72,
+   "fuente": "binance + funding binance + hyperliquid (24 h) + funding hyperliquid"
+  },
+  "2Z": {
+   "desde": "2025-10-02",
+   "hasta": "2026-11-27 00:00",
+   "horas": 10092,
+   "huecos_internos": 0,
+   "max_mov_horario_pct": 57.33,
+   "max_mov_hora": "2025-10-02 14:00",
+   "vol_anual_pct": 122.7,
+   "funding_anual_medio_pct": -16.21,
+   "fuente": "binance + funding binance + hyperliquid (24 h) + funding hyperliquid"
+  },
+  "CHIP": {
+   "desde": "2026-04-16",
+   "hasta": "2026-11-27 00:00",
+   "horas": 5393,
+   "huecos_internos": 0,
+   "max_mov_horario_pct": 23.8,
+   "max_mov_hora": "2026-04-21 07:00",
+   "vol_anual_pct": 169.6,
+   "funding_anual_medio_pct": -29.3,
+   "fuente": "binance + funding binance + hyperliquid (24 h) + funding hyperliquid"
+  },
+  "BLUR": {
+   "desde": "2023-04-28",
+   "hasta": "2026-11-27 00:00",
+   "horas": 31404,
+   "huecos_internos": 0,
+   "max_mov_horario_pct": 34.09,
+   "max_mov_hora": "2025-10-10 22:00",
+   "vol_anual_pct": 113.1,
+   "funding_anual_medio_pct": -15.02,
+   "fuente": "binance + funding binance + hyperliquid (24 h) + funding hyperliquid"
   },
   "HBAR": {
    "desde": "2021-03-17",
-   "hasta": "2026-11-26 13:00",
-   "horas": 49806,
+   "hasta": "2026-11-27 00:00",
+   "horas": 49817,
    "huecos_internos": 120,
    "max_mov_horario_pct": 22.41,
    "max_mov_hora": "2021-05-19 13:00",
    "vol_anual_pct": 106.6,
    "funding_anual_medio_pct": 7.74,
-   "fuente": "binance + funding binance + hyperliquid (13 h) + funding hyperliquid"
+   "fuente": "binance + funding binance + hyperliquid (24 h) + funding hyperliquid"
   },
-  "CHIP": {
-   "desde": "2026-04-16",
-   "hasta": "2026-11-26 13:00",
-   "horas": 5382,
+  "ETHFI": {
+   "desde": "2024-03-18",
+   "hasta": "2026-11-27 00:00",
+   "horas": 23601,
    "huecos_internos": 0,
-   "max_mov_horario_pct": 23.8,
-   "max_mov_hora": "2026-04-21 07:00",
-   "vol_anual_pct": 169.8,
-   "funding_anual_medio_pct": -29.38,
-   "fuente": "binance + funding binance + hyperliquid (13 h) + funding hyperliquid"
+   "max_mov_horario_pct": 22.9,
+   "max_mov_hora": "2025-10-10 22:00",
+   "vol_anual_pct": 126.5,
+   "funding_anual_medio_pct": 2.14,
+   "fuente": "binance + funding binance + hyperliquid (24 h) + funding hyperliquid"
   },
-  "USELESS": {
-   "desde": "2025-08-15",
-   "hasta": "2026-11-26 13:00",
-   "horas": 11233,
+  "CC": {
+   "desde": "2025-10-31",
+   "hasta": "2026-11-27 00:00",
+   "horas": 9396,
    "huecos_internos": 0,
-   "max_mov_horario_pct": 16.8,
-   "max_mov_hora": "2026-09-03 15:00",
-   "vol_anual_pct": 193.2,
-   "funding_anual_medio_pct": 17.91,
-   "fuente": "binance + funding binance + hyperliquid (13 h) + funding hyperliquid"
+   "max_mov_horario_pct": 14.64,
+   "max_mov_hora": "2025-11-10 08:00",
+   "vol_anual_pct": 111.1,
+   "funding_anual_medio_pct": 2.0,
+   "fuente": "binance + funding binance + hyperliquid (24 h) + funding hyperliquid"
   },
-  "ASTER": {
-   "desde": "2025-09-19",
-   "hasta": "2026-11-26 13:00",
-   "horas": 10393,
+  "RENDER": {
+   "desde": "2024-07-26",
+   "hasta": "2026-11-27 00:00",
+   "horas": 20486,
    "huecos_internos": 0,
-   "max_mov_horario_pct": 25.56,
-   "max_mov_hora": "2025-11-02 15:00",
-   "vol_anual_pct": 116.2,
-   "funding_anual_medio_pct": 10.1,
-   "fuente": "binance + funding binance + hyperliquid (13 h) + funding hyperliquid"
+   "max_mov_horario_pct": 34.7,
+   "max_mov_hora": "2025-10-10 22:00",
+   "vol_anual_pct": 110.1,
+   "funding_anual_medio_pct": 4.52,
+   "fuente": "binance + funding binance + hyperliquid (24 h) + funding hyperliquid"
+  },
+  "PURR": {
+   "desde": "2026-05-02",
+   "hasta": "2026-11-27 00:00",
+   "horas": 4999,
+   "huecos_internos": 0,
+   "max_mov_horario_pct": 27.79,
+   "max_mov_hora": "2026-06-04 08:00",
+   "vol_anual_pct": 171.6,
+   "funding_anual_medio_pct": 25.0,
+   "fuente": "hyperliquid (4999 h) + funding hyperliquid"
+  },
+  "BABY": {
+   "desde": "2025-04-05",
+   "hasta": "2026-11-27 00:00",
+   "horas": 14411,
+   "huecos_internos": 0,
+   "max_mov_horario_pct": 36.77,
+   "max_mov_hora": "2026-06-05 10:00",
+   "vol_anual_pct": 123.6,
+   "funding_anual_medio_pct": -20.39,
+   "fuente": "binance + funding binance + hyperliquid (24 h) + funding hyperliquid"
+  },
+  "AERO": {
+   "desde": "2024-12-04",
+   "hasta": "2026-11-27 00:00",
+   "horas": 17338,
+   "huecos_internos": 0,
+   "max_mov_horario_pct": 19.93,
+   "max_mov_hora": "2025-10-10 22:00",
+   "vol_anual_pct": 115.9,
+   "funding_anual_medio_pct": -13.37,
+   "fuente": "binance + funding binance + hyperliquid (24 h) + funding hyperliquid"
+  },
+  "XTEN": {
+   "desde": "2026-10-27",
+   "hasta": "2026-11-27 00:00",
+   "horas": 738,
+   "huecos_internos": 0,
+   "max_mov_horario_pct": 16.44,
+   "max_mov_hora": "2026-11-15 20:00",
+   "vol_anual_pct": 187.3,
+   "funding_anual_medio_pct": 9.78,
+   "fuente": "hyperliquid (738 h) + funding hyperliquid"
   }
  },
  "btc_en_fechas": {
@@ -672,230 +672,230 @@
  "simulaciones": {
   "siempre_comprado_20_monedas_escala_vol": {
    "con_costes": {
-    "dias": 2125,
-    "rent_anual_pct": 4.41,
-    "vol_anual_pct": 40.515,
-    "sharpe_anual": 0.311,
+    "dias": 2126,
+    "rent_anual_pct": 4.378,
+    "vol_anual_pct": 40.505,
+    "sharpe_anual": 0.31,
     "caida_max_pct": 60.972,
-    "dias_positivos_pct": 53.694,
+    "dias_positivos_pct": 53.669,
     "semanas_positivas_pct": 50.0,
     "dias_con_posicion_pct": 100.0
    },
    "giro_anual": 6.1,
    "exposicion_media": 0.617,
    "sin_costes": {
-    "dias": 2125,
-    "rent_anual_pct": 4.864,
-    "vol_anual_pct": 40.514,
+    "dias": 2126,
+    "rent_anual_pct": 4.831,
+    "vol_anual_pct": 40.505,
     "sharpe_anual": 0.321,
     "caida_max_pct": 60.614,
-    "dias_positivos_pct": 53.694,
+    "dias_positivos_pct": 53.669,
     "semanas_positivas_pct": 50.329,
     "dias_con_posicion_pct": 100.0
    }
   },
   "tendencia_semana_mes": {
    "con_costes": {
-    "dias": 2125,
-    "rent_anual_pct": 25.689,
-    "vol_anual_pct": 30.414,
+    "dias": 2126,
+    "rent_anual_pct": 25.715,
+    "vol_anual_pct": 30.407,
     "sharpe_anual": 0.904,
     "caida_max_pct": 34.211,
-    "dias_positivos_pct": 52.0,
+    "dias_positivos_pct": 52.023,
     "semanas_positivas_pct": 50.0,
     "dias_con_posicion_pct": 100.0
    },
    "giro_anual": 23.3,
    "exposicion_media": 0.617,
    "sin_costes": {
-    "dias": 2125,
-    "rent_anual_pct": 27.785,
-    "vol_anual_pct": 30.416,
-    "sharpe_anual": 0.958,
+    "dias": 2126,
+    "rent_anual_pct": 27.811,
+    "vol_anual_pct": 30.409,
+    "sharpe_anual": 0.959,
     "caida_max_pct": 33.063,
-    "dias_positivos_pct": 52.188,
+    "dias_positivos_pct": 52.211,
     "semanas_positivas_pct": 50.987,
     "dias_con_posicion_pct": 100.0
    }
   },
   "vendido_cuando_funding_positivo": {
    "con_costes": {
-    "dias": 2125,
-    "rent_anual_pct": -10.204,
-    "vol_anual_pct": 34.095,
-    "sharpe_anual": -0.146,
+    "dias": 2126,
+    "rent_anual_pct": -10.142,
+    "vol_anual_pct": 34.087,
+    "sharpe_anual": -0.145,
     "caida_max_pct": 64.906,
-    "dias_positivos_pct": 46.494,
+    "dias_positivos_pct": 46.519,
     "semanas_positivas_pct": 51.645,
     "dias_con_posicion_pct": 100.0
    },
-   "giro_anual": 13.9,
+   "giro_anual": 14.0,
    "exposicion_media": 0.501,
    "sin_costes": {
-    "dias": 2125,
-    "rent_anual_pct": -9.31,
-    "vol_anual_pct": 34.095,
-    "sharpe_anual": -0.117,
+    "dias": 2126,
+    "rent_anual_pct": -9.248,
+    "vol_anual_pct": 34.087,
+    "sharpe_anual": -0.116,
     "caida_max_pct": 64.307,
-    "dias_positivos_pct": 46.494,
+    "dias_positivos_pct": 46.519,
     "semanas_positivas_pct": 51.974,
     "dias_con_posicion_pct": 100.0
    }
   },
   "lab_cruce_24_336_c2_sec_amb_nf_h1": {
    "con_costes": {
-    "dias": 2125,
-    "rent_anual_pct": 1.819,
+    "dias": 2126,
+    "rent_anual_pct": 1.807,
     "vol_anual_pct": 1.31,
-    "sharpe_anual": 1.383,
+    "sharpe_anual": 1.374,
     "caida_max_pct": 1.553,
-    "dias_positivos_pct": 51.012,
+    "dias_positivos_pct": 50.988,
     "semanas_positivas_pct": 49.342,
     "dias_con_posicion_pct": 100.0
    },
    "giro_anual": 8.0,
    "exposicion_media": 0.053,
    "sin_costes": {
-    "dias": 2125,
-    "rent_anual_pct": 2.403,
+    "dias": 2126,
+    "rent_anual_pct": 2.39,
     "vol_anual_pct": 1.31,
-    "sharpe_anual": 1.819,
+    "sharpe_anual": 1.81,
     "caida_max_pct": 1.176,
-    "dias_positivos_pct": 51.906,
+    "dias_positivos_pct": 51.881,
     "semanas_positivas_pct": 53.289,
     "dias_con_posicion_pct": 100.0
    }
   },
   "lab_cruce_24_168_c2_ser_lar_ba_h24": {
    "con_costes": {
-    "dias": 2125,
-    "rent_anual_pct": 4.922,
-    "vol_anual_pct": 3.678,
-    "sharpe_anual": 1.325,
+    "dias": 2126,
+    "rent_anual_pct": 4.919,
+    "vol_anual_pct": 3.677,
+    "sharpe_anual": 1.324,
     "caida_max_pct": 4.159,
     "dias_positivos_pct": 53.7,
     "semanas_positivas_pct": 40.957,
-    "dias_con_posicion_pct": 52.141
+    "dias_con_posicion_pct": 52.117
    },
    "giro_anual": 5.5,
    "exposicion_media": 0.03,
    "sin_costes": {
-    "dias": 2125,
-    "rent_anual_pct": 5.331,
-    "vol_anual_pct": 3.682,
+    "dias": 2126,
+    "rent_anual_pct": 5.328,
+    "vol_anual_pct": 3.681,
     "sharpe_anual": 1.429,
     "caida_max_pct": 3.999,
     "dias_positivos_pct": 54.693,
     "semanas_positivas_pct": 42.553,
-    "dias_con_posicion_pct": 52.141
+    "dias_con_posicion_pct": 52.117
    }
   },
   "lab_cruce_12_336_s_ser_amb_ba_h1": {
    "con_costes": {
-    "dias": 2125,
-    "rent_anual_pct": 27.012,
-    "vol_anual_pct": 20.413,
+    "dias": 2126,
+    "rent_anual_pct": 26.997,
+    "vol_anual_pct": 20.409,
     "sharpe_anual": 1.273,
     "caida_max_pct": 19.883,
     "dias_positivos_pct": 51.718,
     "semanas_positivas_pct": 50.265,
-    "dias_con_posicion_pct": 53.412
+    "dias_con_posicion_pct": 53.387
    },
    "giro_anual": 62.2,
    "exposicion_media": 0.321,
    "sin_costes": {
-    "dias": 2125,
-    "rent_anual_pct": 32.754,
-    "vol_anual_pct": 20.377,
+    "dias": 2126,
+    "rent_anual_pct": 32.735,
+    "vol_anual_pct": 20.373,
     "sharpe_anual": 1.492,
     "caida_max_pct": 18.362,
     "dias_positivos_pct": 52.381,
     "semanas_positivas_pct": 51.323,
-    "dias_con_posicion_pct": 53.365
+    "dias_con_posicion_pct": 53.34
    }
   },
   "lab_impulso_72_c2_ser_lar_ba_h24": {
    "con_costes": {
-    "dias": 2125,
-    "rent_anual_pct": 5.532,
-    "vol_anual_pct": 4.643,
+    "dias": 2126,
+    "rent_anual_pct": 5.53,
+    "vol_anual_pct": 4.642,
     "sharpe_anual": 1.183,
     "caida_max_pct": 7.571,
     "dias_positivos_pct": 49.189,
     "semanas_positivas_pct": 41.489,
-    "dias_con_posicion_pct": 52.235
+    "dias_con_posicion_pct": 52.211
    },
    "giro_anual": 11.8,
    "exposicion_media": 0.032,
    "sin_costes": {
-    "dias": 2125,
-    "rent_anual_pct": 6.421,
-    "vol_anual_pct": 4.652,
+    "dias": 2126,
+    "rent_anual_pct": 6.418,
+    "vol_anual_pct": 4.651,
     "sharpe_anual": 1.361,
     "caida_max_pct": 6.808,
     "dias_positivos_pct": 50.45,
     "semanas_positivas_pct": 44.149,
-    "dias_con_posicion_pct": 52.235
+    "dias_con_posicion_pct": 52.211
    }
   },
   "lab_cruce_24_336_c2_ser_amb_ba_h24": {
    "con_costes": {
-    "dias": 2125,
-    "rent_anual_pct": 5.072,
-    "vol_anual_pct": 4.505,
+    "dias": 2126,
+    "rent_anual_pct": 5.07,
+    "vol_anual_pct": 4.504,
     "sharpe_anual": 1.121,
     "caida_max_pct": 3.992,
     "dias_positivos_pct": 53.568,
     "semanas_positivas_pct": 46.597,
-    "dias_con_posicion_pct": 53.412
+    "dias_con_posicion_pct": 53.387
    },
    "giro_anual": 7.4,
    "exposicion_media": 0.051,
    "sin_costes": {
-    "dias": 2125,
-    "rent_anual_pct": 5.628,
-    "vol_anual_pct": 4.507,
+    "dias": 2126,
+    "rent_anual_pct": 5.626,
+    "vol_anual_pct": 4.506,
     "sharpe_anual": 1.237,
     "caida_max_pct": 3.875,
     "dias_positivos_pct": 54.361,
     "semanas_positivas_pct": 47.644,
-    "dias_con_posicion_pct": 53.412
+    "dias_con_posicion_pct": 53.387
    }
   },
   "lab_impulso_720_c0.5_ser_lar_nf_h24": {
    "con_costes": {
-    "dias": 2125,
-    "rent_anual_pct": 17.053,
-    "vol_anual_pct": 15.172,
+    "dias": 2126,
+    "rent_anual_pct": 17.044,
+    "vol_anual_pct": 15.168,
     "sharpe_anual": 1.114,
     "caida_max_pct": 21.379,
     "dias_positivos_pct": 52.041,
     "semanas_positivas_pct": 39.597,
-    "dias_con_posicion_pct": 92.235
+    "dias_con_posicion_pct": 92.192
    },
    "giro_anual": 18.2,
    "exposicion_media": 0.172,
    "sin_costes": {
-    "dias": 2125,
-    "rent_anual_pct": 18.574,
-    "vol_anual_pct": 15.173,
+    "dias": 2126,
+    "rent_anual_pct": 18.565,
+    "vol_anual_pct": 15.17,
     "sharpe_anual": 1.199,
     "caida_max_pct": 19.256,
     "dias_positivos_pct": 52.653,
     "semanas_positivas_pct": 40.268,
-    "dias_con_posicion_pct": 92.235
+    "dias_con_posicion_pct": 92.192
    }
   }
  },
  "sistema": {
   "servidor": {
    "resumen": {
-    "dias": 2125,
-    "rent_anual_pct": 1.496,
-    "vol_anual_pct": 24.549,
+    "dias": 2126,
+    "rent_anual_pct": 1.507,
+    "vol_anual_pct": 24.543,
     "sharpe_anual": 0.183,
     "caida_max_pct": 39.68,
-    "dias_positivos_pct": 44.612,
+    "dias_positivos_pct": 44.638,
     "semanas_positivas_pct": 35.197,
     "dias_con_posicion_pct": 100.0
    },
@@ -905,62 +905,62 @@
     "2023": 16.7,
     "2024": 29.0,
     "2025": -20.1,
-    "2026": -0.2
+    "2026": -0.1
    },
    "eta": 10.0,
    "expertos": {
     "tend_12_72": {
      "peso_medio_pct": 6.7,
-     "sharpe_anual": 0.53,
-     "rent_anual_pct": 12.5,
+     "sharpe_anual": 0.52,
+     "rent_anual_pct": 12.23,
      "caida_max_pct": 35.7
     },
     "tend_24_168": {
      "peso_medio_pct": 6.2,
      "sharpe_anual": 0.72,
-     "rent_anual_pct": 19.29,
+     "rent_anual_pct": 19.16,
      "caida_max_pct": 30.9
     },
     "tend_72_336": {
      "peso_medio_pct": 7.8,
-     "sharpe_anual": 0.94,
-     "rent_anual_pct": 27.57,
+     "sharpe_anual": 0.95,
+     "rent_anual_pct": 27.6,
      "caida_max_pct": 27.1
     },
     "tend_168_720": {
      "peso_medio_pct": 8.0,
      "sharpe_anual": 0.9,
-     "rent_anual_pct": 25.69,
+     "rent_anual_pct": 25.71,
      "caida_max_pct": 34.2
     },
     "tendL_24_168": {
      "peso_medio_pct": 5.1,
-     "sharpe_anual": 0.73,
-     "rent_anual_pct": 14.86,
+     "sharpe_anual": 0.72,
+     "rent_anual_pct": 14.77,
      "caida_max_pct": 26.3
     },
     "tendL_168_720": {
      "peso_medio_pct": 5.8,
      "sharpe_anual": 0.85,
-     "rent_anual_pct": 17.57,
+     "rent_anual_pct": 17.56,
      "caida_max_pct": 33.4
     },
     "mom_24": {
      "peso_medio_pct": 1.4,
      "sharpe_anual": -2.32,
-     "rent_anual_pct": -56.32,
+     "rent_anual_pct": -56.29,
      "caida_max_pct": 99.3
     },
     "mom_168": {
      "peso_medio_pct": 4.2,
      "sharpe_anual": -0.0,
-     "rent_anual_pct": -5.03,
+     "rent_anual_pct": -5.1,
      "caida_max_pct": 63.9
     },
     "mom_720": {
      "peso_medio_pct": 8.2,
      "sharpe_anual": 0.83,
-     "rent_anual_pct": 23.39,
+     "rent_anual_pct": 23.42,
      "caida_max_pct": 34.9
     },
     "rev_12": {
@@ -971,14 +971,14 @@
     },
     "rev_24z": {
      "peso_medio_pct": 1.8,
-     "sharpe_anual": -2.83,
-     "rent_anual_pct": -32.3,
+     "sharpe_anual": -2.84,
+     "rent_anual_pct": -32.31,
      "caida_max_pct": 90.0
     },
     "fund_contra": {
      "peso_medio_pct": 4.4,
-     "sharpe_anual": -0.15,
-     "rent_anual_pct": -2.14,
+     "sharpe_anual": -0.14,
+     "rent_anual_pct": -2.05,
      "caida_max_pct": 26.3
     },
     "carry": {
@@ -996,7 +996,7 @@
     "btc_hold": {
      "peso_medio_pct": 26.6,
      "sharpe_anual": 0.28,
-     "rent_anual_pct": 0.38,
+     "rent_anual_pct": 0.5,
      "caida_max_pct": 78.4
     },
     "efectivo": {
@@ -1009,12 +1009,12 @@
   },
   "servidor_eta_1": {
    "resumen": {
-    "dias": 2125,
-    "rent_anual_pct": -0.292,
-    "vol_anual_pct": 12.587,
-    "sharpe_anual": 0.039,
+    "dias": 2126,
+    "rent_anual_pct": -0.305,
+    "vol_anual_pct": 12.584,
+    "sharpe_anual": 0.038,
     "caida_max_pct": 27.664,
-    "dias_positivos_pct": 43.388,
+    "dias_positivos_pct": 43.368,
     "semanas_positivas_pct": 39.145,
     "dias_con_posicion_pct": 100.0
    },
@@ -1024,62 +1024,62 @@
     "2023": 1.3,
     "2024": 12.4,
     "2025": -9.1,
-    "2026": -6.5
+    "2026": -6.6
    },
    "eta": 1.0,
    "expertos": {
     "tend_12_72": {
      "peso_medio_pct": 6.7,
-     "sharpe_anual": 0.53,
-     "rent_anual_pct": 12.5,
+     "sharpe_anual": 0.52,
+     "rent_anual_pct": 12.23,
      "caida_max_pct": 35.7
     },
     "tend_24_168": {
      "peso_medio_pct": 6.8,
      "sharpe_anual": 0.72,
-     "rent_anual_pct": 19.29,
+     "rent_anual_pct": 19.16,
      "caida_max_pct": 30.9
     },
     "tend_72_336": {
      "peso_medio_pct": 7.0,
-     "sharpe_anual": 0.94,
-     "rent_anual_pct": 27.57,
+     "sharpe_anual": 0.95,
+     "rent_anual_pct": 27.6,
      "caida_max_pct": 27.1
     },
     "tend_168_720": {
      "peso_medio_pct": 6.9,
      "sharpe_anual": 0.9,
-     "rent_anual_pct": 25.69,
+     "rent_anual_pct": 25.71,
      "caida_max_pct": 34.2
     },
     "tendL_24_168": {
      "peso_medio_pct": 6.7,
-     "sharpe_anual": 0.73,
-     "rent_anual_pct": 14.86,
+     "sharpe_anual": 0.72,
+     "rent_anual_pct": 14.77,
      "caida_max_pct": 26.3
     },
     "tendL_168_720": {
      "peso_medio_pct": 6.7,
      "sharpe_anual": 0.85,
-     "rent_anual_pct": 17.57,
+     "rent_anual_pct": 17.56,
      "caida_max_pct": 33.4
     },
     "mom_24": {
      "peso_medio_pct": 4.4,
      "sharpe_anual": -2.32,
-     "rent_anual_pct": -56.32,
+     "rent_anual_pct": -56.29,
      "caida_max_pct": 99.3
     },
     "mom_168": {
      "peso_medio_pct": 6.1,
      "sharpe_anual": -0.0,
-     "rent_anual_pct": -5.03,
+     "rent_anual_pct": -5.1,
      "caida_max_pct": 63.9
     },
     "mom_720": {
      "peso_medio_pct": 6.8,
      "sharpe_anual": 0.83,
-     "rent_anual_pct": 23.39,
+     "rent_anual_pct": 23.42,
      "caida_max_pct": 34.9
     },
     "rev_12": {
@@ -1090,14 +1090,14 @@
     },
     "rev_24z": {
      "peso_medio_pct": 5.2,
-     "sharpe_anual": -2.83,
-     "rent_anual_pct": -32.3,
+     "sharpe_anual": -2.84,
+     "rent_anual_pct": -32.31,
      "caida_max_pct": 90.0
     },
     "fund_contra": {
      "peso_medio_pct": 6.1,
-     "sharpe_anual": -0.15,
-     "rent_anual_pct": -2.14,
+     "sharpe_anual": -0.14,
+     "rent_anual_pct": -2.05,
      "caida_max_pct": 26.3
     },
     "carry": {
@@ -1115,7 +1115,7 @@
     "btc_hold": {
      "peso_medio_pct": 7.2,
      "sharpe_anual": 0.28,
-     "rent_anual_pct": 0.38,
+     "rent_anual_pct": 0.5,
      "caida_max_pct": 78.4
     },
     "efectivo": {
@@ -1128,12 +1128,12 @@
   },
   "servidor_pesos_iguales": {
    "resumen": {
-    "dias": 2125,
-    "rent_anual_pct": -5.732,
-    "vol_anual_pct": 11.042,
-    "sharpe_anual": -0.479,
+    "dias": 2126,
+    "rent_anual_pct": -5.744,
+    "vol_anual_pct": 11.04,
+    "sharpe_anual": -0.481,
     "caida_max_pct": 45.469,
-    "dias_positivos_pct": 42.212,
+    "dias_positivos_pct": 42.192,
     "semanas_positivas_pct": 36.513,
     "dias_con_posicion_pct": 100.0
    },
@@ -1143,62 +1143,62 @@
     "2023": -6.3,
     "2024": 4.3,
     "2025": -12.8,
-    "2026": -12.4
+    "2026": -12.5
    },
    "eta": 0.0,
    "expertos": {
     "tend_12_72": {
      "peso_medio_pct": 6.2,
-     "sharpe_anual": 0.53,
-     "rent_anual_pct": 12.5,
+     "sharpe_anual": 0.52,
+     "rent_anual_pct": 12.23,
      "caida_max_pct": 35.7
     },
     "tend_24_168": {
      "peso_medio_pct": 6.2,
      "sharpe_anual": 0.72,
-     "rent_anual_pct": 19.29,
+     "rent_anual_pct": 19.16,
      "caida_max_pct": 30.9
     },
     "tend_72_336": {
      "peso_medio_pct": 6.2,
-     "sharpe_anual": 0.94,
-     "rent_anual_pct": 27.57,
+     "sharpe_anual": 0.95,
+     "rent_anual_pct": 27.6,
      "caida_max_pct": 27.1
     },
     "tend_168_720": {
      "peso_medio_pct": 6.2,
      "sharpe_anual": 0.9,
-     "rent_anual_pct": 25.69,
+     "rent_anual_pct": 25.71,
      "caida_max_pct": 34.2
     },
     "tendL_24_168": {
      "peso_medio_pct": 6.2,
-     "sharpe_anual": 0.73,
-     "rent_anual_pct": 14.86,
+     "sharpe_anual": 0.72,
+     "rent_anual_pct": 14.77,
      "caida_max_pct": 26.3
     },
     "tendL_168_720": {
      "peso_medio_pct": 6.2,
      "sharpe_anual": 0.85,
-     "rent_anual_pct": 17.57,
+     "rent_anual_pct": 17.56,
      "caida_max_pct": 33.4
     },
     "mom_24": {
      "peso_medio_pct": 6.2,
      "sharpe_anual": -2.32,
-     "rent_anual_pct": -56.32,
+     "rent_anual_pct": -56.29,
      "caida_max_pct": 99.3
     },
     "mom_168": {
      "peso_medio_pct": 6.2,
      "sharpe_anual": -0.0,
-     "rent_anual_pct": -5.03,
+     "rent_anual_pct": -5.1,
      "caida_max_pct": 63.9
     },
     "mom_720": {
      "peso_medio_pct": 6.2,
      "sharpe_anual": 0.83,
-     "rent_anual_pct": 23.39,
+     "rent_anual_pct": 23.42,
      "caida_max_pct": 34.9
     },
     "rev_12": {
@@ -1209,14 +1209,14 @@
     },
     "rev_24z": {
      "peso_medio_pct": 6.2,
-     "sharpe_anual": -2.83,
-     "rent_anual_pct": -32.3,
+     "sharpe_anual": -2.84,
+     "rent_anual_pct": -32.31,
      "caida_max_pct": 90.0
     },
     "fund_contra": {
      "peso_medio_pct": 6.2,
-     "sharpe_anual": -0.15,
-     "rent_anual_pct": -2.14,
+     "sharpe_anual": -0.14,
+     "rent_anual_pct": -2.05,
      "caida_max_pct": 26.3
     },
     "carry": {
@@ -1234,7 +1234,7 @@
     "btc_hold": {
      "peso_medio_pct": 6.5,
      "sharpe_anual": 0.28,
-     "rent_anual_pct": 0.38,
+     "rent_anual_pct": 0.5,
      "caida_max_pct": 78.4
     },
     "efectivo": {
@@ -1247,12 +1247,12 @@
   },
   "servidor_riesgo_igualado": {
    "resumen": {
-    "dias": 2125,
-    "rent_anual_pct": 5.93,
-    "vol_anual_pct": 11.187,
+    "dias": 2126,
+    "rent_anual_pct": 5.932,
+    "vol_anual_pct": 11.184,
     "sharpe_anual": 0.571,
     "caida_max_pct": 16.713,
-    "dias_positivos_pct": 45.318,
+    "dias_positivos_pct": 45.343,
     "semanas_positivas_pct": 43.092,
     "dias_con_posicion_pct": 100.0
    },
@@ -1269,73 +1269,73 @@
     "tend_12_72": {
      "peso_medio_pct": 10.9,
      "sharpe_anual": 0.84,
-     "rent_anual_pct": 16.5,
+     "rent_anual_pct": 16.34,
      "caida_max_pct": 24.0
     },
     "tend_24_168": {
      "peso_medio_pct": 8.6,
-     "sharpe_anual": 0.92,
-     "rent_anual_pct": 18.06,
+     "sharpe_anual": 0.91,
+     "rent_anual_pct": 17.99,
      "caida_max_pct": 19.2
     },
     "tend_72_336": {
      "peso_medio_pct": 10.1,
      "sharpe_anual": 1.17,
-     "rent_anual_pct": 23.88,
+     "rent_anual_pct": 23.89,
      "caida_max_pct": 16.0
     },
     "tend_168_720": {
      "peso_medio_pct": 9.3,
      "sharpe_anual": 1.12,
-     "rent_anual_pct": 22.2,
+     "rent_anual_pct": 22.21,
      "caida_max_pct": 15.7
     },
     "tendL_24_168": {
      "peso_medio_pct": 5.8,
-     "sharpe_anual": 0.48,
-     "rent_anual_pct": 7.06,
+     "sharpe_anual": 0.47,
+     "rent_anual_pct": 6.99,
      "caida_max_pct": 26.9
     },
     "tendL_168_720": {
      "peso_medio_pct": 6.3,
      "sharpe_anual": 0.67,
-     "rent_anual_pct": 9.37,
+     "rent_anual_pct": 9.36,
      "caida_max_pct": 25.4
     },
     "mom_24": {
      "peso_medio_pct": 1.8,
      "sharpe_anual": -2.15,
-     "rent_anual_pct": -38.6,
+     "rent_anual_pct": -38.58,
      "caida_max_pct": 94.6
     },
     "mom_168": {
      "peso_medio_pct": 5.1,
      "sharpe_anual": 0.22,
-     "rent_anual_pct": 2.54,
+     "rent_anual_pct": 2.5,
      "caida_max_pct": 40.1
     },
     "mom_720": {
      "peso_medio_pct": 9.3,
      "sharpe_anual": 1.02,
-     "rent_anual_pct": 20.21,
+     "rent_anual_pct": 20.23,
      "caida_max_pct": 19.1
     },
     "rev_12": {
      "peso_medio_pct": 0.9,
-     "sharpe_anual": -5.57,
+     "sharpe_anual": -5.58,
      "rent_anual_pct": -67.45,
      "caida_max_pct": 99.9
     },
     "rev_24z": {
      "peso_medio_pct": 1.8,
      "sharpe_anual": -3.01,
-     "rent_anual_pct": -33.42,
+     "rent_anual_pct": -33.44,
      "caida_max_pct": 90.8
     },
     "fund_contra": {
      "peso_medio_pct": 4.5,
-     "sharpe_anual": -0.13,
-     "rent_anual_pct": -1.45,
+     "sharpe_anual": -0.11,
+     "rent_anual_pct": -1.35,
      "caida_max_pct": 20.8
     },
     "carry": {
@@ -1353,7 +1353,7 @@
     "btc_hold": {
      "peso_medio_pct": 10.6,
      "sharpe_anual": 0.21,
-     "rent_anual_pct": 2.14,
+     "rent_anual_pct": 2.18,
      "caida_max_pct": 39.0
     },
     "efectivo": {
@@ -1366,12 +1366,12 @@
   },
   "servidor_con_laboratorio": {
    "resumen": {
-    "dias": 2125,
-    "rent_anual_pct": 2.181,
-    "vol_anual_pct": 23.268,
+    "dias": 2126,
+    "rent_anual_pct": 2.189,
+    "vol_anual_pct": 23.263,
     "sharpe_anual": 0.209,
     "caida_max_pct": 36.536,
-    "dias_positivos_pct": 44.471,
+    "dias_positivos_pct": 44.497,
     "semanas_positivas_pct": 34.539,
     "dias_con_posicion_pct": 100.0
    },
@@ -1381,62 +1381,62 @@
     "2023": 15.1,
     "2024": 28.6,
     "2025": -17.3,
-    "2026": -0.0
+    "2026": 0.0
    },
    "eta": 10.0,
    "expertos": {
     "tend_12_72": {
      "peso_medio_pct": 5.8,
-     "sharpe_anual": 0.53,
-     "rent_anual_pct": 12.5,
+     "sharpe_anual": 0.52,
+     "rent_anual_pct": 12.23,
      "caida_max_pct": 35.7
     },
     "tend_24_168": {
      "peso_medio_pct": 5.3,
      "sharpe_anual": 0.72,
-     "rent_anual_pct": 19.29,
+     "rent_anual_pct": 19.16,
      "caida_max_pct": 30.9
     },
     "tend_72_336": {
      "peso_medio_pct": 6.7,
-     "sharpe_anual": 0.94,
-     "rent_anual_pct": 27.57,
+     "sharpe_anual": 0.95,
+     "rent_anual_pct": 27.6,
      "caida_max_pct": 27.1
     },
     "tend_168_720": {
      "peso_medio_pct": 6.8,
      "sharpe_anual": 0.9,
-     "rent_anual_pct": 25.69,
+     "rent_anual_pct": 25.71,
      "caida_max_pct": 34.2
     },
     "tendL_24_168": {
      "peso_medio_pct": 4.3,
-     "sharpe_anual": 0.73,
-     "rent_anual_pct": 14.86,
+     "sharpe_anual": 0.72,
+     "rent_anual_pct": 14.77,
      "caida_max_pct": 26.3
     },
     "tendL_168_720": {
      "peso_medio_pct": 5.0,
      "sharpe_anual": 0.85,
-     "rent_anual_pct": 17.57,
+     "rent_anual_pct": 17.56,
      "caida_max_pct": 33.4
     },
     "mom_24": {
      "peso_medio_pct": 1.2,
      "sharpe_anual": -2.32,
-     "rent_anual_pct": -56.32,
+     "rent_anual_pct": -56.29,
      "caida_max_pct": 99.3
     },
     "mom_168": {
      "peso_medio_pct": 3.6,
      "sharpe_anual": -0.0,
-     "rent_anual_pct": -5.03,
+     "rent_anual_pct": -5.1,
      "caida_max_pct": 63.9
     },
     "mom_720": {
      "peso_medio_pct": 7.0,
      "sharpe_anual": 0.83,
-     "rent_anual_pct": 23.39,
+     "rent_anual_pct": 23.42,
      "caida_max_pct": 34.9
     },
     "rev_12": {
@@ -1447,14 +1447,14 @@
     },
     "rev_24z": {
      "peso_medio_pct": 1.5,
-     "sharpe_anual": -2.83,
-     "rent_anual_pct": -32.3,
+     "sharpe_anual": -2.84,
+     "rent_anual_pct": -32.31,
      "caida_max_pct": 90.0
     },
     "lab_cruce_24_336_c2_sec_amb_nf_h1": {
      "peso_medio_pct": 3.3,
-     "sharpe_anual": 1.38,
-     "rent_anual_pct": 1.82,
+     "sharpe_anual": 1.37,
+     "rent_anual_pct": 1.81,
      "caida_max_pct": 1.6
     },
     "lab_cruce_24_168_c2_ser_lar_ba_h24": {
@@ -1466,13 +1466,13 @@
     "lab_cruce_12_336_s_ser_amb_ba_h1": {
      "peso_medio_pct": 6.6,
      "sharpe_anual": 1.27,
-     "rent_anual_pct": 27.01,
+     "rent_anual_pct": 27.0,
      "caida_max_pct": 19.9
     },
     "fund_contra": {
      "peso_medio_pct": 3.6,
-     "sharpe_anual": -0.15,
-     "rent_anual_pct": -2.14,
+     "sharpe_anual": -0.14,
+     "rent_anual_pct": -2.05,
      "caida_max_pct": 26.3
     },
     "carry": {
@@ -1490,7 +1490,7 @@
     "btc_hold": {
      "peso_medio_pct": 25.0,
      "sharpe_anual": 0.28,
-     "rent_anual_pct": 0.38,
+     "rent_anual_pct": 0.5,
      "caida_max_pct": 78.4
     },
     "efectivo": {
