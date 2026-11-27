@@ -1,8 +1,8 @@
 {
  "version": 1,
- "generado": "2026-11-26T17:32:32Z",
- "fecha": "2026-11-25",
- "valida_hasta": "2026-11-28",
+ "generado": "2026-11-27T17:11:58Z",
+ "fecha": "2026-11-26",
+ "valida_hasta": "2026-11-29",
  "modelo": "LightGBM, 101 indicadores (Alpha158 de Qlib + funding, compras agresivas y beta con BTC)",
  "regla": "lenta largo-corto: compra las 5 mejores y vende las 5 peores entre las monedas del servidor; se mantienen mientras sigan entre las 15 mejores (o peores); 10 % del dinero en cada una",
  "universo_mes": "2026-11",
@@ -28,148 +28,148 @@
   "BTWUSDT",
   "ADAUSDT"
  ],
- "dias_de_entrenamiento": 2460,
- "filas_de_entrenamiento": 46711,
+ "dias_de_entrenamiento": 2461,
+ "filas_de_entrenamiento": 46731,
  "ranking": [
-  {
-   "simbolo": "ETHUSDT",
-   "moneda": "ETH",
-   "operable": true,
-   "puntuacion": 0.08954
-  },
   {
    "simbolo": "BTCUSDT",
    "moneda": "BTC",
    "operable": true,
-   "puntuacion": 0.08303
+   "puntuacion": 0.09219
   },
   {
    "simbolo": "BNBUSDT",
    "moneda": "BNB",
    "operable": true,
-   "puntuacion": 0.07003
-  },
-  {
-   "simbolo": "XRPUSDT",
-   "moneda": "XRP",
-   "operable": true,
-   "puntuacion": 0.06985
-  },
-  {
-   "simbolo": "ADAUSDT",
-   "moneda": "ADA",
-   "operable": true,
-   "puntuacion": 0.06075
-  },
-  {
-   "simbolo": "DOGEUSDT",
-   "moneda": "DOGE",
-   "operable": true,
-   "puntuacion": 0.05103
-  },
-  {
-   "simbolo": "SUIUSDT",
-   "moneda": "SUI",
-   "operable": true,
-   "puntuacion": 0.0468
+   "puntuacion": 0.0903
   },
   {
    "simbolo": "BTWUSDT",
    "moneda": "BTW",
    "operable": false,
-   "puntuacion": 0.04254
+   "puntuacion": 0.08992
   },
   {
-   "simbolo": "QNTUSDT",
-   "moneda": "QNT",
-   "operable": false,
-   "puntuacion": 0.04067
+   "simbolo": "ETHUSDT",
+   "moneda": "ETH",
+   "operable": true,
+   "puntuacion": 0.06587
   },
   {
    "simbolo": "SOLUSDT",
    "moneda": "SOL",
    "operable": true,
-   "puntuacion": 0.03695
-  },
-  {
-   "simbolo": "HYPEUSDT",
-   "moneda": "HYPE",
-   "operable": true,
-   "puntuacion": 0.03426
-  },
-  {
-   "simbolo": "QUSDT",
-   "moneda": "Q",
-   "operable": false,
-   "puntuacion": 0.01656
+   "puntuacion": 0.06577
   },
   {
    "simbolo": "WLDUSDT",
    "moneda": "WLD",
    "operable": true,
-   "puntuacion": 0.01601
+   "puntuacion": 0.05686
   },
   {
-   "simbolo": "NEARUSDT",
-   "moneda": "NEAR",
+   "simbolo": "DOGEUSDT",
+   "moneda": "DOGE",
    "operable": true,
-   "puntuacion": 0.0032
+   "puntuacion": 0.0564
+  },
+  {
+   "simbolo": "ADAUSDT",
+   "moneda": "ADA",
+   "operable": true,
+   "puntuacion": 0.05615
+  },
+  {
+   "simbolo": "XRPUSDT",
+   "moneda": "XRP",
+   "operable": true,
+   "puntuacion": 0.05315
+  },
+  {
+   "simbolo": "SUIUSDT",
+   "moneda": "SUI",
+   "operable": true,
+   "puntuacion": 0.04257
   },
   {
    "simbolo": "UNIUSDT",
    "moneda": "UNI",
    "operable": true,
-   "puntuacion": -0.00217
+   "puntuacion": 0.0394
   },
   {
-   "simbolo": "STRKUSDT",
-   "moneda": "STRK",
+   "simbolo": "QUSDT",
+   "moneda": "Q",
    "operable": false,
-   "puntuacion": -0.00874
+   "puntuacion": 0.03832
   },
   {
-   "simbolo": "PUMPUSDT",
-   "moneda": "PUMP",
-   "operable": false,
-   "puntuacion": -0.01617
+   "simbolo": "NEARUSDT",
+   "moneda": "NEAR",
+   "operable": true,
+   "puntuacion": 0.03662
   },
   {
    "simbolo": "ENAUSDT",
    "moneda": "ENA",
    "operable": true,
-   "puntuacion": -0.02202
-  },
-  {
-   "simbolo": "1000PEPEUSDT",
-   "moneda": "kPEPE",
-   "operable": true,
-   "puntuacion": -0.03352
+   "puntuacion": 0.03344
   },
   {
    "simbolo": "ZECUSDT",
    "moneda": "ZEC",
    "operable": true,
-   "puntuacion": -0.07777
+   "puntuacion": 0.01505
+  },
+  {
+   "simbolo": "HYPEUSDT",
+   "moneda": "HYPE",
+   "operable": true,
+   "puntuacion": 0.01402
+  },
+  {
+   "simbolo": "QNTUSDT",
+   "moneda": "QNT",
+   "operable": false,
+   "puntuacion": 0.00102
+  },
+  {
+   "simbolo": "STRKUSDT",
+   "moneda": "STRK",
+   "operable": false,
+   "puntuacion": -0.00694
+  },
+  {
+   "simbolo": "1000PEPEUSDT",
+   "moneda": "kPEPE",
+   "operable": true,
+   "puntuacion": -0.00989
+  },
+  {
+   "simbolo": "PUMPUSDT",
+   "moneda": "PUMP",
+   "operable": false,
+   "puntuacion": -0.03705
   }
  ],
  "cartera": {
-  "ETH": 0.1,
   "BTC": 0.1,
   "BNB": 0.1,
+  "ETH": 0.1,
   "ADA": 0.1,
   "ENA": 0.1,
-  "ZEC": -0.1,
   "kPEPE": -0.1,
-  "UNI": -0.1,
+  "ZEC": -0.1,
   "NEAR": -0.1,
+  "UNI": -0.1,
   "WLD": -0.1
  },
  "anterior": {
+  "ETH": 0.1,
   "BTC": 0.1,
   "BNB": 0.1,
-  "ENA": 0.1,
   "ADA": 0.1,
-  "ETH": 0.1,
+  "ENA": 0.1,
   "ZEC": -0.1,
   "kPEPE": -0.1,
   "UNI": -0.1,
@@ -180,7 +180,7 @@
  "aviso": "Investigación en papel. En la prueba de 2022 a 2026: +21 % al año de media con caídas del 37 %, y 2026 en negativo. No es una recomendación.",
  "registro": {
   "simbolos": 918,
-  "listado_s": 5.1,
+  "listado_s": 7.4,
   "descargas_pendientes": 72,
   "descargas": {
    "0": 72
@@ -219,5 +219,5 @@
    "kPEPE"
   ]
  },
- "segundos": 748.0
+ "segundos": 752.6
 }
