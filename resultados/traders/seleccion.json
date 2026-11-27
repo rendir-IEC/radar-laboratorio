@@ -1,194 +1,194 @@
 {
  "version": 1,
- "generado": "2026-11-26T14:32:03Z",
+ "generado": "2026-11-27T14:31:12Z",
  "usar_previa": true,
  "validacion": {
   "meses_estudiados": 26,
-  "ic_puntuacion_media": 0.136,
-  "t_ic_puntuacion": 5.69,
-  "ventaja_elegidas_pct_mes": 14.99,
-  "t_ventaja_elegidas": 6.12
+  "ic_puntuacion_media": 0.137,
+  "t_ic_puntuacion": 5.74,
+  "ventaja_elegidas_pct_mes": 15.15,
+  "t_ventaja_elegidas": 5.92
  },
  "carteras": [
   {
    "direccion": "0xb65dd7c56afbf3b272ab5fc49be44b47dca18003",
-   "t": 4.571,
-   "quincenas": 18,
+   "t": 4.582,
+   "quincenas": 19,
    "tipo": "vault"
   },
   {
    "direccion": "0x1081e214bd6f0137234b92432d9b6033b88965b7",
-   "t": 4.284,
-   "quincenas": 11,
+   "t": 4.397,
+   "quincenas": 12,
    "tipo": "cuenta"
   },
   {
    "direccion": "0xe31501c472d557bfa145ce105d325fb2dd4cb867",
-   "t": 3.472,
+   "t": 4.312,
+   "quincenas": 14,
+   "tipo": "cuenta"
+  },
+  {
+   "direccion": "0x53375ca9a649f337d83d0834fec0db97640a2a06",
+   "t": 2.799,
    "quincenas": 13,
+   "tipo": "vault"
+  },
+  {
+   "direccion": "0xb07856ebcb6b37967eaf7c4b4e64dcce28c6de15",
+   "t": 2.791,
+   "quincenas": 12,
+   "tipo": "cuenta"
+  },
+  {
+   "direccion": "0xd8c5228c515db3043dfa0c8cd6f22450ee9a99b0",
+   "t": 2.578,
+   "quincenas": 21,
+   "tipo": "cuenta"
+  },
+  {
+   "direccion": "0x888e000c78b8f1aada5b3c99f880794907b76d77",
+   "t": 2.569,
+   "quincenas": 26,
+   "tipo": "cuenta"
+  },
+  {
+   "direccion": "0x490af7d4a048a81db0f677517ed6373565b42349",
+   "t": 2.535,
+   "quincenas": 26,
+   "tipo": "vault"
+  },
+  {
+   "direccion": "0xb632c6580173a16154f17cdafc6eb27e95cf73b7",
+   "t": 2.331,
+   "quincenas": 15,
+   "tipo": "cuenta"
+  },
+  {
+   "direccion": "0xfc98b6ec7f59ea13354bae6171a9120692fb8777",
+   "t": 2.31,
+   "quincenas": 25,
+   "tipo": "cuenta"
+  },
+  {
+   "direccion": "0x8bb033130be354eed1110ce7228d7095f001d9fe",
+   "t": 2.291,
+   "quincenas": 26,
+   "tipo": "vault"
+  },
+  {
+   "direccion": "0x325edd95bb016c36027ce3b9f7595af7094a9564",
+   "t": 2.121,
+   "quincenas": 19,
+   "tipo": "cuenta"
+  },
+  {
+   "direccion": "0x15a4f009bb324a3fb9e36137136b201e3fe0dfdb",
+   "t": 2.095,
+   "quincenas": 11,
    "tipo": "cuenta"
   },
   {
    "direccion": "0xc3b1bf1f1e6fb8161ef4dc2f34e2c56f70b94b11",
-   "t": 3.275,
+   "t": 2.063,
    "quincenas": 15,
    "tipo": "vault"
   },
   {
-   "direccion": "0x53375ca9a649f337d83d0834fec0db97640a2a06",
-   "t": 3.256,
-   "quincenas": 12,
-   "tipo": "vault"
-  },
-  {
-   "direccion": "0x8fc7c0442e582bca195978c5a4fdec2e7c5bb0f7",
-   "t": 2.798,
-   "quincenas": 26,
-   "tipo": "vault"
-  },
-  {
-   "direccion": "0x490af7d4a048a81db0f677517ed6373565b42349",
-   "t": 2.684,
-   "quincenas": 26,
-   "tipo": "vault"
-  },
-  {
-   "direccion": "0x888e000c78b8f1aada5b3c99f880794907b76d77",
-   "t": 2.579,
+   "direccion": "0xab5e6f394951c28ab1873007e373202689cdbec3",
+   "t": 2.05,
    "quincenas": 26,
    "tipo": "cuenta"
   },
   {
    "direccion": "0x72774e2fe1992d5da8c6e9cef73fd2ab980c0b98",
-   "t": 1.982,
+   "t": 2.008,
    "quincenas": 17,
    "tipo": "cuenta"
   },
   {
-   "direccion": "0x8bb033130be354eed1110ce7228d7095f001d9fe",
-   "t": 1.974,
-   "quincenas": 26,
-   "tipo": "vault"
-  },
-  {
-   "direccion": "0x4f12b217aa59e6d3e1f91ca2dc96f9543576618b",
-   "t": 1.913,
-   "quincenas": 15,
-   "tipo": "cuenta"
-  },
-  {
-   "direccion": "0xab5e6f394951c28ab1873007e373202689cdbec3",
-   "t": 1.807,
-   "quincenas": 26,
-   "tipo": "cuenta"
-  },
-  {
-   "direccion": "0x936cf4fb95c30ce83f658b5bbb247e4bb381bb0f",
-   "t": 1.768,
-   "quincenas": 24,
-   "tipo": "cuenta"
-  },
-  {
-   "direccion": "0x5661a070eb13c7c55ac3210b2447d4bea426cbf5",
-   "t": 1.725,
-   "quincenas": 26,
-   "tipo": "vault"
-  },
-  {
-   "direccion": "0xfdb03a2574e9e7d1c77d9ed752d99cdf25c3db25",
-   "t": 1.65,
-   "quincenas": 23,
-   "tipo": "vault"
-  },
-  {
-   "direccion": "0x3440f23a87f1950e7a88cd248fd270e92d1132c5",
-   "t": 1.639,
-   "quincenas": 26,
-   "tipo": "cuenta"
-  },
-  {
-   "direccion": "0x14ecb3f4932522b8d508fa6e237e2746a4999feb",
-   "t": 1.572,
-   "quincenas": 14,
-   "tipo": "vault"
-  },
-  {
-   "direccion": "0x77375a8c9d13bf79afb2a87f1b0ac1dfd5f5bf66",
-   "t": 1.54,
-   "quincenas": 24,
-   "tipo": "cuenta"
-  },
-  {
-   "direccion": "0x668cec05549105e5b05bcc779a43186735d7ea2e",
-   "t": 1.536,
-   "quincenas": 26,
-   "tipo": "cuenta"
-  },
-  {
-   "direccion": "0xb632c6580173a16154f17cdafc6eb27e95cf73b7",
-   "t": 1.524,
-   "quincenas": 16,
-   "tipo": "cuenta"
-  },
-  {
-   "direccion": "0x77eeda199553e33b246e4b4666849b9ad0972902",
-   "t": 1.51,
-   "quincenas": 26,
-   "tipo": "cuenta"
-  },
-  {
-   "direccion": "0xac26cf5f3c46b5e102048c65b977d2551b72a9c7",
-   "t": 1.472,
+   "direccion": "0x8fc7c0442e582bca195978c5a4fdec2e7c5bb0f7",
+   "t": 1.995,
    "quincenas": 26,
    "tipo": "vault"
   },
   {
    "direccion": "0xa2ec76b6464bcbd771f11b769d40055176a6e4a3",
-   "t": 1.449,
+   "t": 1.887,
    "quincenas": 12,
    "tipo": "vault"
   },
   {
-   "direccion": "0xda51323fe9800c8365646ad5c7ade0dd17fdc167",
-   "t": 1.39,
+   "direccion": "0x9a88dd4eacc3aa561c4f50ec66bcede831bec813",
+   "t": 1.848,
    "quincenas": 26,
    "tipo": "vault"
   },
   {
-   "direccion": "0x00897e2d7168165b81558c3cd9257efb007f2410",
-   "t": 1.367,
-   "quincenas": 26,
-   "tipo": "cuenta"
-  },
-  {
-   "direccion": "0xd9012a0c82242b04ee09e45e98b24903f982d975",
-   "t": 1.361,
-   "quincenas": 23,
-   "tipo": "cuenta"
-  },
-  {
-   "direccion": "0x6859da14835424957a1e6b397d8026b1d9ff7e1e",
-   "t": 1.342,
-   "quincenas": 26,
-   "tipo": "cuenta"
-  },
-  {
-   "direccion": "0x90dbb196cacf24bd212b377a0dd62eaad5e8151b",
-   "t": 1.319,
-   "quincenas": 19,
-   "tipo": "cuenta"
-  },
-  {
-   "direccion": "0x7a6d5fc57f6906f337c48fe2763c3a501304f79c",
-   "t": 1.318,
+   "direccion": "0x84abc08c0ea62e687c370154de1f38ea462f4d37",
+   "t": 1.841,
    "quincenas": 24,
    "tipo": "cuenta"
   },
   {
-   "direccion": "0xd6e56265890b76413d1d527eb9b75e334c0c5b42",
-   "t": 1.317,
+   "direccion": "0x4f12b217aa59e6d3e1f91ca2dc96f9543576618b",
+   "t": 1.532,
+   "quincenas": 15,
+   "tipo": "cuenta"
+  },
+  {
+   "direccion": "0x5661a070eb13c7c55ac3210b2447d4bea426cbf5",
+   "t": 1.529,
    "quincenas": 26,
    "tipo": "vault"
+  },
+  {
+   "direccion": "0x7491180d3e43719bd8a53cdfbef27a1527a1d90f",
+   "t": 1.524,
+   "quincenas": 13,
+   "tipo": "vault"
+  },
+  {
+   "direccion": "0x50e2fe552727a4b8692c192b4f96d1a6b0d44394",
+   "t": 1.524,
+   "quincenas": 26,
+   "tipo": "vault"
+  },
+  {
+   "direccion": "0x0748e296e5a350ec36c8487a1cea406e1b57d4b2",
+   "t": 1.498,
+   "quincenas": 26,
+   "tipo": "cuenta"
+  },
+  {
+   "direccion": "0x185611e0343c14f53a4406891cb0fdc9e81808ae",
+   "t": 1.477,
+   "quincenas": 26,
+   "tipo": "cuenta"
+  },
+  {
+   "direccion": "0x77eeda199553e33b246e4b4666849b9ad0972902",
+   "t": 1.474,
+   "quincenas": 26,
+   "tipo": "cuenta"
+  },
+  {
+   "direccion": "0xfc667adba8d4837586078f4fdcdc29804337ca06",
+   "t": 1.456,
+   "quincenas": 26,
+   "tipo": "cuenta"
+  },
+  {
+   "direccion": "0x3440f23a87f1950e7a88cd248fd270e92d1132c5",
+   "t": 1.434,
+   "quincenas": 26,
+   "tipo": "cuenta"
+  },
+  {
+   "direccion": "0xfc27136e42af1732ddc9ce2605ea9bff1b959d9d",
+   "t": 1.417,
+   "quincenas": 16,
+   "tipo": "cuenta"
   }
  ]
 }
