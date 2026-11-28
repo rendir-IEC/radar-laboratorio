@@ -41,6 +41,7 @@ jobs:
           python pruebas/prueba_datos.py
           python pruebas/prueba_ml.py
           python pruebas/prueba_examen.py
+          python pruebas/prueba_doblar.py
       - name: Pruebas del servidor (sin red)
         working-directory: servidor
         run: |
@@ -151,6 +152,7 @@ jobs:
           python -m lab.diagnostico --panel datos/panel.npz --resultados /tmp/res
           python -m lab.ml --panel datos/panel.npz --salida /tmp/res/ml
           python -m lab.examen --panel datos/panel.npz --salida /tmp/res/examen.json
+          python -m lab.doblar --panel datos/panel.npz --salida /tmp/res/doblar
           cp datos/preparar.json /tmp/res/datos.json
       - uses: actions/upload-artifact@v4
         with:
@@ -166,6 +168,7 @@ jobs:
             git fetch -q origin main && git reset -q --hard origin/main
             mkdir -p resultados
             cp /tmp/res/estrategias.json /tmp/res/informe.md /tmp/res/diagnostico.json /tmp/res/datos.json /tmp/res/examen.json resultados/
+            mkdir -p resultados/doblar && cp /tmp/res/doblar/doblar.json /tmp/res/doblar/informe.md resultados/doblar/
             mkdir -p resultados/ml && cp /tmp/res/ml/ml.json /tmp/res/ml/informe.md resultados/ml/
             [ -f resultados/historial.csv ] || head -1 /tmp/res/historial_linea.csv > resultados/historial.csv
             tail -1 /tmp/res/historial_linea.csv >> resultados/historial.csv
