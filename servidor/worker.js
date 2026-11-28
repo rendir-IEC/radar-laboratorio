@@ -16,7 +16,7 @@
 // y un disparador Cron cada minuto (* * * * *). Primero repasa unas 5000 horas de historia, 16 por minuto;
 // después aprende cada hora en vivo. Todo en papel: no mueve dinero.
 
-const VERSION = '2.9.0';
+const VERSION = '2.9.1';
 const HL = 'https://api.hyperliquid.xyz/info';
 const BINANCE = 'https://data-api.binance.vision/api/v3';
 const KRAKEN = 'https://api.kraken.com/0/public';
@@ -1121,7 +1121,7 @@ async function apCiclo(env) {
   });
   // cazadores de funding: con los datos de esta misma hora (sin peticiones de más); si fallan, el sistema sigue
   let C = null, cz = null;
-  try { C = (await czCargar(env)) || czNuevo(horaActual); cz = czPaso(C, czMercados(meta, ctxs), horaActual); } catch (e) { console.log('cazadores: ' + (e.message || e)); C = null; }
+  try { C = czMigra((await czCargar(env)) || czNuevo(horaActual), horaActual); cz = czPaso(C, czMercados(meta, ctxs), horaActual); } catch (e) { console.log('cazadores: ' + (e.message || e)); C = null; }
   const flujo = await apFlujoDeLaHora(env, horaActual - H1);
   const antes = prFoto(E);
   apPaso(E, { t: horaActual, px: p, f, carteras, pxTodos: todos, flujo });
@@ -2061,16 +2061,19 @@ async function prVista(env, v) {
 // pequeñas no siempre hay contado para cubrirse.
 const CZ = {
   E24: 2 / 25,        // media móvil de unas 24 h del funding de cada mercado
+  E72: 2 / 73,        // y de unos 3 días
+  VOL_SIGUE: 0.5,     // quien ya está dentro sigue mientras el volumen no baje de la mitad del mínimo para entrar
   ETA: 10,
   REPARTO: 0.001,
   MAX_MERCADO: 15,    // filas de la vista de mercados
 };
 const CZ_CAZADORES = [
-  { id: 'cz_cob_20', nombre: 'Cubierto: las 5 que más pagan (desde 20 % al año)', modo: 'cubierto', entra: 0.2, sale: 0.1, k: 5, vol: 1e6 },
-  { id: 'cz_cob_50', nombre: 'Cubierto: las 3 que más pagan (desde 50 % al año)', modo: 'cubierto', entra: 0.5, sale: 0.2, k: 3, vol: 1e6 },
-  { id: 'cz_cob_100', nombre: 'Cubierto: solo extremos (desde 100 % al año)', modo: 'cubierto', entra: 1.0, sale: 0.4, k: 3, vol: 1e6 },
-  { id: 'cz_cob_liq', nombre: 'Cubierto: las 10 que más pagan entre las muy líquidas (más de 5 M$ al día)', modo: 'cubierto', entra: 0.1, sale: 0.05, k: 10, vol: 5e6 },
-  { id: 'cz_cob_const', nombre: 'Cubierto: solo si pagan de forma constante (media de 24 h desde 30 %)', modo: 'cubierto', entra: 0.3, sale: 0.15, k: 5, vol: 1e6, media: true },
+  // v2.9.1: los cubiertos deciden con la media del funding (el pago de una hora salta mucho y entrar y salir cuesta más de lo que se cobra)
+  { id: 'cz_cob_20', nombre: 'Cubierto: las 5 que más pagan (media de 24 h desde 20 % al año)', modo: 'cubierto', entra: 0.2, sale: 0.1, k: 5, vol: 1e6, media: 24 },
+  { id: 'cz_cob_50', nombre: 'Cubierto: las 3 que más pagan (media de 24 h desde 50 % al año)', modo: 'cubierto', entra: 0.5, sale: 0.2, k: 3, vol: 1e6, media: 24 },
+  { id: 'cz_cob_100', nombre: 'Cubierto: solo extremos (media de 24 h desde 100 % al año)', modo: 'cubierto', entra: 1.0, sale: 0.4, k: 3, vol: 1e6, media: 24 },
+  { id: 'cz_cob_liq', nombre: 'Cubierto: las 10 que más pagan entre las muy líquidas (más de 5 M$ al día; media de 24 h)', modo: 'cubierto', entra: 0.1, sale: 0.05, k: 10, vol: 5e6, media: 24 },
+  { id: 'cz_cob_const', nombre: 'Cubierto: solo si pagan de forma constante (media de 3 días desde 30 %)', modo: 'cubierto', entra: 0.3, sale: 0.15, k: 5, vol: 1e6, media: 72 },
   { id: 'cz_contra_compra', nombre: 'Sin cubrir: vende cuando los compradores pagan demasiado (desde 100 % al año)', modo: 'contra', lado: 'largos', entra: 1.0, sale: 0.3, k: 3, vol: 1e6 },
   { id: 'cz_contra_venta', nombre: 'Sin cubrir: compra cuando los vendedores pagan demasiado (desde −50 % al año)', modo: 'contra', lado: 'cortos', entra: 0.5, sale: 0.15, k: 3, vol: 1e6 },
   { id: 'cz_contra_ambos', nombre: 'Sin cubrir: contra los excesos de los dos lados (desde 75 % al año)', modo: 'contra', lado: 'ambos', entra: 0.75, sale: 0.25, k: 5, vol: 1e6 },
@@ -2078,7 +2081,16 @@ const CZ_CAZADORES = [
 function czNuevo(t) {
   const cz = {};
   for (const c of CZ_CAZADORES) cz[c.id] = { pos: {}, st: apStats(), coste: 0, tUlt: null };
-  return { v: 1, creado: t, t: null, px: {}, f: {}, e24: {}, n: {}, cz, eq: { lw: {}, st: apStats() } };
+  return { v: 2, creado: t, t: null, px: {}, f: {}, e24: {}, e72: {}, n: {}, cz, eq: { lw: {}, st: apStats() }, cambios: [] };
+}
+// De v1 (v2.9.0) a v2: los cubiertos cambian de regla y empiezan su cuenta de cero; la media de 3 días arranca desde la de 24 h.
+function czMigra(C, t) {
+  if (!C || (C.v || 1) >= 2) return C;
+  C.e72 = { ...(C.e24 || {}) };
+  for (const c of CZ_CAZADORES) if (c.modo === 'cubierto' && C.cz[c.id]) C.cz[c.id].st = apStats();
+  C.cambios = (C.cambios || []).concat([{ t, nota: 'v2.9.1: los cubiertos deciden con la media del funding (24 h; el constante, 3 días) y empiezan de cero' }]);
+  C.v = 2;
+  return C;
 }
 // Lo que trae la hora en vivo (metaAndAssetCtxs del dex principal): precio, funding horario y volumen de cada perpetuo.
 function czMercados(meta, ctxs) {
@@ -2092,12 +2104,16 @@ function czMercados(meta, ctxs) {
   });
   return out;
 }
-// Funding anual que mira cada cazador: el de ahora o, si lo pide, la media de 24 h.
-const czAnual = (C, c, m, M) => (c.media ? (C.n[m] >= 12 ? C.e24[m] : null) : M[m].f) * 8760;
+// Funding anual que mira cada cazador: el de ahora o, si lo pide, la media de 24 h (con 12 h de datos) o de 3 días (con 36 h). null: aún no lo sabe.
+const czAnual = (C, c, m, M) => {
+  if (c.media === 72) return C.n[m] >= 36 && C.e72 && C.e72[m] != null ? C.e72[m] * 8760 : null;
+  if (c.media) return C.n[m] >= 12 && C.e24[m] != null ? C.e24[m] * 8760 : null;
+  return M[m].f * 8760;
+};
 function czElige(C, c, M, pos0) {
-  const dentro = (m) => {
+  const dentro = (m, ya) => {
     const fa = czAnual(C, c, m, M);
-    if (fa == null || M[m].vol < c.vol) return 0;
+    if (fa == null || M[m].vol < c.vol * (ya ? CZ.VOL_SIGUE : 1)) return 0;
     if (c.modo === 'cubierto') return fa >= c.entra ? 2 : fa >= c.sale ? 1 : 0;
     if (c.lado === 'largos') return fa >= c.entra ? 2 : fa >= c.sale ? 1 : 0;
     if (c.lado === 'cortos') return fa <= -c.entra ? 2 : fa <= -c.sale ? 1 : 0;
@@ -2105,7 +2121,7 @@ function czElige(C, c, M, pos0) {
   };
   const lado = (m) => (c.modo === 'cubierto' ? 1 : -Math.sign(czAnual(C, c, m, M)));
   // se quedan los que siguen por encima del umbral de salida (y en el mismo lado); se llenan las plazas con los que más pagan
-  const siguen = Object.keys(pos0).filter((m) => M[m] && dentro(m) >= 1 && (c.modo === 'cubierto' || Math.sign(pos0[m]) === lado(m)));
+  const siguen = Object.keys(pos0).filter((m) => M[m] && dentro(m, true) >= 1 && (c.modo === 'cubierto' || Math.sign(pos0[m]) === lado(m)));
   const nuevos = Object.keys(M).filter((m) => !siguen.includes(m) && dentro(m) === 2).sort((a, b) => Math.abs(czAnual(C, c, b, M)) - Math.abs(czAnual(C, c, a, M)) || (a < b ? -1 : 1));
   const elegidos = siguen.sort((a, b) => Math.abs(czAnual(C, c, b, M)) - Math.abs(czAnual(C, c, a, M))).slice(0, c.k).concat(nuevos).slice(0, c.k);
   const pos = {};
@@ -2119,6 +2135,7 @@ const czPesos = (C) => {
 };
 // Una hora en vivo. M = czMercados(...) de esta hora.
 function czPaso(C, M, t) {
+  if (!C.e72) C.e72 = {};
   const horas = C.t == null ? 1 : Math.max(1, Math.round((t - C.t) / H1));
   const w0 = czPesos(C), r = {};
   let rEq = 0, alguno = false;
@@ -2144,9 +2161,10 @@ function czPaso(C, M, t) {
   for (const [m, d] of Object.entries(M)) { // 3) memoria del funding de cada mercado
     const h = C.n[m] ? horas : 1;
     C.e24[m] = C.e24[m] == null ? d.f : C.e24[m] + (1 - Math.pow(1 - CZ.E24, h)) * (d.f - C.e24[m]);
+    C.e72[m] = C.e72[m] == null ? d.f : C.e72[m] + (1 - Math.pow(1 - CZ.E72, h)) * (d.f - C.e72[m]);
     C.n[m] = (C.n[m] || 0) + 1;
   }
-  for (const m of Object.keys(C.e24)) if (!M[m]) { delete C.e24[m]; delete C.n[m]; } // mercados que desaparecen
+  for (const m of Object.keys(C.e24)) if (!M[m]) { delete C.e24[m]; delete C.e72[m]; delete C.n[m]; } // mercados que desaparecen
   const usados = new Set();
   for (const c of CZ_CAZADORES) { // 4) cada cazador elige
     const X = C.cz[c.id];
@@ -2168,7 +2186,7 @@ async function czCargar(env) {
 async function czGuardar(env, C) {
   await env.DB.prepare('INSERT INTO ap_estado (id, json, t) VALUES (?1, ?2, ?3) ON CONFLICT(id) DO UPDATE SET json = excluded.json, t = excluded.t').bind('cazadores', JSON.stringify(C), C.t || Date.now()).run();
 }
-const CZ_NOTA = 'Cazadores de funding, en papel: 8 reglas que buscan cada hora, entre los perpetuos de Hyperliquid con más de 1 M$ de volumen al día, a quienes pagan demasiado por estar apalancados. Cubiertos: venden el perpetuo y compran lo mismo al contado, sin riesgo de precio, y cobran el funding (dos tercios del dinero lo cobran; coste de entrar y salir como el cobro del funding del sistema); supone que hay contado para cubrirse, y en monedas pequeñas no siempre lo hay. Sin cubrir: apuestan contra el exceso y sí dependen del precio. Trabajan en equipo: el resultado del equipo pondera a cada cazador por lo que gana. tStat por encima de 2: poco probable que sea suerte. No mueve dinero ni es una recomendación.';
+const CZ_NOTA = 'Cazadores de funding, en papel: 8 reglas que buscan cada hora, entre los perpetuos de Hyperliquid con más de 1 M$ de volumen al día, a quienes pagan demasiado por estar apalancados. Cubiertos: venden el perpetuo y compran lo mismo al contado, sin riesgo de precio, y cobran el funding (dos tercios del dinero lo cobran; coste de entrar y salir como el cobro del funding del sistema); desde la v2.9.1 deciden con la media del funding de 24 h (el de pago constante, de 3 días), no con el pago de una hora, y su cuenta empezó de cero; quien ya está dentro aguanta hasta que el volumen baje de la mitad del mínimo; supone que hay contado para cubrirse, y en monedas pequeñas no siempre lo hay. Sin cubrir: apuestan contra el exceso y sí dependen del precio. Trabajan en equipo: el resultado del equipo pondera a cada cazador por lo que gana. tStat por encima de 2: poco probable que sea suerte. No mueve dinero ni es una recomendación.';
 async function czVista(env, v) {
   await apTablas(env);
   const C = await czCargar(env);
@@ -2186,7 +2204,7 @@ async function czVista(env, v) {
     return { id: c.id, cazador: c.nombre, modo: c.modo === 'cubierto' ? 'cubierto' : 'sin cubrir', horas: m.n, rentPct: (Math.exp(X.st.log) - 1) * 100, tStat: m.sr * Math.sqrt(m.n), caidaMaxPct: X.st.dd * 100,
       pesoEquipoPct: w[c.id] * 100, mercados: Object.keys(X.pos).join(', ') || 'ninguno', exposicionPct: Object.values(X.pos).reduce((a, b) => a + Math.abs(b), 0) * 100 };
   }).sort((a, b) => b.rentPct - a.rentPct);
-  return { rows, equipo: { horas: mq.n, rentPct: (Math.exp(C.eq.st.log) - 1) * 100, tStat: mq.sr * Math.sqrt(mq.n), caidaMaxPct: C.eq.st.dd * 100, desde: iso(C.creado) }, hora: C.t ? iso(C.t) : null, nota: CZ_NOTA };
+  return { rows, equipo: { horas: mq.n, rentPct: (Math.exp(C.eq.st.log) - 1) * 100, tStat: mq.sr * Math.sqrt(mq.n), caidaMaxPct: C.eq.st.dd * 100, desde: iso(C.creado) }, cambios: (C.cambios || []).map((x) => ({ fecha: iso(x.t), nota: x.nota })), hora: C.t ? iso(C.t) : null, nota: CZ_NOTA };
 }
 
 async function aprendizaje({ vista } = {}, env) {
