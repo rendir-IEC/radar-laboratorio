@@ -33,7 +33,7 @@ Cada 91 días se eligen las 5 mejores con la historia de ese momento y se mantie
 | Tendencia 12 h / 2 semanas | no | 1.09 | 0.19 | 33.1 % | 29.5 % | 1.31 | 0.85 | 0.64 | 0.96 |
 | Tendencia 1 día / 1 mes (relativa entre monedas, graduada, reajuste diario) | no | 1.08 | 0.19 | 6.3 % | 8.2 % | 0.28 | 1.77 | 1.33 | 0.09 |
 | Tendencia 1 día / 3 días (solo compras, si BTC sube) | no | 1.04 | 0.16 | 18.9 % | 21.2 % | 1.18 | 0.94 | 0.67 | 0.94 |
-| Contra el funding (1 semana) (si BTC baja) | no | 1.04 | 0.15 | 18.9 % | 21.8 % | 1.46 | 0.57 | 1.75 | 1.03 |
+| Contra el funding (1 semana) (si BTC baja) | no | 1.04 | 0.15 | 18.9 % | 21.8 % | 1.46 | 0.57 | 1.76 | 1.03 |
 | Tendencia 12 h / 1 semana (solo compras, graduada) | no | 1.04 | 0.15 | 4.8 % | 6.2 % | 0.95 | 1.13 | 0.51 | 0.84 |
 
 Para el servidor: lab_cruce_24_336_c2_sec_amb_nf_h1, lab_cruce_24_168_c2_ser_lar_ba_h24, lab_cruce_12_336_s_ser_amb_ba_h1 (candidatas en prueba (ninguna pasa la prueba contra la suerte)).
