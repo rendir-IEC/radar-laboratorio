@@ -16,7 +16,7 @@
 // y un disparador Cron cada minuto (* * * * *). Primero repasa unas 5000 horas de historia, 16 por minuto;
 // después aprende cada hora en vivo. Todo en papel: no mueve dinero.
 
-const VERSION = '2.9.1';
+const VERSION = '2.10.0';
 const HL = 'https://api.hyperliquid.xyz/info';
 const BINANCE = 'https://data-api.binance.vision/api/v3';
 const KRAKEN = 'https://api.kraken.com/0/public';
@@ -366,6 +366,10 @@ const AP_EXPERTOS = [
 // Expertos del laboratorio (rendir-IEC/radar-laboratorio): estrategias con parámetros que el servidor sabe calcular con su
 // memoria. Solo se aceptan valores de una lista cerrada; nunca se ejecuta código que venga de fuera.
 const LAB_URL = 'https://raw.githubusercontent.com/rendir-IEC/radar-laboratorio/main/resultados/estrategias.json';
+// Examen de entrada de la zona de prácticas (laboratorio/lab/examen.py): cada idea que puede nacer, repasada en los
+// últimos 2 años con costes y cada riesgo. Un alumno nuevo solo nace si su idea aprueba con su riesgo (v2.10.0).
+const EX_URL = 'https://raw.githubusercontent.com/rendir-IEC/radar-laboratorio/main/resultados/examen.json';
+const EX_CADA_H = 6;
 const LAB_MAX = 6;
 const LAB_CADA_H = 6;
 const LAB_PESO_PRUEBA = 0.1;      // candidata no aprobada: entra con el 10 % del peso medio y sin reparto fijo: solo sube si gana (0 = solo observar)
@@ -1127,7 +1131,7 @@ async function apCiclo(env) {
   apPaso(E, { t: horaActual, px: p, f, carteras, pxTodos: todos, flujo });
   // zona de prácticas: sin peticiones de más; si falla, el sistema sigue
   let P = null, pr = null;
-  try { P = (await prCargar(env)) || prNuevo(horaActual); pr = prPaso(E, P, { t: horaActual, px: p }, antes); } catch (e) { console.log('prácticas: ' + (e.message || e)); P = null; }
+  try { P = (await prCargar(env)) || prNuevo(horaActual); pr = prPaso(E, P, { t: horaActual, px: p }, antes, prFaltan(P) ? await exLeer(env).catch(() => null) : false); } catch (e) { console.log('prácticas: ' + (e.message || e)); P = null; }
   curva.push([horaActual, E.sistema.log, E.btcLog, E.sistema.n]);
   await apGuardar(env, E, curva);
   if (P) await prGuardar(env, P).catch((e) => console.log('prácticas: ' + (e.message || e)));
@@ -1178,6 +1182,7 @@ async function apCalentar(E, limite, enDex) {
 async function apLabMinuto(env) {
   const E = await apCargar(env);
   const ahora = Date.now();
+  await exActualizar(env, ahora).catch((e) => console.log('examen: ' + (e.message || e)));
   const tocaLab = !(E.labIntento && ahora - E.labIntento < LAB_CADA_H * 3600e3);
   const tocaMl = !(E.mlIntento && ahora - E.mlIntento < ML_CADA_H * 3600e3);
   const tocaTraders = !(E.tradersIntento && ahora - E.tradersIntento < TRADERS_CADA_H * 3600e3);
@@ -1664,6 +1669,7 @@ const PR = {
   GRADUA_H: 720,
   GRADUA_DSR: 0.95,
   MAX_GRADUADOS: 4,
+  INTENTOS_EXAMEN: 120,      // con examen, más intentos para encontrar ideas que aprueben
   MAX_RETIRADOS: 80,
   // v2.8.0: trabajo en equipo
   EQUIPO_ETA: 10,            // cuánto se mueve el peso de cada alumno en el equipo según lo que gana o pierde cada hora
@@ -1746,17 +1752,28 @@ function prNace(P, spec, riesgo, t, padre, origen, grupo = 'normal', conc = null
 }
 // una plaza libre de un grupo: hijo de uno de sus mejores (con un cambio, u otro riesgo o concentración) o una idea nueva
 // lejos de lo ya probado
-function prUnoNuevo(P, t, maestros, grupo = 'normal') {
+// Nota del examen de entrada para una idea con un riesgo: {ok, rentPct (2 años, con ese riesgo)}. Sin tabla: sin examen.
+function prExamen(X, sp, riesgo) {
+  if (!X || !X.ideas) return { ok: true, sin: true };
+  const v = X.ideas[apLabIdent(sp)], i = (X.riesgos || []).indexOf(riesgo);
+  if (!v || i < 0) return { ok: false };
+  return { ok: ((v[0] >> i) & 1) === 1, rentPct: v[1 + i] };
+}
+function prUnoNuevo(P, t, maestros, grupo = 'normal', X = null) {
   const vivas = new Set(P.alumnos.map((A) => prClave(A.spec, A.riesgo, A.conc)));
   const alto = grupo === 'arriesgado';
-  for (let intento = 0; intento < 40; intento++) {
+  const examina = (sp, r) => { const e = prExamen(X, sp, r); if (!e.ok) P.cuenta.suspendidos = (P.cuenta.suspendidos || 0) + 1; return e; };
+  const nace = (sp, r, padre, origen, c, e) => { const A = prNace(P, sp, r, t, padre, origen, grupo, c); if (!e.sin) { A.examenPct = e.rentPct; P.cuenta.aprobados = (P.cuenta.aprobados || 0) + 1; } return A; };
+  for (let intento = 0; intento < (X ? PR.INTENTOS_EXAMEN : 40); intento++) {
     if (maestros.length && prRng(P) >= PR.CURIOSIDAD) {
       const otro = maestros.filter((A) => prGrupo(A) !== grupo), mios = maestros.filter((A) => prGrupo(A) === grupo);
       if (otro.length && (!mios.length || prRng(P) < PR.MENTOR)) { // se pasan ideas: la misma idea, con el riesgo de este grupo
         const padre = prElige(P, otro);
         const [riesgo, conc] = alto ? prRiesgoAlto(P) : [prElige(P, [1, 2]), null];
         if (!prValido(padre.spec, riesgo, conc, grupo) || vivas.has(prClave(padre.spec, riesgo, conc))) continue;
-        return prNace(P, padre.spec, riesgo, t, padre, 'compañero', grupo, conc);
+        const e = examina(padre.spec, riesgo);
+        if (!e.ok) continue;
+        return nace(padre.spec, riesgo, padre, 'compañero', conc, e);
       }
       const padre = prElige(P, mios.length ? mios : maestros);
       let riesgo = padre.riesgo, conc = padre.conc == null ? null : padre.conc;
@@ -1764,17 +1781,21 @@ function prUnoNuevo(P, t, maestros, grupo = 'normal') {
       const cambiaRiesgo = riesgo !== padre.riesgo || conc !== (padre.conc == null ? null : padre.conc);
       const sp = cambiaRiesgo && prRng(P) < 0.5 ? padre.spec : prMuta(P, padre.spec);
       if (!prValido(sp, riesgo, conc, grupo) || vivas.has(prClave(sp, riesgo, conc))) continue;
-      return prNace(P, sp, riesgo, t, padre, 'hijo', grupo, conc);
+      const e = examina(sp, riesgo);
+      if (!e.ok) continue;
+      return nace(sp, riesgo, padre, 'hijo', conc, e);
     }
     let mejor = null, menos = Infinity; // curiosidad: de 12 ideas al azar, la del vecindario menos probado
     for (let k = 0; k < 12; k++) {
       const sp = prAzar(P);
       const [r, c] = alto ? prRiesgoAlto(P) : [prElige(P, PR.RIESGOS), null];
       if (!prValido(sp, r, c, grupo) || vivas.has(prClave(sp, r, c))) continue;
+      const e = examina(sp, r);
+      if (!e.ok) continue;
       const n = (P.mapa[prVecindario(sp)] || 0) + prRng(P) * 0.5;
-      if (n < menos) { menos = n; mejor = [sp, r, c]; }
+      if (n < menos) { menos = n; mejor = [sp, r, c, e]; }
     }
-    if (mejor) return prNace(P, mejor[0], mejor[1], t, null, 'curiosidad', grupo, mejor[2]);
+    if (mejor) return nace(mejor[0], mejor[1], null, 'curiosidad', mejor[2], mejor[3]);
   }
   return null;
 }
@@ -1843,13 +1864,14 @@ function prMaestros(P, grupo = 'normal') {
   const top = j.slice(0, Math.max(1, Math.ceil(j.length / 4)));
   return top.some((A) => prT(A) > 0) ? top.filter((A) => prT(A) > 0) : top;
 }
-function prRellena(P, t) {
+const prFaltan = (P) => !!P && P.alumnos.length < PR.ALUMNOS + PR.ARRIESGADOS;
+function prRellena(P, t, X = null) {
   for (const g of ['normal', 'arriesgado']) {
     // sus mejores y, como mentores, los dos mejores juzgados del otro grupo que ganan
     const otro = g === 'normal' ? 'arriesgado' : 'normal';
     const mentores = P.alumnos.filter((A) => prGrupo(A) === otro && A.st.n >= PR.JUZGAR_H && prT(A) > 0).sort((a, b) => prT(b) - prT(a)).slice(0, 2);
     const maestros = prMaestros(P, g).concat(mentores);
-    while (P.alumnos.filter((A) => prGrupo(A) === g).length < prCupo(g)) if (!prUnoNuevo(P, t, maestros, g)) break;
+    while (P.alumnos.filter((A) => prGrupo(A) === g).length < prCupo(g)) if (!prUnoNuevo(P, t, maestros, g, X)) break;
   }
 }
 function prRonda(P, t) { // cada grupo compite por separado
@@ -1949,7 +1971,7 @@ function prConcentra(E, A, base) {
   for (const m of elegidas) pos[m] = Math.sign(base[m]) * A.riesgo / elegidas.length;
   return pos;
 }
-function prPaso(E, P, snap, antes) {
+function prPaso(E, P, snap, antes, X = null) {
   const t = snap.t;
   if ((P.v || 1) < 2) { // v2.6.1: los alumnos de antes son el grupo normal y nace el grupo arriesgado
     for (const A of P.alumnos) { A.grupo = A.grupo || 'normal'; if (A.conc === undefined) A.conc = null; }
@@ -1973,7 +1995,7 @@ function prPaso(E, P, snap, antes) {
   prEquipoAprende(P, porRiesgo);
   for (const A of P.alumnos.slice()) if (A.st.log <= PR.QUIEBRA) { out.quiebras.push(prNombre(A)); prRetira(P, A, t, 'quiebra'); } // 2) quiebras
   if (t - P.ronda >= PR.RONDA_H * H1) out.retirados = prRonda(P, t); // 3) ronda
-  prRellena(P, t);
+  if (X !== false) prRellena(P, t, X); // false: la tabla del examen no se ha leído (no faltaba nadie); las plazas que se vacíen ahora se llenan en la hora siguiente
   const listas = AP.MERCADOS.filter((m) => E.monedas[m] && E.monedas[m].n >= AP.HORAS_MIN && snap.px[m] > 0);
   for (const A of P.alumnos) { // 4) posiciones nuevas
     const sp = A.spec;
@@ -1997,6 +2019,25 @@ function prPaso(E, P, snap, antes) {
   out.graduados = prGraduar(E, P, t); // 5) graduación
   P.t = t;
   return out;
+}
+// La tabla del examen vive aparte (unos 200 KB): se lee en la hora en vivo y se refresca cada EX_CADA_H horas en el minuto del laboratorio.
+async function exLeer(env) {
+  const fila = await env.DB.prepare('SELECT json FROM ap_estado WHERE id = ?1').bind('examen').first();
+  return fila ? JSON.parse(fila.json) : null;
+}
+function exValido(j) {
+  return !!(j && j.version === 1 && Array.isArray(j.riesgos) && j.riesgos.length && j.ideas && typeof j.ideas === 'object' && Object.keys(j.ideas).length >= 1000 && j.ventana);
+}
+async function exActualizar(env, ahora) {
+  const fila = await env.DB.prepare('SELECT t FROM ap_estado WHERE id = ?1').bind('examen').first();
+  if (fila && ahora - fila.t < EX_CADA_H * 3600e3) return false;
+  const r = await fetch(EX_URL, { headers: { 'User-Agent': 'radar-mercados/' + VERSION } });
+  if (!r.ok) return false;
+  const j = await r.json();
+  if (!exValido(j)) return false;
+  const X = { generado: j.generado, ventana: j.ventana, riesgos: j.riesgos, resumen: j.resumen, coste: j.coste_por_giro_pct, ideas: j.ideas };
+  await env.DB.prepare('INSERT INTO ap_estado (id, json, t) VALUES (?1, ?2, ?3) ON CONFLICT(id) DO UPDATE SET json = excluded.json, t = excluded.t').bind('examen', JSON.stringify(X), ahora).run();
+  return true;
 }
 async function prCargar(env) {
   const fila = await env.DB.prepare('SELECT json FROM ap_estado WHERE id = ?1').bind('practicas').first();
@@ -2034,11 +2075,12 @@ async function prVista(env, v) {
   await apTablas(env);
   const P = await prCargar(env);
   if (!P) return { rows: [], nota: 'La zona de prácticas abre en la próxima hora en vivo.' };
+  const X = v === 'practicas' ? await exLeer(env).catch(() => null) : null;
   const nota = 'Zona de prácticas, en papel: ' + PR.ALUMNOS + ' alumnos normales (variantes de las estrategias del sistema, con riesgo ×1, ×2 o ×3) y ' + PR.ARRIESGADOS + ' arriesgados (×5 o ×10, o todo en 1 o 3 monedas sin ajustar por volatilidad; cada grupo compite por separado) practican cada hora con su propio dinero de prácticas, con comisiones y funding. Cada ' + PR.RONDA_H + ' h se retira la cuarta parte peor de los que llevan ' + PR.JUZGAR_H + ' h (salvo los que van con t ≥ ' + PR.SALVA_T + '); quien pierde la mitad, quiebra. Las plazas libres son para hijos de los mejores (un cambio), para ideas que funcionan en el otro grupo (con el riesgo de este) o para ideas nuevas lejos de lo ya probado. Trabajan en equipo: todos votan una cartera común en la que pesa más quien más acierta por unidad de riesgo; esa cartera compite también en el sistema principal. Se gradúa quien gana un mes en vivo con un Sharpe deflactado de más de ' + PR.GRADUA_DSR + ' contando todos los alumnos que han existido; entonces entra en el sistema con poco peso. tStat: t de su rentabilidad hora a hora (por encima de 2, poco probable que sea suerte). No mueve dinero ni es una recomendación.';
   if (v === 'practicas_retirados') return { rows: P.retirados.slice().reverse().map((r) => ({ ...r, motivo: PR_MOTIVOS[r.motivo] || r.motivo, spec: undefined })), nota };
   if (v === 'practicas_lecciones') { const L = prLecciones(P); return { rows: L.rows, frases: L.frases, nota: 'Lo que dejan los alumnos juzgados (al menos ' + PR.JUZGAR_H + ' h), vivos y retirados, agrupado por cada decisión. Con pocos alumnos o pocas horas, las diferencias pueden ser suerte.' }; }
   const wEq = P.equipo ? prEquipoPesos(P.equipo, P.alumnos.map((A) => A.id)) : {};
-  const filas = P.alumnos.map((A) => ({ ...prFicha(A, null), estado: prEstado(A), dsr: A.dsr == null ? null : A.dsr, pesoEquipoPct: (wEq[A.id] || 0) * 100 })).sort((a, b) => (b.horas >= PR.JUZGAR_H) - (a.horas >= PR.JUZGAR_H) || b.tStat - a.tStat);
+  const filas = P.alumnos.map((A) => ({ ...prFicha(A, null), estado: prEstado(A), dsr: A.dsr == null ? null : A.dsr, pesoEquipoPct: (wEq[A.id] || 0) * 100, examenPct: A.examenPct == null ? null : A.examenPct })).sort((a, b) => (b.horas >= PR.JUZGAR_H) - (a.horas >= PR.JUZGAR_H) || b.tStat - a.tStat);
   const proxima = P.ronda + PR.RONDA_H * H1;
   const gr = (P.cuenta.grupos || {}).arriesgado || { retirados: 0, quiebras: 0 };
   let equipo = null;
@@ -2049,7 +2091,8 @@ async function prVista(env, v) {
     const mediaAlumnos = juz.length ? juz.reduce((a, A) => a + (Math.exp(A.st.log) - 1) * 100 / A.riesgo, 0) / juz.length : null;
     equipo = { desde: iso(Q.desde), horas: mq.n, rentPct: (Math.exp(Q.st.log) - 1) * 100, tStat: mq.sr * Math.sqrt(mq.n), caidaMaxPct: Q.st.dd * 100, exposicionPct: Object.values(Q.pos).reduce((a, b) => a + Math.abs(b), 0) * 100, mediaAlumnosPorRiesgoPct: mediaAlumnos, quienesPesan: pesan };
   }
-  return { rows: filas, equipo, resumen: { alumnos: P.alumnos.length, arriesgados: P.alumnos.filter((A) => prGrupo(A) === 'arriesgado').length, retiradosArriesgados: gr.retirados, quiebrasArriesgados: gr.quiebras, probadas: P.probadas, rondas: P.rondas, proximaRonda: iso(proxima), retirados: P.cuenta.retirados, quiebras: P.cuenta.quiebras, graduados: P.graduados, abierta: iso(P.creado), hasta: P.t ? iso(P.t) : null }, nota };
+  return { rows: filas, equipo, resumen: { alumnos: P.alumnos.length, arriesgados: P.alumnos.filter((A) => prGrupo(A) === 'arriesgado').length, retiradosArriesgados: gr.retirados, quiebrasArriesgados: gr.quiebras, probadas: P.probadas, rondas: P.rondas, proximaRonda: iso(proxima), retirados: P.cuenta.retirados, quiebras: P.cuenta.quiebras, graduados: P.graduados, abierta: iso(P.creado), hasta: P.t ? iso(P.t) : null,
+    suspendidos: P.cuenta.suspendidos || 0, aprobados: P.cuenta.aprobados || 0, examen: X ? { generado: X.generado, desde: X.ventana.desde, hasta: X.ventana.hasta, aprueban: (X.resumen || {}).aprueban || null } : null }, nota: nota + ' Examen de entrada (desde la v2.10.0): un alumno nuevo solo nace si su idea, con su riesgo, no perdió dinero ni bajó de la mitad en los últimos 2 años de historia con costes (laboratorio, 20 monedas cripto; a los concentrados se les examina la idea repartida). examenPct: lo que hizo esa idea en esos 2 años; suspendidos: ideas descartadas por no aprobar.' };
 }
 
 // ---------- cazadores de funding (v2.9.0) ----------

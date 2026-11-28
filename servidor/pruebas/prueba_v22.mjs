@@ -42,6 +42,7 @@ globalThis.fetch = async (url, init = {}) => {
   if (u.host === 'raw.githubusercontent.com' && u.pathname.endsWith('/traders/seleccion.json')) { porTipo.traders = (porTipo.traders || 0) + 1; return new Response('no', { status: 404 }); }
   if (u.host === 'raw.githubusercontent.com' && u.pathname.endsWith('/semana/ranking.json')) { porTipo.semana = (porTipo.semana || 0) + 1; return new Response('no', { status: 404 }); }
   if (u.host === 'ntfy.sh') { porTipo.ntfy = (porTipo.ntfy || 0) + 1; return new Response('{}', { status: 200 }); }
+  if (u.host === 'raw.githubusercontent.com' && u.pathname.endsWith('/resultados/examen.json')) { porTipo.examen = (porTipo.examen || 0) + 1; return new Response('no', { status: 404 }); }
   if (u.host === 'raw.githubusercontent.com') { porTipo.lab = (porTipo.lab || 0) + 1; return resp(LAB_JSON); }
   if (u.host !== 'api.hyperliquid.xyz') throw new Error('Host no simulado ' + u.host);
   if (JSON.parse(init.body).type === 'metaAndAssetCtxs' && !JSON.parse(init.body).dex && HUECO_ETH(AHORA)) { const r = await metaOriginal(url, init); const j = await r.json(); const i = j[0].universe.findIndex((a) => a.name === 'ETH'); j[1][i].markPx = ''; return resp(j); }
@@ -109,6 +110,7 @@ check(lab.rows.length === 3 && lab.rows.every((r) => r.horasEnVivo > 0), 'los 3 
 check(lab.laboratorio.estrategiasProbadas === 2232 && lab.laboratorio.fueraDeMuestraTop5.sharpeAnual === 1, 'la vista laboratorio resume lo publicado');
 check((porTipo.semana || 0) >= 7 && (porTipo.semana || 0) <= 9 && !porTipo.ntfy, 'avisos: el ranking semanal se mira una vez por hora (' + porTipo.semana + ' en 8 h) y con precios tranquilos no sale ningún aviso (ni resumen)');
 check((porTipo.lab || 0) >= 1 && (porTipo.lab || 0) <= 3, 'consulta el laboratorio como mucho cada 6 horas: ' + porTipo.lab + ' veces en 8 h');
+check((porTipo.examen || 0) >= 1 && (porTipo.examen || 0) <= 9, 'busca la tabla del examen en el minuto del laboratorio (sin tabla, cada hora): ' + porTipo.examen + ' veces en 8 h');
 const al = (await herramienta('aprendizaje', { vista: 'alertas' })).rows;
 check(al.some((a) => a.tipo === 'laboratorio' && a.texto.startsWith('Llegan del laboratorio')), 'avisa de las que llegan del laboratorio');
 const E2 = estado();
