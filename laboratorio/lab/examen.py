@@ -6,8 +6,13 @@ volatilidad, banda sin operar, funding) y el coste prudente del laboratorio (com
 monedas cripto del servidor. Con cada riesgo (×1, ×2, ×3, ×5, ×10) aprueba si en esos 2 años no pierde dinero y
 nunca se queda con menos de la mitad (que en la zona de prácticas es quiebra).
 
-El servidor lo lee y, desde la v2.10.0, solo deja nacer alumnos que aprueban con su riesgo. Los concentrados (todo
-en 1 o 3 monedas) se examinan con la misma idea repartida entre todas: es una condición necesaria, no suficiente.
+El servidor lo lee y, desde la v2.10.0, solo deja nacer alumnos que aprueban con su riesgo. Desde la v2.10.1 los
+concentrados (todo en 1 o 3 monedas, como prConcentra del servidor: las de señal más fuerte, sin ajustar por
+volatilidad) tienen su propio examen (clave ident_c1 o ident_c3).
+
+Además estudia a fondo la línea «contra el funding» (1 día y 1 semana): repartida, en 3 monedas y en 1, con ×1, ×3,
+×5 y ×10, en los 2 años y en toda la historia del laboratorio (resultado, caída, si habría quebrado, peor semana y
+año a año).
 
 Uso: python -m lab.examen --panel datos/panel.npz --salida /tmp/res/examen.json [--dias 730]
 """
@@ -21,10 +26,10 @@ import time
 
 import numpy as np
 
-from .comun import COMISION, DESLIZAMIENTO, H, MONEDAS_SERVIDOR, SPANS
+from .comun import BANDA, COMISION, DESLIZAMIENTO, H, MONEDAS_SERVIDOR, SPANS
 from .datos import cargar_panel
-from .senales import memoria
-from .simular import correr, preparar
+from .senales import bruto, memoria, objetivo
+from .simular import correr, preparar, simular
 
 RIESGOS = [1, 2, 3, 5, 10]
 QUIEBRA = math.log(0.5)
@@ -71,7 +76,72 @@ def nota(r):
     return mascara, rents
 
 
-def examinar(panel, dias=730, limite=0):
+def objetivo_concentrado(e, Mu, i_btc, conc, nombres=None):
+    """prConcentra del servidor, normalizado a riesgo 1: de las monedas en las que la idea tiene posición, las `conc`
+    de señal bruta más fuerte (en «sección», respecto a la media de esas), cada una con 1/conc del dinero y el signo de
+    la idea. Sin ajuste por volatilidad."""
+    base = objetivo(e, Mu, i_btc)
+    x = bruto(e, Mu)
+    mask = (base != 0) & np.isfinite(x)
+    xx = np.where(mask, x, np.nan)
+    if e['modo'] == 'seccion':
+        with np.errstate(invalid='ignore'):
+            media = np.nanmean(np.where(mask.any(axis=1)[:, None], xx, 0.0), axis=1)
+        xx = xx - media[:, None]
+    # como el servidor (v2.10.1): de más fuerte a más débil con la fuerza redondeada a 1e-10, y a igualdad, por nombre
+    N = base.shape[1]
+    nombres = nombres or [str(j) for j in range(N)]
+    rango = np.argsort(np.argsort(np.array(nombres, dtype=object)))
+    fuerza = np.where(mask, np.round(np.abs(np.nan_to_num(xx, nan=0.0)) * 1e10), -1.0)
+    orden = np.lexsort((np.broadcast_to(rango, base.shape), -fuerza), axis=1)
+    n = np.minimum(mask.sum(axis=1), conc)
+    pos = np.zeros_like(base)
+    filas = np.arange(base.shape[0])
+    for k in range(conc):
+        j = orden[:, k]
+        ok = k < n
+        pos[filas[ok], j[ok]] = np.sign(base[filas[ok], j[ok]]) / np.maximum(n[ok], 1)
+    return pos
+
+
+def ficha(r, t, ini, fin, R):
+    """Resultado con riesgo R entre ini y fin: total, anual, caída máxima, si habría quebrado, peor semana, semanas
+    positivas y año a año."""
+    rr = np.log(np.maximum(1 + R * r[ini:fin], 1e-12))
+    lg = np.cumsum(rr)
+    if not len(lg):
+        return {}
+    pico = np.maximum.accumulate(np.concatenate([[0.0], lg]))[1:]
+    sem = rr[: len(rr) // 168 * 168].reshape(-1, 168).sum(axis=1)
+    anos = {}
+    for k in range(ini, fin):
+        a = dt.datetime.fromtimestamp(int(t[k]) / 1000, dt.timezone.utc).year
+        anos[a] = anos.get(a, 0.0) + rr[k - ini]
+    horas = fin - ini
+    return {'rent_pct': round(math.expm1(lg[-1]) * 100, 1), 'rent_anual_pct': round(math.expm1(lg[-1] * 8760 / horas) * 100, 1),
+            'caida_max_pct': round(float(1 - np.exp((lg - pico).min())) * 100, 1), 'quiebra': bool(lg.min() <= QUIEBRA),
+            'minimo_pct': round(float(np.expm1(lg.min())) * 100, 1),
+            'peor_semana_pct': round(float(np.expm1(sem.min())) * 100, 1) if len(sem) else None,
+            'semanas_positivas_pct': round(float((sem > 0).mean()) * 100, 1) if len(sem) else None,
+            'por_ano_pct': {str(a): round(math.expm1(v) * 100, 1) for a, v in sorted(anos.items())}}
+
+
+def linea_contra_funding(Mu, Ru, Fu, hora, i_btc, coste, t, ini2, ini_todo, fin, nombres):
+    """La línea del alumno «Contra el funding (1 día), todo en 1 moneda ×5» y sus vecinas."""
+    filas = []
+    for a in (24, 168):
+        e = {'senal': 'funding_contra', 'a': a, 'forma': 'signo', 'modo': 'serie', 'lado': 'ambos', 'filtro': 'ninguno', 'cada': 1}
+        for conc in (None, 3, 1):
+            obj = objetivo(e, Mu, i_btc) if conc is None else objetivo_concentrado(e, Mu, i_btc, conc, nombres)
+            r, g = simular(obj, Ru, Fu, hora, 1, coste, BANDA)
+            for R in ((1, 3) if conc is None else (1, 3, 5, 10)):
+                filas.append({'idea': 'Contra el funding (%s)' % ('1 día' if a == 24 else '1 semana'), 'concentracion': conc or 'repartida', 'riesgo': R,
+                              'dos_anos': ficha(r, t, ini2, fin, R), 'toda_la_historia': ficha(r, t, ini_todo, fin, R),
+                              'giro_anual': round(float(g[ini2:fin].sum()) * 8760 / max(fin - ini2, 1), 1)})
+    return filas
+
+
+def examinar(panel, dias=730, limite=0, con_concentrados=True):
     M = memoria(panel)
     R, Fsig, hora = preparar(panel)
     monedas = panel['monedas']
@@ -81,7 +151,8 @@ def examinar(panel, dias=730, limite=0):
     Mu = {'lp': M['lp'][:, cols], 'ema': {s: v[:, cols] for s, v in M['ema'].items()}, 'sig': M['sig'][:, cols],
           'fe24': M['fe24'][:, cols], 'fe168': M['fe168'][:, cols], 'lista': M['lista'][:, cols]}
     Ru, Fu = R[:, cols], Fsig[:, cols]
-    i_btc = [monedas[c] for c in cols].index('BTC')
+    nombres = [monedas[c] for c in cols]
+    i_btc = nombres.index('BTC')
     t = panel['t']
     fin = len(t) - 1  # la última hora no tiene la siguiente
     ini = int(np.searchsorted(t, t[fin] - dias * 24 * H))
@@ -89,13 +160,23 @@ def examinar(panel, dias=730, limite=0):
     specs = gramatica()
     if limite:
         specs = specs[:limite]
-    tabla, aprueban = {}, [0] * len(RIESGOS)
+    tabla, aprueban, aprueban_c = {}, [0] * len(RIESGOS), [0] * len(RIESGOS)
     for e in specs:
         r, _, _ = correr(e, Mu, Ru, Fu, hora, i_btc, coste)
         mask, rents = nota(r[ini:fin])
         tabla[ident(e)] = [mask] + rents
         for i in range(len(RIESGOS)):
             aprueban[i] += (mask >> i) & 1
+        if con_concentrados:
+            for conc in (1, 3):
+                rc, _ = simular(objetivo_concentrado(e, Mu, i_btc, conc, nombres), Ru, Fu, hora, int(e["cada"]), coste, BANDA)
+                mc, rentc = nota(rc[ini:fin])
+                tabla[ident(e) + '_c%d' % conc] = [mc] + rentc
+                for i in range(len(RIESGOS)):
+                    aprueban_c[i] += (mc >> i) & 1
+    lista = Mu['lista'].sum(axis=1)
+    ini_todo = int(np.argmax(lista >= 5))
+    linea = linea_contra_funding(Mu, Ru, Fu, hora, i_btc, coste, t, ini, ini_todo, fin, nombres)
     f = lambda ms: dt.datetime.fromtimestamp(ms / 1000, dt.timezone.utc).strftime('%Y-%m-%d')
     return {
         'generado': dt.datetime.now(dt.timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ'), 'version': 1,
@@ -104,7 +185,10 @@ def examinar(panel, dias=730, limite=0):
         'ventana': {'desde': f(int(t[ini])), 'hasta': f(int(t[fin])), 'dias': dias, 'horas': int(fin - ini)},
         'universo': [monedas[c] for c in cols], 'coste_por_giro_pct': round(coste * 100, 4), 'riesgos': RIESGOS,
         'formato': 'ident: [máscara de riesgos aprobados (bit i = riesgos[i]), resultado % con ×1, ×2, ×3, ×5, ×10]',
-        'resumen': {'ideas': len(tabla), 'aprueban': {('x%d' % R): n for R, n in zip(RIESGOS, aprueban)}},
+        'resumen': {'ideas': len(tabla), 'aprueban': {('x%d' % R): n for R, n in zip(RIESGOS, aprueban)},
+                    'aprueban_concentradas': {('x%d' % R): n for R, n in zip(RIESGOS, aprueban_c)}},
+        'linea_contra_funding': {'toda_la_historia_desde': f(int(t[ini_todo])), 'filas': linea,
+                                 'explicacion': 'Contra el funding: vende donde los compradores pagan mucho y compra donde pagan los vendedores (media de 1 día o de 1 semana). Concentrada: todo en las 1 o 3 monedas con el funding más extremo, sin ajustar por volatilidad, como los alumnos arriesgados.'},
         'ideas': tabla,
     }
 

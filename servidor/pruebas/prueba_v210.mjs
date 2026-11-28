@@ -38,6 +38,12 @@ check(!W.prExamen(X, ambos, 1).ok, 'una idea que pierde suspende');
 check(!W.prExamen(X, larga, 4).ok, 'un riesgo que no está en la tabla no aprueba');
 check(!W.prExamen({ ...X, ideas: {} }, larga, 1).ok, 'una idea que no está en la tabla no aprueba');
 check(W.prExamen(null, ambos, 10).ok && W.prExamen(null, ambos, 10).sin, 'sin tabla: sin examen (como antes)');
+// v2.10.1: los concentrados tienen su propio examen
+const Xc = { ...X, ideas: { [W.apLabIdent(larga)]: [31, 1, 2, 3, 5, 10], [W.apLabIdent(larga) + '_c1']: [0, -50, -80, -95, -99, -100], [W.apLabIdent(larga) + '_c3']: [7, 4, 6, 8, -40, -90] } };
+check(W.prExamen(Xc, larga, 5).ok && !W.prExamen(Xc, larga, 5, 1).ok, 'repartida aprueba con ×5; todo en 1 moneda suspende');
+check(W.prExamen(Xc, larga, 3, 3).ok && W.prExamen(Xc, larga, 3, 3).rentPct === 8 && !W.prExamen(Xc, larga, 5, 3).ok, 'en 3 monedas: aprueba con ×3 (8 %) y suspende con ×5');
+const Xviejo = { ...X, ideas: { [W.apLabIdent(larga)]: [31, 1, 2, 3, 5, 10] } };
+check(W.prExamen(Xviejo, larga, 5, 1).ok, 'con una tabla sin concentrados, se usa la idea repartida');
 
 // rellenar plazas con examen
 const T0 = Date.UTC(2026, 10, 28, 12);

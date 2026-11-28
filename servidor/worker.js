@@ -16,7 +16,7 @@
 // y un disparador Cron cada minuto (* * * * *). Primero repasa unas 5000 horas de historia, 16 por minuto;
 // después aprende cada hora en vivo. Todo en papel: no mueve dinero.
 
-const VERSION = '2.10.0';
+const VERSION = '2.10.1';
 const HL = 'https://api.hyperliquid.xyz/info';
 const BINANCE = 'https://data-api.binance.vision/api/v3';
 const KRAKEN = 'https://api.kraken.com/0/public';
@@ -1753,16 +1753,17 @@ function prNace(P, spec, riesgo, t, padre, origen, grupo = 'normal', conc = null
 // una plaza libre de un grupo: hijo de uno de sus mejores (con un cambio, u otro riesgo o concentración) o una idea nueva
 // lejos de lo ya probado
 // Nota del examen de entrada para una idea con un riesgo: {ok, rentPct (2 años, con ese riesgo)}. Sin tabla: sin examen.
-function prExamen(X, sp, riesgo) {
+function prExamen(X, sp, riesgo, conc = null) {
   if (!X || !X.ideas) return { ok: true, sin: true };
-  const v = X.ideas[apLabIdent(sp)], i = (X.riesgos || []).indexOf(riesgo);
+  // v2.10.1: los concentrados tienen su propio examen (ident_c1, ident_c3); con una tabla vieja sin ellos, la idea repartida
+  const id = apLabIdent(sp), v = (conc && X.ideas[id + '_c' + conc]) || X.ideas[id], i = (X.riesgos || []).indexOf(riesgo);
   if (!v || i < 0) return { ok: false };
   return { ok: ((v[0] >> i) & 1) === 1, rentPct: v[1 + i] };
 }
 function prUnoNuevo(P, t, maestros, grupo = 'normal', X = null) {
   const vivas = new Set(P.alumnos.map((A) => prClave(A.spec, A.riesgo, A.conc)));
   const alto = grupo === 'arriesgado';
-  const examina = (sp, r) => { const e = prExamen(X, sp, r); if (!e.ok) P.cuenta.suspendidos = (P.cuenta.suspendidos || 0) + 1; return e; };
+  const examina = (sp, r, c) => { const e = prExamen(X, sp, r, c); if (!e.ok) P.cuenta.suspendidos = (P.cuenta.suspendidos || 0) + 1; return e; };
   const nace = (sp, r, padre, origen, c, e) => { const A = prNace(P, sp, r, t, padre, origen, grupo, c); if (!e.sin) { A.examenPct = e.rentPct; P.cuenta.aprobados = (P.cuenta.aprobados || 0) + 1; } return A; };
   for (let intento = 0; intento < (X ? PR.INTENTOS_EXAMEN : 40); intento++) {
     if (maestros.length && prRng(P) >= PR.CURIOSIDAD) {
@@ -1771,7 +1772,7 @@ function prUnoNuevo(P, t, maestros, grupo = 'normal', X = null) {
         const padre = prElige(P, otro);
         const [riesgo, conc] = alto ? prRiesgoAlto(P) : [prElige(P, [1, 2]), null];
         if (!prValido(padre.spec, riesgo, conc, grupo) || vivas.has(prClave(padre.spec, riesgo, conc))) continue;
-        const e = examina(padre.spec, riesgo);
+        const e = examina(padre.spec, riesgo, conc);
         if (!e.ok) continue;
         return nace(padre.spec, riesgo, padre, 'compañero', conc, e);
       }
@@ -1781,7 +1782,7 @@ function prUnoNuevo(P, t, maestros, grupo = 'normal', X = null) {
       const cambiaRiesgo = riesgo !== padre.riesgo || conc !== (padre.conc == null ? null : padre.conc);
       const sp = cambiaRiesgo && prRng(P) < 0.5 ? padre.spec : prMuta(P, padre.spec);
       if (!prValido(sp, riesgo, conc, grupo) || vivas.has(prClave(sp, riesgo, conc))) continue;
-      const e = examina(sp, riesgo);
+      const e = examina(sp, riesgo, conc);
       if (!e.ok) continue;
       return nace(sp, riesgo, padre, 'hijo', conc, e);
     }
@@ -1790,7 +1791,7 @@ function prUnoNuevo(P, t, maestros, grupo = 'normal', X = null) {
       const sp = prAzar(P);
       const [r, c] = alto ? prRiesgoAlto(P) : [prElige(P, PR.RIESGOS), null];
       if (!prValido(sp, r, c, grupo) || vivas.has(prClave(sp, r, c))) continue;
-      const e = examina(sp, r);
+      const e = examina(sp, r, c);
       if (!e.ok) continue;
       const n = (P.mapa[prVecindario(sp)] || 0) + prRng(P) * 0.5;
       if (n < menos) { menos = n; mejor = [sp, r, c, e]; }
@@ -1966,7 +1967,9 @@ function prConcentra(E, A, base) {
   const x = {};
   for (const m of ms) { const v = apLabBruto(A.spec, E.monedas[m]); x[m] = Number.isFinite(v) ? v : 0; }
   if (A.spec.modo === 'seccion') { const media = ms.reduce((a, m) => a + x[m], 0) / ms.length; for (const m of ms) x[m] -= media; }
-  const elegidas = ms.sort((a, b) => Math.abs(x[b]) - Math.abs(x[a]) || (a < b ? -1 : 1)).slice(0, A.conc);
+  // v2.10.1: la fuerza se compara redondeada (1e-10) para que un empate exacto se decida siempre por el nombre (igual que el laboratorio)
+  const q = (m) => Math.round(Math.abs(x[m]) * 1e10);
+  const elegidas = ms.sort((a, b) => q(b) - q(a) || (a < b ? -1 : 1)).slice(0, A.conc);
   const pos = {};
   for (const m of elegidas) pos[m] = Math.sign(base[m]) * A.riesgo / elegidas.length;
   return pos;
@@ -2092,7 +2095,7 @@ async function prVista(env, v) {
     equipo = { desde: iso(Q.desde), horas: mq.n, rentPct: (Math.exp(Q.st.log) - 1) * 100, tStat: mq.sr * Math.sqrt(mq.n), caidaMaxPct: Q.st.dd * 100, exposicionPct: Object.values(Q.pos).reduce((a, b) => a + Math.abs(b), 0) * 100, mediaAlumnosPorRiesgoPct: mediaAlumnos, quienesPesan: pesan };
   }
   return { rows: filas, equipo, resumen: { alumnos: P.alumnos.length, arriesgados: P.alumnos.filter((A) => prGrupo(A) === 'arriesgado').length, retiradosArriesgados: gr.retirados, quiebrasArriesgados: gr.quiebras, probadas: P.probadas, rondas: P.rondas, proximaRonda: iso(proxima), retirados: P.cuenta.retirados, quiebras: P.cuenta.quiebras, graduados: P.graduados, abierta: iso(P.creado), hasta: P.t ? iso(P.t) : null,
-    suspendidos: P.cuenta.suspendidos || 0, aprobados: P.cuenta.aprobados || 0, examen: X ? { generado: X.generado, desde: X.ventana.desde, hasta: X.ventana.hasta, aprueban: (X.resumen || {}).aprueban || null } : null }, nota: nota + ' Examen de entrada (desde la v2.10.0): un alumno nuevo solo nace si su idea, con su riesgo, no perdió dinero ni bajó de la mitad en los últimos 2 años de historia con costes (laboratorio, 20 monedas cripto; a los concentrados se les examina la idea repartida). examenPct: lo que hizo esa idea en esos 2 años; suspendidos: ideas descartadas por no aprobar.' };
+    suspendidos: P.cuenta.suspendidos || 0, aprobados: P.cuenta.aprobados || 0, examen: X ? { generado: X.generado, desde: X.ventana.desde, hasta: X.ventana.hasta, aprueban: (X.resumen || {}).aprueban || null } : null }, nota: nota + ' Examen de entrada (desde la v2.10.0): un alumno nuevo solo nace si su idea, con su riesgo, no perdió dinero ni bajó de la mitad en los últimos 2 años de historia con costes (laboratorio, 20 monedas cripto; los concentrados, con su propio examen: todo en sus 1 o 3 monedas). examenPct: lo que hizo esa idea en esos 2 años; suspendidos: ideas descartadas por no aprobar.' };
 }
 
 // ---------- cazadores de funding (v2.9.0) ----------
