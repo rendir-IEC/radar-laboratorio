@@ -141,6 +141,36 @@ def linea_contra_funding(Mu, Ru, Fu, hora, i_btc, coste, t, ini2, ini_todo, fin,
     return filas
 
 
+def sugeridas(specs, tabla, Mu, Ru, Fu, hora, i_btc, coste, t, ini, ini_todo, fin, n=3, riesgo=5):
+    """Las mejores variantes de la línea «contra el funding» que aprueban con ×5: para que la zona de prácticas las pruebe
+    en vivo en el grupo arriesgado. Primero las que tampoco habrían quebrado en toda la historia; sin repetir la misma
+    combinación de plazo, modo, lado, filtro y reajuste (la forma casi no cambia nada en esta señal)."""
+    i = RIESGOS.index(riesgo)
+    cands = []
+    for e in specs:
+        if e['senal'] != 'funding_contra':
+            continue
+        v = tabla.get(ident(e))
+        if v and (v[0] >> i) & 1:
+            cands.append((v[1 + i], e))
+    cands.sort(key=lambda x: -x[0])
+    vistas, out = set(), []
+    for _, e in cands:
+        clave = (e['a'], e['modo'], e['lado'], e['filtro'], e['cada'])
+        if clave in vistas:
+            continue
+        vistas.add(clave)
+        r, _, _ = correr(e, Mu, Ru, Fu, hora, i_btc, coste)
+        dos, todo = ficha(r, t, ini, fin, riesgo), ficha(r, t, ini_todo, fin, riesgo)
+        out.append({'ident': ident(e), 'spec': {k: e[k] for k in ('senal', 'a', 'b', 'forma', 'k', 'modo', 'lado', 'filtro', 'cada') if k in e},
+                    'riesgo': riesgo, 'conc': None, 'dos_anos': dos, 'toda_la_historia': todo,
+                    'motivo': 'Línea contra el funding (la pidió Catalina): variante repartida que aprueba con ×%d' % riesgo})
+        if len(out) >= 3 * n:
+            break
+    out.sort(key=lambda x: (x['toda_la_historia'].get('quiebra', True), -x['dos_anos'].get('rent_pct', -100)))
+    return out[:n]
+
+
 def examinar(panel, dias=730, limite=0, con_concentrados=True):
     M = memoria(panel)
     R, Fsig, hora = preparar(panel)
@@ -177,6 +207,7 @@ def examinar(panel, dias=730, limite=0, con_concentrados=True):
     lista = Mu['lista'].sum(axis=1)
     ini_todo = int(np.argmax(lista >= 5))
     linea = linea_contra_funding(Mu, Ru, Fu, hora, i_btc, coste, t, ini, ini_todo, fin, nombres)
+    sug = sugeridas(specs, tabla, Mu, Ru, Fu, hora, i_btc, coste, t, ini, ini_todo, fin)
     f = lambda ms: dt.datetime.fromtimestamp(ms / 1000, dt.timezone.utc).strftime('%Y-%m-%d')
     return {
         'generado': dt.datetime.now(dt.timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ'), 'version': 1,
@@ -189,6 +220,7 @@ def examinar(panel, dias=730, limite=0, con_concentrados=True):
                     'aprueban_concentradas': {('x%d' % R): n for R, n in zip(RIESGOS, aprueban_c)}},
         'linea_contra_funding': {'toda_la_historia_desde': f(int(t[ini_todo])), 'filas': linea,
                                  'explicacion': 'Contra el funding: vende donde los compradores pagan mucho y compra donde pagan los vendedores (media de 1 día o de 1 semana). Concentrada: todo en las 1 o 3 monedas con el funding más extremo, sin ajustar por volatilidad, como los alumnos arriesgados.'},
+        'sugeridas': sug,
         'ideas': tabla,
     }
 

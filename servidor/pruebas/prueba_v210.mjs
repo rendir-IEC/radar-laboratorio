@@ -9,7 +9,7 @@ import { DatabaseSync } from 'node:sqlite';
 let fallos = 0;
 const check = (ok, msg) => { console.log((ok ? 'OK    ' : 'FALLO ') + msg); if (!ok) fallos++; };
 const fuente = fs.readFileSync(new URL('../worker.js', import.meta.url), 'utf8') +
-  '\nexport { aprendizaje, apEstadoNuevo, prFoto, prPaso, prFaltan, prNuevo, prRellena, prRetira, prExamen, prClave, exLeer, exActualizar, exValido, apLabIdent, PR, H1, VERSION, EX_URL };\n';
+  '\nexport { aprendizaje, prSugeridas, apEstadoNuevo, prFoto, prPaso, prFaltan, prNuevo, prRellena, prRetira, prExamen, prClave, exLeer, exActualizar, exValido, apLabIdent, PR, H1, VERSION, EX_URL };\n';
 const tmp = path.join(os.tmpdir(), 'worker_v210_' + process.pid + '.mjs');
 fs.writeFileSync(tmp, fuente);
 const W = await import(tmp);
@@ -84,9 +84,33 @@ check(P4.alumnos.length === total - 1, 'si no se ha leído la tabla (false), la 
 W.prPaso(E, P4, { t: T0 + 2 * H1, px: {} }, W.prFoto(E), X);
 check(P4.alumnos.length === total && P4.alumnos.some((A) => A.examenPct != null), 'la hora siguiente, con la tabla, se llena con un alumno que aprueba');
 
+// v2.11.0: ideas sugeridas por el laboratorio en el grupo arriesgado
+const sug = [{ spec: { senal: 'funding_contra', a: 168, forma: 'signo', modo: 'seccion', lado: 'largos', filtro: 'btc_alcista', cada: 24 }, riesgo: 5, conc: null, motivo: 'prueba' },
+  { spec: { senal: 'funding_contra', a: 24, forma: 'signo', modo: 'seccion', lado: 'largos', filtro: 'btc_alcista', cada: 1 }, riesgo: 5, conc: null },
+  { spec: { senal: 'funding_contra', a: 24, forma: 'signo', modo: 'serie', lado: 'ambos', filtro: 'ninguno', cada: 1 }, riesgo: 5, conc: 1 },
+  { spec: { senal: 'funding_contra', a: 168, forma: 'signo', modo: 'serie', lado: 'largos', filtro: 'ninguno', cada: 1 }, riesgo: 10, conc: null }];
+const Xs = { ...X, sugeridas: sug };
+const P5 = W.prNuevo(T0);
+const arr5 = P5.alumnos.filter((A) => A.grupo === 'arriesgado');
+for (const A of arr5.slice(0, 4)) W.prRetira(P5, A, T0 + H1, 'ronda');
+W.prRellena(P5, T0 + H1, Xs);
+const lab5 = P5.alumnos.filter((A) => A.origen === 'laboratorio');
+check(lab5.length === 2 && lab5.every((A) => A.grupo === 'arriesgado' && A.riesgo === 5 && A.spec.lado === 'largos' && A.examenPct === 25), 'entran las 2 sugeridas que aprueban (las «solo compras» de la tabla de prueba): ' + lab5.map((A) => A.spec.a + 'h ×' + A.riesgo).join(', '));
+check(P5.alumnos.length === total && P5.alumnos.filter((A) => A.grupo === 'arriesgado').length === 12, 'y el resto de plazas se llena como siempre');
+check(P5.sugeridasProbadas.length === 2, 'quedan apuntadas como probadas');
+for (const A of lab5) W.prRetira(P5, A, T0 + 2 * H1, 'ronda');
+W.prRellena(P5, T0 + 2 * H1, Xs);
+check(!P5.alumnos.some((A) => A.origen === 'laboratorio'), 'si se retiran, no vuelven a entrar (cada sugerida una sola vez)');
+const P6 = W.prNuevo(T0);
+for (const A of P6.alumnos.filter((A) => A.grupo === 'arriesgado').slice(0, 6)) W.prRetira(P6, A, T0 + H1, 'ronda');
+const Xmuchas = { ...X, ideas: new Proxy({}, { get: () => [31, 1, 2, 3, 5, 10] }), sugeridas: [3, 4, 5, 6, 7].map((h) => ({ spec: { senal: 'cruce', a: 24, b: 168, forma: 'signo', modo: 'serie', lado: 'ambos', filtro: 'ninguno', cada: h % 2 ? 1 : 24 }, riesgo: h < 5 ? 5 : 10, conc: null })) };
+W.prRellena(P6, T0 + H1, Xmuchas);
+check(P6.alumnos.filter((A) => A.origen === 'laboratorio').length === 3, 'como mucho 3 sugeridas a la vez');
+
 // tabla en D1: validación, refresco cada 6 h y vista
 check(!W.exValido(null) && !W.exValido({ version: 1, riesgos: RIESGOS, ideas: { a: [1] }, ventana: {} }), 'una tabla vacía o pequeña no vale');
-const tabla = { version: 1, generado: '2026-11-28T12:00:00Z', ventana: { desde: '2024-11-28', hasta: '2026-11-28', dias: 730 }, riesgos: RIESGOS, resumen: { ideas: 4608, aprueban: { x1: 900 } }, coste_por_giro_pct: 0.07, ideas: {} };
+const tabla = { version: 1, generado: '2026-11-28T12:00:00Z', ventana: { desde: '2024-11-28', hasta: '2026-11-28', dias: 730 }, riesgos: RIESGOS, resumen: { ideas: 4608, aprueban: { x1: 900 } }, coste_por_giro_pct: 0.07, ideas: {},
+  sugeridas: [{ spec: larga, riesgo: 5, conc: null, motivo: 'prueba', dos_anos: { rent_pct: 40, caida_max_pct: 30 }, toda_la_historia: { quiebra: false } }, { spec: { senal: 'nada' }, riesgo: 5 }] };
 for (let i = 0; i < 1200; i++) tabla.ideas['idea_' + i] = [1, 1, 2, 3, 5, 10];
 tabla.ideas[W.apLabIdent(larga)] = [15, 4, 8, 12, 20, -60];
 check(W.exValido(tabla), 'la tabla del laboratorio vale');
@@ -100,6 +124,7 @@ const ahora = Date.UTC(2026, 10, 28, 12, 37);
 check(await W.exActualizar(ENV, ahora) === true && pedidas === 1, 'primera lectura de la tabla');
 const L = await W.exLeer(ENV);
 check(L && L.generado === tabla.generado && Object.keys(L.ideas).length === 1201 && L.riesgos.length === 5, 'guardada en D1 (' + JSON.stringify(L).length + ' bytes)');
+check(L.sugeridas.length === 1 && L.sugeridas[0].dosAnos.rent_pct === 40, 'guarda las sugeridas válidas (descarta las que no son ideas)');
 check(await W.exActualizar(ENV, ahora + 3 * H1) === false && pedidas === 1, 'a las 3 h no se vuelve a pedir');
 check(await W.exActualizar(ENV, ahora + 7 * H1) === true && pedidas === 2, 'a las 7 h sí');
 globalThis.fetch = async () => ({ ok: true, json: async () => ({ version: 1, riesgos: [], ideas: {} }) });
@@ -111,6 +136,7 @@ const v = await W.aprendizaje({ vista: 'practicas' }, ENV);
 check(v.resumen.suspendidos === P.cuenta.suspendidos && v.resumen.aprobados === P.cuenta.aprobados && v.resumen.examen && v.resumen.examen.desde === '2024-11-28', 'la vista enseña el examen: ' + JSON.stringify({ s: v.resumen.suspendidos, a: v.resumen.aprobados, ex: v.resumen.examen }));
 check(v.rows.some((x) => x.examenPct != null) && v.rows.some((x) => x.examenPct == null), 'cada alumno nuevo con su nota; los de antes, sin nota');
 check(/Examen de entrada/.test(v.nota), 'la nota lo explica');
+check(v.resumen.sugeridas.length === 1 && v.resumen.sugeridas[0].dosAnosPct === 40 && v.resumen.sugeridas[0].quiebraEnLaHistoria === false && /×5$/.test(v.resumen.sugeridas[0].alumno), 'la vista enseña las sugeridas: ' + JSON.stringify(v.resumen.sugeridas[0]));
 check(!JSON.stringify(v).includes('NaN'), 'sin NaN');
 
 console.log(fallos ? fallos + ' FALLOS' : 'todo OK');

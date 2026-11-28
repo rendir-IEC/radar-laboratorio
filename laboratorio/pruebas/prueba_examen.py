@@ -104,6 +104,10 @@ check(len(L) == 2 * (2 + 4 + 4) and all('dos_anos' in x and 'toda_la_historia' i
 x5 = [x for x in L if x['concentracion'] == 1 and x['riesgo'] == 5 and '1 día' in x['idea']][0]
 check({'rent_pct', 'caida_max_pct', 'quiebra', 'peor_semana_pct', 'por_ano_pct'} <= set(x5['dos_anos']), 'la del alumno (1 día, 1 moneda, ×5): ' + json.dumps(x5['dos_anos'], ensure_ascii=False)[:160])
 check('NaN' not in json.dumps(res), 'sin NaN (con concentrados)')
+res2 = ex.examinar(panel, dias=200, limite=0, con_concentrados=False)
+S = res2['sugeridas']
+check(len(S) <= 3 and all(x['spec']['senal'] == 'funding_contra' and x['riesgo'] == 5 and (res2['ideas'][x['ident']][0] >> 3) & 1 for x in S), 'sugeridas: hasta 3 variantes contra el funding que aprueban con ×5 (%d: %s)' % (len(S), ', '.join(x['ident'] for x in S)))
+check(len({(x['spec']['a'], x['spec']['modo'], x['spec']['lado'], x['spec']['filtro'], x['spec']['cada']) for x in S}) == len(S), 'sin repetir la misma combinación')
 
 print(('%d FALLOS' % fallos) if fallos else 'todo OK')
 sys.exit(1 if fallos else 0)

@@ -16,7 +16,7 @@
 // y un disparador Cron cada minuto (* * * * *). Primero repasa unas 5000 horas de historia, 16 por minuto;
 // después aprende cada hora en vivo. Todo en papel: no mueve dinero.
 
-const VERSION = '2.10.1';
+const VERSION = '2.11.0';
 const HL = 'https://api.hyperliquid.xyz/info';
 const BINANCE = 'https://data-api.binance.vision/api/v3';
 const KRAKEN = 'https://api.kraken.com/0/public';
@@ -1670,6 +1670,7 @@ const PR = {
   GRADUA_DSR: 0.95,
   MAX_GRADUADOS: 4,
   INTENTOS_EXAMEN: 120,      // con examen, más intentos para encontrar ideas que aprueben
+  SUGERIDAS_MAX: 3,          // plazas del grupo arriesgado para las ideas que sugiere el laboratorio (v2.11.0)
   MAX_RETIRADOS: 80,
   // v2.8.0: trabajo en equipo
   EQUIPO_ETA: 10,            // cuánto se mueve el peso de cada alumno en el equipo según lo que gana o pierde cada hora
@@ -1866,7 +1867,29 @@ function prMaestros(P, grupo = 'normal') {
   return top.some((A) => prT(A) > 0) ? top.filter((A) => prT(A) > 0) : top;
 }
 const prFaltan = (P) => !!P && P.alumnos.length < PR.ALUMNOS + PR.ARRIESGADOS;
+// v2.11.0: ideas que sugiere el laboratorio (examen.json, «sugeridas»: las mejores variantes de una línea que aprueban con
+// su riesgo). Entran en el grupo arriesgado antes que las demás, como mucho SUGERIDAS_MAX a la vez y cada una una sola vez.
+function prSugeridas(P, t, X) {
+  const g = 'arriesgado';
+  if (!X || !Array.isArray(X.sugeridas)) return 0;
+  P.sugeridasProbadas = P.sugeridasProbadas || [];
+  let n = 0;
+  for (const s of X.sugeridas) {
+    if (P.alumnos.filter((A) => prGrupo(A) === g).length >= prCupo(g)) break;
+    if (P.alumnos.filter((A) => A.origen === 'laboratorio').length >= PR.SUGERIDAS_MAX) break;
+    if (!s || !s.spec || !apLabValida(s.spec)) continue;
+    const sp = prLimpia(s.spec), conc = s.conc == null ? null : s.conc, clave = prClave(sp, s.riesgo, conc);
+    if (P.sugeridasProbadas.includes(clave) || !prValido(sp, s.riesgo, conc, g) || P.alumnos.some((A) => prClave(A.spec, A.riesgo, A.conc) === clave)) continue;
+    const e = prExamen(X, sp, s.riesgo, conc);
+    if (!e.ok) continue;
+    const A = prNace(P, sp, s.riesgo, t, null, 'laboratorio', g, conc);
+    if (!e.sin) { A.examenPct = e.rentPct; P.cuenta.aprobados = (P.cuenta.aprobados || 0) + 1; }
+    P.sugeridasProbadas.push(clave); n++;
+  }
+  return n;
+}
 function prRellena(P, t, X = null) {
+  prSugeridas(P, t, X);
   for (const g of ['normal', 'arriesgado']) {
     // sus mejores y, como mentores, los dos mejores juzgados del otro grupo que ganan
     const otro = g === 'normal' ? 'arriesgado' : 'normal';
@@ -2038,7 +2061,10 @@ async function exActualizar(env, ahora) {
   if (!r.ok) return false;
   const j = await r.json();
   if (!exValido(j)) return false;
-  const X = { generado: j.generado, ventana: j.ventana, riesgos: j.riesgos, resumen: j.resumen, coste: j.coste_por_giro_pct, ideas: j.ideas };
+  const sugeridas = Array.isArray(j.sugeridas) ? j.sugeridas.slice(0, 5).filter((x) => x && x.spec && apLabValida(x.spec) && typeof x.riesgo === 'number')
+    .map((x) => ({ spec: x.spec, riesgo: x.riesgo, conc: x.conc == null ? null : x.conc, motivo: String(x.motivo || '').slice(0, 200),
+      dosAnos: x.dos_anos || null, todaLaHistoria: x.toda_la_historia || null })) : [];
+  const X = { generado: j.generado, ventana: j.ventana, riesgos: j.riesgos, resumen: j.resumen, coste: j.coste_por_giro_pct, ideas: j.ideas, sugeridas };
   await env.DB.prepare('INSERT INTO ap_estado (id, json, t) VALUES (?1, ?2, ?3) ON CONFLICT(id) DO UPDATE SET json = excluded.json, t = excluded.t').bind('examen', JSON.stringify(X), ahora).run();
   return true;
 }
@@ -2095,7 +2121,11 @@ async function prVista(env, v) {
     equipo = { desde: iso(Q.desde), horas: mq.n, rentPct: (Math.exp(Q.st.log) - 1) * 100, tStat: mq.sr * Math.sqrt(mq.n), caidaMaxPct: Q.st.dd * 100, exposicionPct: Object.values(Q.pos).reduce((a, b) => a + Math.abs(b), 0) * 100, mediaAlumnosPorRiesgoPct: mediaAlumnos, quienesPesan: pesan };
   }
   return { rows: filas, equipo, resumen: { alumnos: P.alumnos.length, arriesgados: P.alumnos.filter((A) => prGrupo(A) === 'arriesgado').length, retiradosArriesgados: gr.retirados, quiebrasArriesgados: gr.quiebras, probadas: P.probadas, rondas: P.rondas, proximaRonda: iso(proxima), retirados: P.cuenta.retirados, quiebras: P.cuenta.quiebras, graduados: P.graduados, abierta: iso(P.creado), hasta: P.t ? iso(P.t) : null,
-    suspendidos: P.cuenta.suspendidos || 0, aprobados: P.cuenta.aprobados || 0, examen: X ? { generado: X.generado, desde: X.ventana.desde, hasta: X.ventana.hasta, aprueban: (X.resumen || {}).aprueban || null } : null }, nota: nota + ' Examen de entrada (desde la v2.10.0): un alumno nuevo solo nace si su idea, con su riesgo, no perdió dinero ni bajó de la mitad en los últimos 2 años de historia con costes (laboratorio, 20 monedas cripto; los concentrados, con su propio examen: todo en sus 1 o 3 monedas). examenPct: lo que hizo esa idea en esos 2 años; suspendidos: ideas descartadas por no aprobar.' };
+    suspendidos: P.cuenta.suspendidos || 0, aprobados: P.cuenta.aprobados || 0, examen: X ? { generado: X.generado, desde: X.ventana.desde, hasta: X.ventana.hasta, aprueban: (X.resumen || {}).aprueban || null } : null,
+    sugeridas: X && X.sugeridas ? X.sugeridas.map((s) => ({ alumno: apLabNombre(prLimpia(s.spec)) + (s.conc === 1 ? ', todo en 1 moneda' : s.conc ? ', en ' + s.conc + ' monedas' : '') + ' ×' + s.riesgo,
+      dosAnosPct: s.dosAnos ? s.dosAnos.rent_pct : null, caidaMaxDosAnosPct: s.dosAnos ? s.dosAnos.caida_max_pct : null, quiebraEnLaHistoria: s.todaLaHistoria ? !!s.todaLaHistoria.quiebra : null,
+      viva: P.alumnos.some((A) => prClave(A.spec, A.riesgo, A.conc) === prClave(prLimpia(s.spec), s.riesgo, s.conc == null ? null : s.conc)),
+      probada: (P.sugeridasProbadas || []).includes(prClave(prLimpia(s.spec), s.riesgo, s.conc == null ? null : s.conc)) })) : [] }, nota: nota + ' Examen de entrada (desde la v2.10.0): un alumno nuevo solo nace si su idea, con su riesgo, no perdió dinero ni bajó de la mitad en los últimos 2 años de historia con costes (laboratorio, 20 monedas cripto; los concentrados, con su propio examen: todo en sus 1 o 3 monedas). examenPct: lo que hizo esa idea en esos 2 años; suspendidos: ideas descartadas por no aprobar. Sugeridas (desde la v2.11.0): el laboratorio propone las mejores variantes de una línea que aprueban con su riesgo y entran en el grupo arriesgado cuando hay plaza (como mucho ' + PR.SUGERIDAS_MAX + ' a la vez, cada una una vez); origen «laboratorio».' };
 }
 
 // ---------- cazadores de funding (v2.9.0) ----------
