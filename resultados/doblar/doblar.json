@@ -1,0 +1,3634 @@
+{
+ "generado": "2026-11-28T17:43:48Z",
+ "version": 1,
+ "pregunta": "¿Hay alguna regla que acierte lo bastante la dirección de los próximos 3 días para que doblar o perder con ×10, ×20 o ×40 salga a cuenta?",
+ "aviso": "Investigación en papel con datos pasados; precios de cierre horario (las mechas no se ven: la liquidación real llega antes). No es una recomendación.",
+ "periodos": {
+  "eleccion": [
+   "2021-02-01",
+   "2024-11-25"
+  ],
+  "examen": [
+   "2024-11-25",
+   "2026-11-25"
+  ]
+ },
+ "reglas_probadas": 138,
+ "t_exigida": 3.38,
+ "elegida": {
+  "regla": "Sigue el de 30 días, en Bitcoin, ×10",
+  "rasgo": "imp30",
+  "signo": 1,
+  "eleccion": "BTC",
+  "L": 10,
+  "eleccion_2021_2024": {
+   "apuestas": 1393,
+   "independientes": 465,
+   "dobla_pct": 7.8,
+   "quiebra_pct": 7.5,
+   "nada_pct": 84.8,
+   "media_por_apuesta_pct": 1.46,
+   "t": 0.85
+  },
+  "examen_2_anos": {
+   "apuestas": 731,
+   "independientes": 244,
+   "dobla_pct": 3.0,
+   "quiebra_pct": 2.5,
+   "nada_pct": 94.5,
+   "media_por_apuesta_pct": 0.55,
+   "t": 0.25
+  }
+ },
+ "aprueba": false,
+ "kelly": {
+  "parte_por_apuesta_pct": 4.0,
+  "crecimiento_por_apuesta_pct": 0.013,
+  "dias_para_duplicar": 16609.0
+ },
+ "examen_todas": {
+  "reglas": 138,
+  "ganan_de_media": 11,
+  "superan_t_exigida": 0,
+  "mejor_dobla_pct": 41.6
+ },
+ "top5_eleccion": [
+  {
+   "regla": "Sigue el de 30 días, en Bitcoin, ×10",
+   "rasgo": "imp30",
+   "signo": 1,
+   "eleccion": "BTC",
+   "L": 10,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 7.8,
+    "quiebra_pct": 7.5,
+    "nada_pct": 84.8,
+    "media_por_apuesta_pct": 1.46,
+    "t": 0.85
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 3.0,
+    "quiebra_pct": 2.5,
+    "nada_pct": 94.5,
+    "media_por_apuesta_pct": 0.55,
+    "t": 0.25
+   }
+  },
+  {
+   "regla": "Sigue el de 30 días, en Ethereum, ×10",
+   "rasgo": "imp30",
+   "signo": 1,
+   "eleccion": "ETH",
+   "L": 10,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 11.6,
+    "quiebra_pct": 12.2,
+    "nada_pct": 76.2,
+    "media_por_apuesta_pct": 1.29,
+    "t": 1.42
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 10.0,
+    "quiebra_pct": 8.2,
+    "nada_pct": 81.8,
+    "media_por_apuesta_pct": 3.91,
+    "t": 0.29
+   }
+  },
+  {
+   "regla": "Sigue el de 7 días, en la moneda más extrema, ×10",
+   "rasgo": "imp7",
+   "signo": 1,
+   "eleccion": "extrema",
+   "L": 10,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 30.6,
+    "quiebra_pct": 30.2,
+    "nada_pct": 39.3,
+    "media_por_apuesta_pct": 0.24,
+    "t": -0.3
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 26.5,
+    "quiebra_pct": 31.9,
+    "nada_pct": 41.6,
+    "media_por_apuesta_pct": -6.86,
+    "t": -1.17
+   }
+  },
+  {
+   "regla": "Sigue el de 30 días, en la moneda más extrema, ×10",
+   "rasgo": "imp30",
+   "signo": 1,
+   "eleccion": "extrema",
+   "L": 10,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 27.9,
+    "quiebra_pct": 28.6,
+    "nada_pct": 43.5,
+    "media_por_apuesta_pct": -0.14,
+    "t": 0.1
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 26.3,
+    "quiebra_pct": 31.6,
+    "nada_pct": 42.1,
+    "media_por_apuesta_pct": -5.65,
+    "t": -1.92
+   }
+  },
+  {
+   "regla": "Siempre compra en Bitcoin, ×10",
+   "rasgo": "siempre",
+   "signo": 1,
+   "eleccion": "BTC",
+   "L": 10,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 6.9,
+    "quiebra_pct": 8.0,
+    "nada_pct": 85.1,
+    "media_por_apuesta_pct": -0.2,
+    "t": -0.31
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 1.2,
+    "quiebra_pct": 4.9,
+    "nada_pct": 93.8,
+    "media_por_apuesta_pct": -3.91,
+    "t": -1.12
+   }
+  }
+ ],
+ "reglas": [
+  {
+   "regla": "Sigue el movimiento de 1 día, en Bitcoin, ×10",
+   "rasgo": "imp1",
+   "signo": 1,
+   "eleccion": "BTC",
+   "L": 10,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 7.1,
+    "quiebra_pct": 7.9,
+    "nada_pct": 85.0,
+    "media_por_apuesta_pct": -0.99,
+    "t": 0.34
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 2.6,
+    "quiebra_pct": 3.0,
+    "nada_pct": 94.4,
+    "media_por_apuesta_pct": -3.51,
+    "t": -2.74
+   }
+  },
+  {
+   "regla": "Sigue el movimiento de 1 día, en Bitcoin, ×20",
+   "rasgo": "imp1",
+   "signo": 1,
+   "eleccion": "BTC",
+   "L": 20,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 22.8,
+    "quiebra_pct": 33.9,
+    "nada_pct": 43.4,
+    "media_por_apuesta_pct": -9.55,
+    "t": -2.03
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 13.8,
+    "quiebra_pct": 26.5,
+    "nada_pct": 59.6,
+    "media_por_apuesta_pct": -12.57,
+    "t": -3.89
+   }
+  },
+  {
+   "regla": "Sigue el movimiento de 1 día, en Bitcoin, ×40",
+   "rasgo": "imp1",
+   "signo": 1,
+   "eleccion": "BTC",
+   "L": 40,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 28.9,
+    "quiebra_pct": 63.3,
+    "nada_pct": 7.8,
+    "media_por_apuesta_pct": -33.11,
+    "t": -6.42
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 28.3,
+    "quiebra_pct": 59.8,
+    "nada_pct": 11.9,
+    "media_por_apuesta_pct": -29.02,
+    "t": -4.99
+   }
+  },
+  {
+   "regla": "Sigue el movimiento de 1 día, en Ethereum, ×10",
+   "rasgo": "imp1",
+   "signo": 1,
+   "eleccion": "ETH",
+   "L": 10,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 11.0,
+    "quiebra_pct": 13.4,
+    "nada_pct": 75.7,
+    "media_por_apuesta_pct": -1.02,
+    "t": 0.01
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 7.9,
+    "quiebra_pct": 10.9,
+    "nada_pct": 81.1,
+    "media_por_apuesta_pct": -3.83,
+    "t": -1.49
+   }
+  },
+  {
+   "regla": "Sigue el movimiento de 1 día, en Ethereum, ×20",
+   "rasgo": "imp1",
+   "signo": 1,
+   "eleccion": "ETH",
+   "L": 20,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 26.8,
+    "quiebra_pct": 40.5,
+    "nada_pct": 32.7,
+    "media_por_apuesta_pct": -12.04,
+    "t": -3.21
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 25.3,
+    "quiebra_pct": 39.7,
+    "nada_pct": 35.0,
+    "media_por_apuesta_pct": -12.86,
+    "t": -1.89
+   }
+  },
+  {
+   "regla": "Sigue el movimiento de 1 día, en Ethereum, ×40",
+   "rasgo": "imp1",
+   "signo": 1,
+   "eleccion": "ETH",
+   "L": 40,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 31.2,
+    "quiebra_pct": 64.4,
+    "nada_pct": 4.5,
+    "media_por_apuesta_pct": -32.57,
+    "t": -8.05
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 31.9,
+    "quiebra_pct": 65.1,
+    "nada_pct": 3.0,
+    "media_por_apuesta_pct": -33.07,
+    "t": -5.38
+   }
+  },
+  {
+   "regla": "Sigue el movimiento de 1 día, en la moneda más extrema, ×10",
+   "rasgo": "imp1",
+   "signo": 1,
+   "eleccion": "extrema",
+   "L": 10,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 27.4,
+    "quiebra_pct": 28.7,
+    "nada_pct": 43.9,
+    "media_por_apuesta_pct": -1.3,
+    "t": -0.45
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 27.4,
+    "quiebra_pct": 29.5,
+    "nada_pct": 43.1,
+    "media_por_apuesta_pct": -1.21,
+    "t": 1.16
+   }
+  },
+  {
+   "regla": "Sigue el movimiento de 1 día, en la moneda más extrema, ×20",
+   "rasgo": "imp1",
+   "signo": 1,
+   "eleccion": "extrema",
+   "L": 20,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 38.7,
+    "quiebra_pct": 52.8,
+    "nada_pct": 8.5,
+    "media_por_apuesta_pct": -13.42,
+    "t": -2.13
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 40.8,
+    "quiebra_pct": 51.0,
+    "nada_pct": 8.2,
+    "media_por_apuesta_pct": -9.69,
+    "t": -1.06
+   }
+  },
+  {
+   "regla": "Sigue el movimiento de 1 día, en la moneda más extrema, ×40",
+   "rasgo": "imp1",
+   "signo": 1,
+   "eleccion": "extrema",
+   "L": 40,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 35.7,
+    "quiebra_pct": 64.0,
+    "nada_pct": 0.4,
+    "media_por_apuesta_pct": -28.18,
+    "t": -5.93
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 36.9,
+    "quiebra_pct": 63.1,
+    "nada_pct": 0.0,
+    "media_por_apuesta_pct": -26.13,
+    "t": -3.68
+   }
+  },
+  {
+   "regla": "Va contra el movimiento de 1 día, en Bitcoin, ×10",
+   "rasgo": "imp1",
+   "signo": -1,
+   "eleccion": "BTC",
+   "L": 10,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 5.7,
+    "quiebra_pct": 9.8,
+    "nada_pct": 84.5,
+    "media_por_apuesta_pct": -2.89,
+    "t": -2.03
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 1.9,
+    "quiebra_pct": 4.2,
+    "nada_pct": 93.8,
+    "media_por_apuesta_pct": -0.05,
+    "t": 1.55
+   }
+  },
+  {
+   "regla": "Va contra el movimiento de 1 día, en Bitcoin, ×20",
+   "rasgo": "imp1",
+   "signo": -1,
+   "eleccion": "BTC",
+   "L": 20,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 21.5,
+    "quiebra_pct": 33.4,
+    "nada_pct": 45.1,
+    "media_por_apuesta_pct": -8.18,
+    "t": -2.68
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 12.6,
+    "quiebra_pct": 23.9,
+    "nada_pct": 63.5,
+    "media_por_apuesta_pct": -4.85,
+    "t": -0.33
+   }
+  },
+  {
+   "regla": "Va contra el movimiento de 1 día, en Bitcoin, ×40",
+   "rasgo": "imp1",
+   "signo": -1,
+   "eleccion": "BTC",
+   "L": 40,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 30.9,
+    "quiebra_pct": 60.4,
+    "nada_pct": 8.7,
+    "media_por_apuesta_pct": -27.53,
+    "t": -8.07
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 30.4,
+    "quiebra_pct": 57.6,
+    "nada_pct": 12.0,
+    "media_por_apuesta_pct": -24.18,
+    "t": -5.37
+   }
+  },
+  {
+   "regla": "Va contra el movimiento de 1 día, en Ethereum, ×10",
+   "rasgo": "imp1",
+   "signo": -1,
+   "eleccion": "ETH",
+   "L": 10,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 9.5,
+    "quiebra_pct": 15.1,
+    "nada_pct": 75.4,
+    "media_por_apuesta_pct": -4.34,
+    "t": -1.68
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 7.3,
+    "quiebra_pct": 11.1,
+    "nada_pct": 81.7,
+    "media_por_apuesta_pct": -0.69,
+    "t": 0.3
+   }
+  },
+  {
+   "regla": "Va contra el movimiento de 1 día, en Ethereum, ×20",
+   "rasgo": "imp1",
+   "signo": -1,
+   "eleccion": "ETH",
+   "L": 20,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 26.8,
+    "quiebra_pct": 40.3,
+    "nada_pct": 32.8,
+    "media_por_apuesta_pct": -10.13,
+    "t": -2.52
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 26.4,
+    "quiebra_pct": 38.4,
+    "nada_pct": 35.2,
+    "media_por_apuesta_pct": -7.83,
+    "t": -1.86
+   }
+  },
+  {
+   "regla": "Va contra el movimiento de 1 día, en Ethereum, ×40",
+   "rasgo": "imp1",
+   "signo": -1,
+   "eleccion": "ETH",
+   "L": 40,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 34.7,
+    "quiebra_pct": 59.8,
+    "nada_pct": 5.5,
+    "media_por_apuesta_pct": -24.15,
+    "t": -5.21
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 34.5,
+    "quiebra_pct": 61.7,
+    "nada_pct": 3.8,
+    "media_por_apuesta_pct": -25.92,
+    "t": -5.16
+   }
+  },
+  {
+   "regla": "Va contra el movimiento de 1 día, en la moneda más extrema, ×10",
+   "rasgo": "imp1",
+   "signo": -1,
+   "eleccion": "extrema",
+   "L": 10,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 23.4,
+    "quiebra_pct": 33.2,
+    "nada_pct": 43.4,
+    "media_por_apuesta_pct": -7.83,
+    "t": -1.94
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 22.7,
+    "quiebra_pct": 33.8,
+    "nada_pct": 43.5,
+    "media_por_apuesta_pct": -9.43,
+    "t": -3.15
+   }
+  },
+  {
+   "regla": "Va contra el movimiento de 1 día, en la moneda más extrema, ×20",
+   "rasgo": "imp1",
+   "signo": -1,
+   "eleccion": "extrema",
+   "L": 20,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 38.0,
+    "quiebra_pct": 53.4,
+    "nada_pct": 8.5,
+    "media_por_apuesta_pct": -14.14,
+    "t": -3.32
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 37.5,
+    "quiebra_pct": 55.3,
+    "nada_pct": 7.3,
+    "media_por_apuesta_pct": -17.0,
+    "t": -2.88
+   }
+  },
+  {
+   "regla": "Va contra el movimiento de 1 día, en la moneda más extrema, ×40",
+   "rasgo": "imp1",
+   "signo": -1,
+   "eleccion": "extrema",
+   "L": 40,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 36.9,
+    "quiebra_pct": 62.2,
+    "nada_pct": 0.9,
+    "media_por_apuesta_pct": -25.02,
+    "t": -6.45
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 35.4,
+    "quiebra_pct": 64.3,
+    "nada_pct": 0.3,
+    "media_por_apuesta_pct": -28.86,
+    "t": -5.02
+   }
+  },
+  {
+   "regla": "Sigue el de 3 días, en Bitcoin, ×10",
+   "rasgo": "imp3",
+   "signo": 1,
+   "eleccion": "BTC",
+   "L": 10,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 7.0,
+    "quiebra_pct": 8.0,
+    "nada_pct": 85.1,
+    "media_por_apuesta_pct": -0.74,
+    "t": 0.74
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 2.9,
+    "quiebra_pct": 2.9,
+    "nada_pct": 94.3,
+    "media_por_apuesta_pct": -2.28,
+    "t": -1.88
+   }
+  },
+  {
+   "regla": "Sigue el de 3 días, en Bitcoin, ×20",
+   "rasgo": "imp3",
+   "signo": 1,
+   "eleccion": "BTC",
+   "L": 20,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 24.3,
+    "quiebra_pct": 32.4,
+    "nada_pct": 43.3,
+    "media_por_apuesta_pct": -6.45,
+    "t": -0.7
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 13.5,
+    "quiebra_pct": 26.0,
+    "nada_pct": 60.5,
+    "media_por_apuesta_pct": -10.31,
+    "t": -3.56
+   }
+  },
+  {
+   "regla": "Sigue el de 3 días, en Bitcoin, ×40",
+   "rasgo": "imp3",
+   "signo": 1,
+   "eleccion": "BTC",
+   "L": 40,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 30.2,
+    "quiebra_pct": 62.2,
+    "nada_pct": 7.7,
+    "media_por_apuesta_pct": -30.7,
+    "t": -6.73
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 28.0,
+    "quiebra_pct": 61.1,
+    "nada_pct": 10.8,
+    "media_por_apuesta_pct": -31.05,
+    "t": -6.51
+   }
+  },
+  {
+   "regla": "Sigue el de 3 días, en Ethereum, ×10",
+   "rasgo": "imp3",
+   "signo": 1,
+   "eleccion": "ETH",
+   "L": 10,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 11.6,
+    "quiebra_pct": 12.6,
+    "nada_pct": 75.8,
+    "media_por_apuesta_pct": -1.29,
+    "t": -0.29
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 7.9,
+    "quiebra_pct": 10.9,
+    "nada_pct": 81.1,
+    "media_por_apuesta_pct": -4.14,
+    "t": -2.41
+   }
+  },
+  {
+   "regla": "Sigue el de 3 días, en Ethereum, ×20",
+   "rasgo": "imp3",
+   "signo": 1,
+   "eleccion": "ETH",
+   "L": 20,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 27.1,
+    "quiebra_pct": 40.6,
+    "nada_pct": 32.4,
+    "media_por_apuesta_pct": -12.31,
+    "t": -3.2
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 26.1,
+    "quiebra_pct": 39.5,
+    "nada_pct": 34.3,
+    "media_por_apuesta_pct": -12.08,
+    "t": -2.86
+   }
+  },
+  {
+   "regla": "Sigue el de 3 días, en Ethereum, ×40",
+   "rasgo": "imp3",
+   "signo": 1,
+   "eleccion": "ETH",
+   "L": 40,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 32.0,
+    "quiebra_pct": 63.0,
+    "nada_pct": 5.0,
+    "media_por_apuesta_pct": -30.11,
+    "t": -6.07
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 30.8,
+    "quiebra_pct": 65.9,
+    "nada_pct": 3.3,
+    "media_por_apuesta_pct": -34.51,
+    "t": -6.62
+   }
+  },
+  {
+   "regla": "Sigue el de 3 días, en la moneda más extrema, ×10",
+   "rasgo": "imp3",
+   "signo": 1,
+   "eleccion": "extrema",
+   "L": 10,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 29.1,
+    "quiebra_pct": 30.4,
+    "nada_pct": 40.6,
+    "media_por_apuesta_pct": -1.77,
+    "t": -0.44
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 26.1,
+    "quiebra_pct": 31.2,
+    "nada_pct": 42.7,
+    "media_por_apuesta_pct": -4.85,
+    "t": 0.23
+   }
+  },
+  {
+   "regla": "Sigue el de 3 días, en la moneda más extrema, ×20",
+   "rasgo": "imp3",
+   "signo": 1,
+   "eleccion": "extrema",
+   "L": 20,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 41.5,
+    "quiebra_pct": 51.0,
+    "nada_pct": 7.5,
+    "media_por_apuesta_pct": -8.49,
+    "t": -0.48
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 38.2,
+    "quiebra_pct": 54.4,
+    "nada_pct": 7.4,
+    "media_por_apuesta_pct": -16.04,
+    "t": -2.66
+   }
+  },
+  {
+   "regla": "Sigue el de 3 días, en la moneda más extrema, ×40",
+   "rasgo": "imp3",
+   "signo": 1,
+   "eleccion": "extrema",
+   "L": 40,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 36.6,
+    "quiebra_pct": 63.1,
+    "nada_pct": 0.3,
+    "media_por_apuesta_pct": -26.38,
+    "t": -5.33
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 34.5,
+    "quiebra_pct": 65.3,
+    "nada_pct": 0.3,
+    "media_por_apuesta_pct": -30.71,
+    "t": -5.35
+   }
+  },
+  {
+   "regla": "Va contra el de 3 días, en Bitcoin, ×10",
+   "rasgo": "imp3",
+   "signo": -1,
+   "eleccion": "BTC",
+   "L": 10,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 5.9,
+    "quiebra_pct": 9.7,
+    "nada_pct": 84.4,
+    "media_por_apuesta_pct": -3.14,
+    "t": -2.41
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 1.6,
+    "quiebra_pct": 4.4,
+    "nada_pct": 94.0,
+    "media_por_apuesta_pct": -1.28,
+    "t": 0.7
+   }
+  },
+  {
+   "regla": "Va contra el de 3 días, en Bitcoin, ×20",
+   "rasgo": "imp3",
+   "signo": -1,
+   "eleccion": "BTC",
+   "L": 20,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 20.0,
+    "quiebra_pct": 34.8,
+    "nada_pct": 45.2,
+    "media_por_apuesta_pct": -11.28,
+    "t": -4.06
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 12.9,
+    "quiebra_pct": 24.5,
+    "nada_pct": 62.7,
+    "media_por_apuesta_pct": -7.11,
+    "t": -0.6
+   }
+  },
+  {
+   "regla": "Va contra el de 3 días, en Bitcoin, ×40",
+   "rasgo": "imp3",
+   "signo": -1,
+   "eleccion": "BTC",
+   "L": 40,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 29.7,
+    "quiebra_pct": 61.5,
+    "nada_pct": 8.8,
+    "media_por_apuesta_pct": -29.94,
+    "t": -7.73
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 30.6,
+    "quiebra_pct": 56.2,
+    "nada_pct": 13.1,
+    "media_por_apuesta_pct": -22.15,
+    "t": -3.94
+   }
+  },
+  {
+   "regla": "Va contra el de 3 días, en Ethereum, ×10",
+   "rasgo": "imp3",
+   "signo": -1,
+   "eleccion": "ETH",
+   "L": 10,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 8.9,
+    "quiebra_pct": 15.9,
+    "nada_pct": 75.2,
+    "media_por_apuesta_pct": -4.07,
+    "t": -1.37
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 7.3,
+    "quiebra_pct": 11.1,
+    "nada_pct": 81.7,
+    "media_por_apuesta_pct": -0.39,
+    "t": 1.24
+   }
+  },
+  {
+   "regla": "Va contra el de 3 días, en Ethereum, ×20",
+   "rasgo": "imp3",
+   "signo": -1,
+   "eleccion": "ETH",
+   "L": 20,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 26.6,
+    "quiebra_pct": 40.3,
+    "nada_pct": 33.2,
+    "media_por_apuesta_pct": -9.87,
+    "t": -2.54
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 25.6,
+    "quiebra_pct": 38.6,
+    "nada_pct": 35.8,
+    "media_por_apuesta_pct": -8.62,
+    "t": -0.91
+   }
+  },
+  {
+   "regla": "Va contra el de 3 días, en Ethereum, ×40",
+   "rasgo": "imp3",
+   "signo": -1,
+   "eleccion": "ETH",
+   "L": 40,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 33.9,
+    "quiebra_pct": 61.2,
+    "nada_pct": 4.9,
+    "media_por_apuesta_pct": -26.61,
+    "t": -7.15
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 35.6,
+    "quiebra_pct": 60.9,
+    "nada_pct": 3.6,
+    "media_por_apuesta_pct": -24.48,
+    "t": -4.01
+   }
+  },
+  {
+   "regla": "Va contra el de 3 días, en la moneda más extrema, ×10",
+   "rasgo": "imp3",
+   "signo": -1,
+   "eleccion": "extrema",
+   "L": 10,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 24.4,
+    "quiebra_pct": 36.5,
+    "nada_pct": 39.1,
+    "media_por_apuesta_pct": -8.87,
+    "t": -2.26
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 25.3,
+    "quiebra_pct": 33.1,
+    "nada_pct": 41.6,
+    "media_por_apuesta_pct": -4.63,
+    "t": -2.32
+   }
+  },
+  {
+   "regla": "Va contra el de 3 días, en la moneda más extrema, ×20",
+   "rasgo": "imp3",
+   "signo": -1,
+   "eleccion": "extrema",
+   "L": 20,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 38.4,
+    "quiebra_pct": 55.0,
+    "nada_pct": 6.6,
+    "media_por_apuesta_pct": -15.9,
+    "t": -4.85
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 41.0,
+    "quiebra_pct": 50.6,
+    "nada_pct": 8.3,
+    "media_por_apuesta_pct": -8.3,
+    "t": -1.44
+   }
+  },
+  {
+   "regla": "Va contra el de 3 días, en la moneda más extrema, ×40",
+   "rasgo": "imp3",
+   "signo": -1,
+   "eleccion": "extrema",
+   "L": 40,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 36.6,
+    "quiebra_pct": 63.0,
+    "nada_pct": 0.4,
+    "media_por_apuesta_pct": -26.1,
+    "t": -7.41
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 37.9,
+    "quiebra_pct": 61.8,
+    "nada_pct": 0.3,
+    "media_por_apuesta_pct": -23.8,
+    "t": -2.9
+   }
+  },
+  {
+   "regla": "Sigue el de 7 días, en Bitcoin, ×10",
+   "rasgo": "imp7",
+   "signo": 1,
+   "eleccion": "BTC",
+   "L": 10,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 6.7,
+    "quiebra_pct": 8.5,
+    "nada_pct": 84.8,
+    "media_por_apuesta_pct": -1.61,
+    "t": 0.44
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 2.9,
+    "quiebra_pct": 2.9,
+    "nada_pct": 94.3,
+    "media_por_apuesta_pct": -0.76,
+    "t": -1.08
+   }
+  },
+  {
+   "regla": "Sigue el de 7 días, en Bitcoin, ×20",
+   "rasgo": "imp7",
+   "signo": 1,
+   "eleccion": "BTC",
+   "L": 20,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 23.7,
+    "quiebra_pct": 32.8,
+    "nada_pct": 43.5,
+    "media_por_apuesta_pct": -8.41,
+    "t": -1.42
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 15.0,
+    "quiebra_pct": 24.1,
+    "nada_pct": 60.9,
+    "media_por_apuesta_pct": -6.79,
+    "t": -2.12
+   }
+  },
+  {
+   "regla": "Sigue el de 7 días, en Bitcoin, ×40",
+   "rasgo": "imp7",
+   "signo": 1,
+   "eleccion": "BTC",
+   "L": 40,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 29.4,
+    "quiebra_pct": 63.5,
+    "nada_pct": 7.2,
+    "media_por_apuesta_pct": -33.1,
+    "t": -7.62
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 30.0,
+    "quiebra_pct": 59.0,
+    "nada_pct": 11.1,
+    "media_por_apuesta_pct": -27.01,
+    "t": -4.89
+   }
+  },
+  {
+   "regla": "Sigue el de 7 días, en Ethereum, ×10",
+   "rasgo": "imp7",
+   "signo": 1,
+   "eleccion": "ETH",
+   "L": 10,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 11.3,
+    "quiebra_pct": 12.6,
+    "nada_pct": 76.2,
+    "media_por_apuesta_pct": -0.5,
+    "t": -0.0
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 8.8,
+    "quiebra_pct": 10.5,
+    "nada_pct": 80.7,
+    "media_por_apuesta_pct": -1.1,
+    "t": -0.93
+   }
+  },
+  {
+   "regla": "Sigue el de 7 días, en Ethereum, ×20",
+   "rasgo": "imp7",
+   "signo": 1,
+   "eleccion": "ETH",
+   "L": 20,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 28.6,
+    "quiebra_pct": 39.0,
+    "nada_pct": 32.4,
+    "media_por_apuesta_pct": -9.91,
+    "t": -3.04
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 28.2,
+    "quiebra_pct": 36.5,
+    "nada_pct": 35.3,
+    "media_por_apuesta_pct": -7.12,
+    "t": -1.61
+   }
+  },
+  {
+   "regla": "Sigue el de 7 días, en Ethereum, ×40",
+   "rasgo": "imp7",
+   "signo": 1,
+   "eleccion": "ETH",
+   "L": 40,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 32.2,
+    "quiebra_pct": 63.1,
+    "nada_pct": 4.7,
+    "media_por_apuesta_pct": -30.16,
+    "t": -7.93
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 32.8,
+    "quiebra_pct": 64.7,
+    "nada_pct": 2.5,
+    "media_por_apuesta_pct": -31.69,
+    "t": -5.64
+   }
+  },
+  {
+   "regla": "Sigue el de 7 días, en la moneda más extrema, ×10",
+   "rasgo": "imp7",
+   "signo": 1,
+   "eleccion": "extrema",
+   "L": 10,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 30.6,
+    "quiebra_pct": 30.2,
+    "nada_pct": 39.3,
+    "media_por_apuesta_pct": 0.24,
+    "t": -0.3
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 26.5,
+    "quiebra_pct": 31.9,
+    "nada_pct": 41.6,
+    "media_por_apuesta_pct": -6.86,
+    "t": -1.17
+   }
+  },
+  {
+   "regla": "Sigue el de 7 días, en la moneda más extrema, ×20",
+   "rasgo": "imp7",
+   "signo": 1,
+   "eleccion": "extrema",
+   "L": 20,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 40.3,
+    "quiebra_pct": 52.1,
+    "nada_pct": 7.6,
+    "media_por_apuesta_pct": -11.22,
+    "t": -2.71
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 36.0,
+    "quiebra_pct": 57.7,
+    "nada_pct": 6.3,
+    "media_por_apuesta_pct": -21.14,
+    "t": -4.57
+   }
+  },
+  {
+   "regla": "Sigue el de 7 días, en la moneda más extrema, ×40",
+   "rasgo": "imp7",
+   "signo": 1,
+   "eleccion": "extrema",
+   "L": 40,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 35.5,
+    "quiebra_pct": 64.1,
+    "nada_pct": 0.4,
+    "media_por_apuesta_pct": -28.45,
+    "t": -7.35
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 35.2,
+    "quiebra_pct": 64.4,
+    "nada_pct": 0.4,
+    "media_por_apuesta_pct": -29.11,
+    "t": -5.79
+   }
+  },
+  {
+   "regla": "Va contra el de 7 días, en Bitcoin, ×10",
+   "rasgo": "imp7",
+   "signo": -1,
+   "eleccion": "BTC",
+   "L": 10,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 6.2,
+    "quiebra_pct": 9.1,
+    "nada_pct": 84.7,
+    "media_por_apuesta_pct": -2.27,
+    "t": -2.12
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 1.6,
+    "quiebra_pct": 4.4,
+    "nada_pct": 94.0,
+    "media_por_apuesta_pct": -2.8,
+    "t": -0.11
+   }
+  },
+  {
+   "regla": "Va contra el de 7 días, en Bitcoin, ×20",
+   "rasgo": "imp7",
+   "signo": -1,
+   "eleccion": "BTC",
+   "L": 20,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 20.6,
+    "quiebra_pct": 34.5,
+    "nada_pct": 44.9,
+    "media_por_apuesta_pct": -9.33,
+    "t": -3.31
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 11.4,
+    "quiebra_pct": 26.4,
+    "nada_pct": 62.2,
+    "media_por_apuesta_pct": -10.63,
+    "t": -2.04
+   }
+  },
+  {
+   "regla": "Va contra el de 7 días, en Bitcoin, ×40",
+   "rasgo": "imp7",
+   "signo": -1,
+   "eleccion": "BTC",
+   "L": 40,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 30.5,
+    "quiebra_pct": 60.2,
+    "nada_pct": 9.3,
+    "media_por_apuesta_pct": -27.55,
+    "t": -6.83
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 28.7,
+    "quiebra_pct": 58.4,
+    "nada_pct": 12.9,
+    "media_por_apuesta_pct": -26.19,
+    "t": -5.48
+   }
+  },
+  {
+   "regla": "Va contra el de 7 días, en Ethereum, ×10",
+   "rasgo": "imp7",
+   "signo": -1,
+   "eleccion": "ETH",
+   "L": 10,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 9.2,
+    "quiebra_pct": 15.9,
+    "nada_pct": 74.9,
+    "media_por_apuesta_pct": -4.86,
+    "t": -1.65
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 6.4,
+    "quiebra_pct": 11.5,
+    "nada_pct": 82.1,
+    "media_por_apuesta_pct": -3.42,
+    "t": -0.26
+   }
+  },
+  {
+   "regla": "Va contra el de 7 días, en Ethereum, ×20",
+   "rasgo": "imp7",
+   "signo": -1,
+   "eleccion": "ETH",
+   "L": 20,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 25.0,
+    "quiebra_pct": 41.9,
+    "nada_pct": 33.2,
+    "media_por_apuesta_pct": -12.27,
+    "t": -2.69
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 23.5,
+    "quiebra_pct": 41.6,
+    "nada_pct": 34.9,
+    "media_por_apuesta_pct": -13.58,
+    "t": -2.15
+   }
+  },
+  {
+   "regla": "Va contra el de 7 días, en Ethereum, ×40",
+   "rasgo": "imp7",
+   "signo": -1,
+   "eleccion": "ETH",
+   "L": 40,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 33.7,
+    "quiebra_pct": 61.1,
+    "nada_pct": 5.2,
+    "media_por_apuesta_pct": -26.56,
+    "t": -5.33
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 33.5,
+    "quiebra_pct": 62.1,
+    "nada_pct": 4.4,
+    "media_por_apuesta_pct": -27.3,
+    "t": -4.91
+   }
+  },
+  {
+   "regla": "Va contra el de 7 días, en la moneda más extrema, ×10",
+   "rasgo": "imp7",
+   "signo": -1,
+   "eleccion": "extrema",
+   "L": 10,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 24.4,
+    "quiebra_pct": 36.9,
+    "nada_pct": 38.7,
+    "media_por_apuesta_pct": -9.27,
+    "t": -1.71
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 25.3,
+    "quiebra_pct": 32.6,
+    "nada_pct": 42.1,
+    "media_por_apuesta_pct": -2.59,
+    "t": -0.76
+   }
+  },
+  {
+   "regla": "Va contra el de 7 días, en la moneda más extrema, ×20",
+   "rasgo": "imp7",
+   "signo": -1,
+   "eleccion": "extrema",
+   "L": 20,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 38.3,
+    "quiebra_pct": 53.9,
+    "nada_pct": 7.8,
+    "media_por_apuesta_pct": -15.34,
+    "t": -3.79
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 41.6,
+    "quiebra_pct": 49.9,
+    "nada_pct": 8.5,
+    "media_por_apuesta_pct": -7.8,
+    "t": -0.57
+   }
+  },
+  {
+   "regla": "Va contra el de 7 días, en la moneda más extrema, ×40",
+   "rasgo": "imp7",
+   "signo": -1,
+   "eleccion": "extrema",
+   "L": 40,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 36.0,
+    "quiebra_pct": 63.3,
+    "nada_pct": 0.7,
+    "media_por_apuesta_pct": -27.04,
+    "t": -6.64
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 39.5,
+    "quiebra_pct": 60.2,
+    "nada_pct": 0.3,
+    "media_por_apuesta_pct": -20.61,
+    "t": -2.68
+   }
+  },
+  {
+   "regla": "Sigue el de 30 días, en Bitcoin, ×10",
+   "rasgo": "imp30",
+   "signo": 1,
+   "eleccion": "BTC",
+   "L": 10,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 7.8,
+    "quiebra_pct": 7.5,
+    "nada_pct": 84.8,
+    "media_por_apuesta_pct": 1.46,
+    "t": 0.85
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 3.0,
+    "quiebra_pct": 2.5,
+    "nada_pct": 94.5,
+    "media_por_apuesta_pct": 0.55,
+    "t": 0.25
+   }
+  },
+  {
+   "regla": "Sigue el de 30 días, en Bitcoin, ×20",
+   "rasgo": "imp30",
+   "signo": 1,
+   "eleccion": "BTC",
+   "L": 20,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 25.0,
+    "quiebra_pct": 31.3,
+    "nada_pct": 43.7,
+    "media_por_apuesta_pct": -4.09,
+    "t": -0.46
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 16.3,
+    "quiebra_pct": 22.7,
+    "nada_pct": 61.0,
+    "media_por_apuesta_pct": -5.72,
+    "t": -1.51
+   }
+  },
+  {
+   "regla": "Sigue el de 30 días, en Bitcoin, ×40",
+   "rasgo": "imp30",
+   "signo": 1,
+   "eleccion": "BTC",
+   "L": 40,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 31.5,
+    "quiebra_pct": 60.2,
+    "nada_pct": 8.3,
+    "media_por_apuesta_pct": -27.03,
+    "t": -5.88
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 30.6,
+    "quiebra_pct": 57.3,
+    "nada_pct": 12.0,
+    "media_por_apuesta_pct": -24.19,
+    "t": -4.55
+   }
+  },
+  {
+   "regla": "Sigue el de 30 días, en Ethereum, ×10",
+   "rasgo": "imp30",
+   "signo": 1,
+   "eleccion": "ETH",
+   "L": 10,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 11.6,
+    "quiebra_pct": 12.2,
+    "nada_pct": 76.2,
+    "media_por_apuesta_pct": 1.29,
+    "t": 1.42
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 10.0,
+    "quiebra_pct": 8.2,
+    "nada_pct": 81.8,
+    "media_por_apuesta_pct": 3.91,
+    "t": 0.29
+   }
+  },
+  {
+   "regla": "Sigue el de 30 días, en Ethereum, ×20",
+   "rasgo": "imp30",
+   "signo": 1,
+   "eleccion": "ETH",
+   "L": 20,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 29.3,
+    "quiebra_pct": 38.6,
+    "nada_pct": 32.1,
+    "media_por_apuesta_pct": -8.42,
+    "t": -1.3
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 30.1,
+    "quiebra_pct": 34.6,
+    "nada_pct": 35.3,
+    "media_por_apuesta_pct": -3.16,
+    "t": -1.18
+   }
+  },
+  {
+   "regla": "Sigue el de 30 días, en Ethereum, ×40",
+   "rasgo": "imp30",
+   "signo": 1,
+   "eleccion": "ETH",
+   "L": 40,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 33.7,
+    "quiebra_pct": 61.5,
+    "nada_pct": 4.8,
+    "media_por_apuesta_pct": -26.87,
+    "t": -6.5
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 35.8,
+    "quiebra_pct": 60.1,
+    "nada_pct": 4.1,
+    "media_por_apuesta_pct": -23.36,
+    "t": -4.48
+   }
+  },
+  {
+   "regla": "Sigue el de 30 días, en la moneda más extrema, ×10",
+   "rasgo": "imp30",
+   "signo": 1,
+   "eleccion": "extrema",
+   "L": 10,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 27.9,
+    "quiebra_pct": 28.6,
+    "nada_pct": 43.5,
+    "media_por_apuesta_pct": -0.14,
+    "t": 0.1
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 26.3,
+    "quiebra_pct": 31.6,
+    "nada_pct": 42.1,
+    "media_por_apuesta_pct": -5.65,
+    "t": -1.92
+   }
+  },
+  {
+   "regla": "Sigue el de 30 días, en la moneda más extrema, ×20",
+   "rasgo": "imp30",
+   "signo": 1,
+   "eleccion": "extrema",
+   "L": 20,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 40.1,
+    "quiebra_pct": 50.2,
+    "nada_pct": 9.8,
+    "media_por_apuesta_pct": -9.45,
+    "t": -1.88
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 39.3,
+    "quiebra_pct": 53.8,
+    "nada_pct": 7.0,
+    "media_por_apuesta_pct": -14.05,
+    "t": -4.44
+   }
+  },
+  {
+   "regla": "Sigue el de 30 días, en la moneda más extrema, ×40",
+   "rasgo": "imp30",
+   "signo": 1,
+   "eleccion": "extrema",
+   "L": 40,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 36.7,
+    "quiebra_pct": 62.6,
+    "nada_pct": 0.7,
+    "media_por_apuesta_pct": -25.73,
+    "t": -7.28
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 35.4,
+    "quiebra_pct": 64.4,
+    "nada_pct": 0.1,
+    "media_por_apuesta_pct": -28.99,
+    "t": -6.35
+   }
+  },
+  {
+   "regla": "Va contra el de 30 días, en Bitcoin, ×10",
+   "rasgo": "imp30",
+   "signo": -1,
+   "eleccion": "BTC",
+   "L": 10,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 5.1,
+    "quiebra_pct": 10.2,
+    "nada_pct": 84.7,
+    "media_por_apuesta_pct": -5.34,
+    "t": -2.53
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 1.5,
+    "quiebra_pct": 4.8,
+    "nada_pct": 93.7,
+    "media_por_apuesta_pct": -4.11,
+    "t": -1.45
+   }
+  },
+  {
+   "regla": "Va contra el de 30 días, en Bitcoin, ×20",
+   "rasgo": "imp30",
+   "signo": -1,
+   "eleccion": "BTC",
+   "L": 20,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 19.3,
+    "quiebra_pct": 36.0,
+    "nada_pct": 44.7,
+    "media_por_apuesta_pct": -13.65,
+    "t": -4.32
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 10.1,
+    "quiebra_pct": 27.8,
+    "nada_pct": 62.1,
+    "media_por_apuesta_pct": -11.7,
+    "t": -2.65
+   }
+  },
+  {
+   "regla": "Va contra el de 30 días, en Bitcoin, ×40",
+   "rasgo": "imp30",
+   "signo": -1,
+   "eleccion": "BTC",
+   "L": 40,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 28.4,
+    "quiebra_pct": 63.5,
+    "nada_pct": 8.1,
+    "media_por_apuesta_pct": -33.61,
+    "t": -8.64
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 28.0,
+    "quiebra_pct": 60.1,
+    "nada_pct": 11.9,
+    "media_por_apuesta_pct": -29.01,
+    "t": -5.83
+   }
+  },
+  {
+   "regla": "Va contra el de 30 días, en Ethereum, ×10",
+   "rasgo": "imp30",
+   "signo": -1,
+   "eleccion": "ETH",
+   "L": 10,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 8.9,
+    "quiebra_pct": 16.3,
+    "nada_pct": 74.8,
+    "media_por_apuesta_pct": -6.65,
+    "t": -3.05
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 5.2,
+    "quiebra_pct": 13.8,
+    "nada_pct": 81.0,
+    "media_por_apuesta_pct": -8.44,
+    "t": -1.49
+   }
+  },
+  {
+   "regla": "Va contra el de 30 días, en Ethereum, ×20",
+   "rasgo": "imp30",
+   "signo": -1,
+   "eleccion": "ETH",
+   "L": 20,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 24.3,
+    "quiebra_pct": 42.2,
+    "nada_pct": 33.5,
+    "media_por_apuesta_pct": -13.76,
+    "t": -4.47
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 21.6,
+    "quiebra_pct": 43.5,
+    "nada_pct": 34.9,
+    "media_por_apuesta_pct": -17.54,
+    "t": -2.58
+   }
+  },
+  {
+   "regla": "Va contra el de 30 días, en Ethereum, ×40",
+   "rasgo": "imp30",
+   "signo": -1,
+   "eleccion": "ETH",
+   "L": 40,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 32.2,
+    "quiebra_pct": 62.7,
+    "nada_pct": 5.1,
+    "media_por_apuesta_pct": -29.85,
+    "t": -6.7
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 30.5,
+    "quiebra_pct": 66.8,
+    "nada_pct": 2.7,
+    "media_por_apuesta_pct": -35.63,
+    "t": -6.09
+   }
+  },
+  {
+   "regla": "Va contra el de 30 días, en la moneda más extrema, ×10",
+   "rasgo": "imp30",
+   "signo": -1,
+   "eleccion": "extrema",
+   "L": 10,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 23.6,
+    "quiebra_pct": 34.2,
+    "nada_pct": 42.2,
+    "media_por_apuesta_pct": -8.9,
+    "t": -2.2
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 23.9,
+    "quiebra_pct": 32.7,
+    "nada_pct": 43.4,
+    "media_por_apuesta_pct": -3.49,
+    "t": 0.24
+   }
+  },
+  {
+   "regla": "Va contra el de 30 días, en la moneda más extrema, ×20",
+   "rasgo": "imp30",
+   "signo": -1,
+   "eleccion": "extrema",
+   "L": 20,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 36.3,
+    "quiebra_pct": 53.3,
+    "nada_pct": 10.3,
+    "media_por_apuesta_pct": -16.4,
+    "t": -3.74
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 40.2,
+    "quiebra_pct": 52.4,
+    "nada_pct": 7.4,
+    "media_por_apuesta_pct": -10.95,
+    "t": -0.15
+   }
+  },
+  {
+   "regla": "Va contra el de 30 días, en la moneda más extrema, ×40",
+   "rasgo": "imp30",
+   "signo": -1,
+   "eleccion": "extrema",
+   "L": 40,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 34.5,
+    "quiebra_pct": 64.8,
+    "nada_pct": 0.7,
+    "media_por_apuesta_pct": -30.11,
+    "t": -7.41
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 34.1,
+    "quiebra_pct": 65.5,
+    "nada_pct": 0.4,
+    "media_por_apuesta_pct": -31.45,
+    "t": -3.82
+   }
+  },
+  {
+   "regla": "Sigue la distancia a su media de 20 días, en Bitcoin, ×10",
+   "rasgo": "media20",
+   "signo": 1,
+   "eleccion": "BTC",
+   "L": 10,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 6.7,
+    "quiebra_pct": 8.7,
+    "nada_pct": 84.6,
+    "media_por_apuesta_pct": -2.11,
+    "t": -0.4
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 3.3,
+    "quiebra_pct": 2.3,
+    "nada_pct": 94.4,
+    "media_por_apuesta_pct": 0.32,
+    "t": 0.33
+   }
+  },
+  {
+   "regla": "Sigue la distancia a su media de 20 días, en Bitcoin, ×20",
+   "rasgo": "media20",
+   "signo": 1,
+   "eleccion": "BTC",
+   "L": 20,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 23.4,
+    "quiebra_pct": 32.4,
+    "nada_pct": 44.2,
+    "media_por_apuesta_pct": -7.06,
+    "t": -1.11
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 15.9,
+    "quiebra_pct": 22.3,
+    "nada_pct": 61.8,
+    "media_por_apuesta_pct": -4.6,
+    "t": -1.0
+   }
+  },
+  {
+   "regla": "Sigue la distancia a su media de 20 días, en Bitcoin, ×40",
+   "rasgo": "media20",
+   "signo": 1,
+   "eleccion": "BTC",
+   "L": 40,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 29.6,
+    "quiebra_pct": 62.5,
+    "nada_pct": 7.9,
+    "media_por_apuesta_pct": -31.48,
+    "t": -6.96
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 30.4,
+    "quiebra_pct": 57.9,
+    "nada_pct": 11.8,
+    "media_por_apuesta_pct": -25.16,
+    "t": -3.75
+   }
+  },
+  {
+   "regla": "Sigue la distancia a su media de 20 días, en Ethereum, ×10",
+   "rasgo": "media20",
+   "signo": 1,
+   "eleccion": "ETH",
+   "L": 10,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 10.7,
+    "quiebra_pct": 13.5,
+    "nada_pct": 75.8,
+    "media_por_apuesta_pct": -1.56,
+    "t": -0.53
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 9.0,
+    "quiebra_pct": 10.1,
+    "nada_pct": 80.8,
+    "media_por_apuesta_pct": -1.95,
+    "t": -1.12
+   }
+  },
+  {
+   "regla": "Sigue la distancia a su media de 20 días, en Ethereum, ×20",
+   "rasgo": "media20",
+   "signo": 1,
+   "eleccion": "ETH",
+   "L": 20,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 28.1,
+    "quiebra_pct": 39.6,
+    "nada_pct": 32.3,
+    "media_por_apuesta_pct": -9.97,
+    "t": -3.05
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 26.4,
+    "quiebra_pct": 38.3,
+    "nada_pct": 35.3,
+    "media_por_apuesta_pct": -10.49,
+    "t": -2.5
+   }
+  },
+  {
+   "regla": "Sigue la distancia a su media de 20 días, en Ethereum, ×40",
+   "rasgo": "media20",
+   "signo": 1,
+   "eleccion": "ETH",
+   "L": 40,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 32.7,
+    "quiebra_pct": 62.1,
+    "nada_pct": 5.2,
+    "media_por_apuesta_pct": -28.38,
+    "t": -7.1
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 31.7,
+    "quiebra_pct": 65.0,
+    "nada_pct": 3.3,
+    "media_por_apuesta_pct": -32.65,
+    "t": -5.81
+   }
+  },
+  {
+   "regla": "Sigue la distancia a su media de 20 días, en la moneda más extrema, ×10",
+   "rasgo": "media20",
+   "signo": 1,
+   "eleccion": "extrema",
+   "L": 10,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 28.9,
+    "quiebra_pct": 32.2,
+    "nada_pct": 39.0,
+    "media_por_apuesta_pct": -4.38,
+    "t": -0.79
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 26.7,
+    "quiebra_pct": 30.2,
+    "nada_pct": 43.1,
+    "media_por_apuesta_pct": -4.15,
+    "t": -1.12
+   }
+  },
+  {
+   "regla": "Sigue la distancia a su media de 20 días, en la moneda más extrema, ×20",
+   "rasgo": "media20",
+   "signo": 1,
+   "eleccion": "extrema",
+   "L": 20,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 40.9,
+    "quiebra_pct": 53.0,
+    "nada_pct": 6.1,
+    "media_por_apuesta_pct": -11.91,
+    "t": -2.37
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 39.4,
+    "quiebra_pct": 53.9,
+    "nada_pct": 6.7,
+    "media_por_apuesta_pct": -13.53,
+    "t": -4.43
+   }
+  },
+  {
+   "regla": "Sigue la distancia a su media de 20 días, en la moneda más extrema, ×40",
+   "rasgo": "media20",
+   "signo": 1,
+   "eleccion": "extrema",
+   "L": 40,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 37.5,
+    "quiebra_pct": 62.1,
+    "nada_pct": 0.4,
+    "media_por_apuesta_pct": -24.52,
+    "t": -5.82
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 35.0,
+    "quiebra_pct": 64.7,
+    "nada_pct": 0.3,
+    "media_por_apuesta_pct": -29.62,
+    "t": -6.28
+   }
+  },
+  {
+   "regla": "Va contra la distancia a su media de 20 días, en Bitcoin, ×10",
+   "rasgo": "media20",
+   "signo": -1,
+   "eleccion": "BTC",
+   "L": 10,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 6.2,
+    "quiebra_pct": 9.0,
+    "nada_pct": 84.9,
+    "media_por_apuesta_pct": -1.77,
+    "t": -1.28
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 1.2,
+    "quiebra_pct": 4.9,
+    "nada_pct": 93.8,
+    "media_por_apuesta_pct": -3.88,
+    "t": -1.52
+   }
+  },
+  {
+   "regla": "Va contra la distancia a su media de 20 días, en Bitcoin, ×20",
+   "rasgo": "media20",
+   "signo": -1,
+   "eleccion": "BTC",
+   "L": 20,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 20.9,
+    "quiebra_pct": 34.9,
+    "nada_pct": 44.2,
+    "media_por_apuesta_pct": -10.68,
+    "t": -3.62
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 10.5,
+    "quiebra_pct": 28.2,
+    "nada_pct": 61.3,
+    "media_por_apuesta_pct": -12.83,
+    "t": -3.15
+   }
+  },
+  {
+   "regla": "Va contra la distancia a su media de 20 días, en Bitcoin, ×40",
+   "rasgo": "media20",
+   "signo": -1,
+   "eleccion": "BTC",
+   "L": 40,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 30.2,
+    "quiebra_pct": 61.2,
+    "nada_pct": 8.5,
+    "media_por_apuesta_pct": -29.16,
+    "t": -7.49
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 28.3,
+    "quiebra_pct": 59.5,
+    "nada_pct": 12.2,
+    "media_por_apuesta_pct": -28.04,
+    "t": -6.73
+   }
+  },
+  {
+   "regla": "Va contra la distancia a su media de 20 días, en Ethereum, ×10",
+   "rasgo": "media20",
+   "signo": -1,
+   "eleccion": "ETH",
+   "L": 10,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 9.8,
+    "quiebra_pct": 15.0,
+    "nada_pct": 75.2,
+    "media_por_apuesta_pct": -3.8,
+    "t": -1.13
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 6.2,
+    "quiebra_pct": 11.9,
+    "nada_pct": 81.9,
+    "media_por_apuesta_pct": -2.57,
+    "t": -0.07
+   }
+  },
+  {
+   "regla": "Va contra la distancia a su media de 20 días, en Ethereum, ×20",
+   "rasgo": "media20",
+   "signo": -1,
+   "eleccion": "ETH",
+   "L": 20,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 25.5,
+    "quiebra_pct": 41.3,
+    "nada_pct": 33.2,
+    "media_por_apuesta_pct": -12.21,
+    "t": -2.68
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 25.3,
+    "quiebra_pct": 39.8,
+    "nada_pct": 34.9,
+    "media_por_apuesta_pct": -10.2,
+    "t": -1.27
+   }
+  },
+  {
+   "regla": "Va contra la distancia a su media de 20 días, en Ethereum, ×40",
+   "rasgo": "media20",
+   "signo": -1,
+   "eleccion": "ETH",
+   "L": 40,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 33.2,
+    "quiebra_pct": 62.1,
+    "nada_pct": 4.7,
+    "media_por_apuesta_pct": -28.35,
+    "t": -6.11
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 34.6,
+    "quiebra_pct": 61.8,
+    "nada_pct": 3.6,
+    "media_por_apuesta_pct": -26.35,
+    "t": -4.75
+   }
+  },
+  {
+   "regla": "Va contra la distancia a su media de 20 días, en la moneda más extrema, ×10",
+   "rasgo": "media20",
+   "signo": -1,
+   "eleccion": "extrema",
+   "L": 10,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 26.6,
+    "quiebra_pct": 34.4,
+    "nada_pct": 39.1,
+    "media_por_apuesta_pct": -4.54,
+    "t": -0.99
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 24.5,
+    "quiebra_pct": 32.4,
+    "nada_pct": 43.1,
+    "media_por_apuesta_pct": -4.13,
+    "t": -0.54
+   }
+  },
+  {
+   "regla": "Va contra la distancia a su media de 20 días, en la moneda más extrema, ×20",
+   "rasgo": "media20",
+   "signo": -1,
+   "eleccion": "extrema",
+   "L": 20,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 38.5,
+    "quiebra_pct": 54.3,
+    "nada_pct": 7.2,
+    "media_por_apuesta_pct": -15.21,
+    "t": -4.64
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 40.1,
+    "quiebra_pct": 51.7,
+    "nada_pct": 8.2,
+    "media_por_apuesta_pct": -11.35,
+    "t": -0.1
+   }
+  },
+  {
+   "regla": "Va contra la distancia a su media de 20 días, en la moneda más extrema, ×40",
+   "rasgo": "media20",
+   "signo": -1,
+   "eleccion": "extrema",
+   "L": 40,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 35.2,
+    "quiebra_pct": 64.1,
+    "nada_pct": 0.7,
+    "media_por_apuesta_pct": -28.76,
+    "t": -6.92
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 36.3,
+    "quiebra_pct": 63.5,
+    "nada_pct": 0.3,
+    "media_por_apuesta_pct": -27.18,
+    "t": -3.22
+   }
+  },
+  {
+   "regla": "Sigue el funding de 1 día, en Bitcoin, ×10",
+   "rasgo": "fund1",
+   "signo": 1,
+   "eleccion": "BTC",
+   "L": 10,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 6.2,
+    "quiebra_pct": 8.8,
+    "nada_pct": 84.9,
+    "media_por_apuesta_pct": -1.89,
+    "t": -0.65
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 1.5,
+    "quiebra_pct": 4.9,
+    "nada_pct": 93.6,
+    "media_por_apuesta_pct": -4.98,
+    "t": -2.12
+   }
+  },
+  {
+   "regla": "Sigue el funding de 1 día, en Bitcoin, ×20",
+   "rasgo": "fund1",
+   "signo": 1,
+   "eleccion": "BTC",
+   "L": 20,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 22.8,
+    "quiebra_pct": 33.5,
+    "nada_pct": 43.8,
+    "media_por_apuesta_pct": -8.88,
+    "t": -2.01
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 10.4,
+    "quiebra_pct": 28.5,
+    "nada_pct": 61.1,
+    "media_por_apuesta_pct": -15.21,
+    "t": -4.13
+   }
+  },
+  {
+   "regla": "Sigue el funding de 1 día, en Bitcoin, ×40",
+   "rasgo": "fund1",
+   "signo": 1,
+   "eleccion": "BTC",
+   "L": 40,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 30.2,
+    "quiebra_pct": 62.1,
+    "nada_pct": 7.7,
+    "media_por_apuesta_pct": -30.48,
+    "t": -6.92
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 26.9,
+    "quiebra_pct": 58.8,
+    "nada_pct": 14.2,
+    "media_por_apuesta_pct": -28.43,
+    "t": -6.14
+   }
+  },
+  {
+   "regla": "Sigue el funding de 1 día, en Ethereum, ×10",
+   "rasgo": "fund1",
+   "signo": 1,
+   "eleccion": "ETH",
+   "L": 10,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 9.7,
+    "quiebra_pct": 14.4,
+    "nada_pct": 75.9,
+    "media_por_apuesta_pct": -1.77,
+    "t": -1.2
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 6.2,
+    "quiebra_pct": 13.0,
+    "nada_pct": 80.8,
+    "media_por_apuesta_pct": -6.68,
+    "t": -1.74
+   }
+  },
+  {
+   "regla": "Sigue el funding de 1 día, en Ethereum, ×20",
+   "rasgo": "fund1",
+   "signo": 1,
+   "eleccion": "ETH",
+   "L": 20,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 27.1,
+    "quiebra_pct": 39.1,
+    "nada_pct": 33.8,
+    "media_por_apuesta_pct": -9.46,
+    "t": -2.57
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 24.1,
+    "quiebra_pct": 41.0,
+    "nada_pct": 34.9,
+    "media_por_apuesta_pct": -14.9,
+    "t": -2.64
+   }
+  },
+  {
+   "regla": "Sigue el funding de 1 día, en Ethereum, ×40",
+   "rasgo": "fund1",
+   "signo": 1,
+   "eleccion": "ETH",
+   "L": 40,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 33.5,
+    "quiebra_pct": 61.6,
+    "nada_pct": 4.9,
+    "media_por_apuesta_pct": -27.46,
+    "t": -6.26
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 31.9,
+    "quiebra_pct": 64.2,
+    "nada_pct": 4.0,
+    "media_por_apuesta_pct": -31.41,
+    "t": -4.81
+   }
+  },
+  {
+   "regla": "Sigue el funding de 1 día, en la moneda más extrema, ×10",
+   "rasgo": "fund1",
+   "signo": 1,
+   "eleccion": "extrema",
+   "L": 10,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 18.7,
+    "quiebra_pct": 22.9,
+    "nada_pct": 58.4,
+    "media_por_apuesta_pct": -2.41,
+    "t": -0.05
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 19.4,
+    "quiebra_pct": 23.0,
+    "nada_pct": 57.6,
+    "media_por_apuesta_pct": 0.64,
+    "t": -0.28
+   }
+  },
+  {
+   "regla": "Sigue el funding de 1 día, en la moneda más extrema, ×20",
+   "rasgo": "fund1",
+   "signo": 1,
+   "eleccion": "extrema",
+   "L": 20,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 34.3,
+    "quiebra_pct": 45.2,
+    "nada_pct": 20.5,
+    "media_por_apuesta_pct": -9.36,
+    "t": -2.73
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 36.3,
+    "quiebra_pct": 46.6,
+    "nada_pct": 17.1,
+    "media_por_apuesta_pct": -7.98,
+    "t": -1.5
+   }
+  },
+  {
+   "regla": "Sigue el funding de 1 día, en la moneda más extrema, ×40",
+   "rasgo": "fund1",
+   "signo": 1,
+   "eleccion": "extrema",
+   "L": 40,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 34.2,
+    "quiebra_pct": 63.4,
+    "nada_pct": 2.4,
+    "media_por_apuesta_pct": -28.67,
+    "t": -6.93
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 36.7,
+    "quiebra_pct": 62.1,
+    "nada_pct": 1.2,
+    "media_por_apuesta_pct": -25.36,
+    "t": -3.38
+   }
+  },
+  {
+   "regla": "Va contra el funding de 1 día, en Bitcoin, ×10",
+   "rasgo": "fund1",
+   "signo": -1,
+   "eleccion": "BTC",
+   "L": 10,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 6.6,
+    "quiebra_pct": 8.8,
+    "nada_pct": 84.6,
+    "media_por_apuesta_pct": -1.99,
+    "t": -1.01
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 3.0,
+    "quiebra_pct": 2.3,
+    "nada_pct": 94.7,
+    "media_por_apuesta_pct": 1.43,
+    "t": 0.92
+   }
+  },
+  {
+   "regla": "Va contra el funding de 1 día, en Bitcoin, ×20",
+   "rasgo": "fund1",
+   "signo": -1,
+   "eleccion": "BTC",
+   "L": 20,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 21.5,
+    "quiebra_pct": 33.8,
+    "nada_pct": 44.7,
+    "media_por_apuesta_pct": -8.85,
+    "t": -2.69
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 16.0,
+    "quiebra_pct": 22.0,
+    "nada_pct": 62.0,
+    "media_por_apuesta_pct": -2.22,
+    "t": -0.1
+   }
+  },
+  {
+   "regla": "Va contra el funding de 1 día, en Bitcoin, ×40",
+   "rasgo": "fund1",
+   "signo": -1,
+   "eleccion": "BTC",
+   "L": 40,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 29.6,
+    "quiebra_pct": 61.6,
+    "nada_pct": 8.8,
+    "media_por_apuesta_pct": -30.16,
+    "t": -7.53
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 31.7,
+    "quiebra_pct": 58.5,
+    "nada_pct": 9.7,
+    "media_por_apuesta_pct": -24.77,
+    "t": -4.29
+   }
+  },
+  {
+   "regla": "Va contra el funding de 1 día, en Ethereum, ×10",
+   "rasgo": "fund1",
+   "signo": -1,
+   "eleccion": "ETH",
+   "L": 10,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 10.8,
+    "quiebra_pct": 14.1,
+    "nada_pct": 75.2,
+    "media_por_apuesta_pct": -3.59,
+    "t": -0.46
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 9.0,
+    "quiebra_pct": 9.0,
+    "nada_pct": 81.9,
+    "media_por_apuesta_pct": 2.16,
+    "t": 0.53
+   }
+  },
+  {
+   "regla": "Va contra el funding de 1 día, en Ethereum, ×20",
+   "rasgo": "fund1",
+   "signo": -1,
+   "eleccion": "ETH",
+   "L": 20,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 26.6,
+    "quiebra_pct": 41.7,
+    "nada_pct": 31.7,
+    "media_por_apuesta_pct": -12.72,
+    "t": -3.16
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 27.6,
+    "quiebra_pct": 37.1,
+    "nada_pct": 35.3,
+    "media_por_apuesta_pct": -5.8,
+    "t": -1.12
+   }
+  },
+  {
+   "regla": "Va contra el funding de 1 día, en Ethereum, ×40",
+   "rasgo": "fund1",
+   "signo": -1,
+   "eleccion": "ETH",
+   "L": 40,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 32.4,
+    "quiebra_pct": 62.6,
+    "nada_pct": 5.0,
+    "media_por_apuesta_pct": -29.27,
+    "t": -6.94
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 34.5,
+    "quiebra_pct": 62.7,
+    "nada_pct": 2.9,
+    "media_por_apuesta_pct": -27.58,
+    "t": -5.74
+   }
+  },
+  {
+   "regla": "Va contra el funding de 1 día, en la moneda más extrema, ×10",
+   "rasgo": "fund1",
+   "signo": -1,
+   "eleccion": "extrema",
+   "L": 10,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 18.4,
+    "quiebra_pct": 23.0,
+    "nada_pct": 58.7,
+    "media_por_apuesta_pct": -4.49,
+    "t": -1.42
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 17.1,
+    "quiebra_pct": 25.4,
+    "nada_pct": 57.5,
+    "media_por_apuesta_pct": -10.15,
+    "t": -2.33
+   }
+  },
+  {
+   "regla": "Va contra el funding de 1 día, en la moneda más extrema, ×20",
+   "rasgo": "fund1",
+   "signo": -1,
+   "eleccion": "extrema",
+   "L": 20,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 31.7,
+    "quiebra_pct": 48.2,
+    "nada_pct": 20.0,
+    "media_por_apuesta_pct": -15.06,
+    "t": -2.65
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 32.1,
+    "quiebra_pct": 51.8,
+    "nada_pct": 16.0,
+    "media_por_apuesta_pct": -18.63,
+    "t": -2.7
+   }
+  },
+  {
+   "regla": "Va contra el funding de 1 día, en la moneda más extrema, ×40",
+   "rasgo": "fund1",
+   "signo": -1,
+   "eleccion": "extrema",
+   "L": 40,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 32.8,
+    "quiebra_pct": 64.5,
+    "nada_pct": 2.7,
+    "media_por_apuesta_pct": -31.14,
+    "t": -7.66
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 32.7,
+    "quiebra_pct": 65.9,
+    "nada_pct": 1.4,
+    "media_por_apuesta_pct": -32.9,
+    "t": -5.13
+   }
+  },
+  {
+   "regla": "Sigue el funding de 7 días, en Bitcoin, ×10",
+   "rasgo": "fund7",
+   "signo": 1,
+   "eleccion": "BTC",
+   "L": 10,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 6.5,
+    "quiebra_pct": 8.7,
+    "nada_pct": 84.9,
+    "media_por_apuesta_pct": -0.98,
+    "t": -0.38
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 1.1,
+    "quiebra_pct": 5.2,
+    "nada_pct": 93.7,
+    "media_por_apuesta_pct": -5.96,
+    "t": -2.05
+   }
+  },
+  {
+   "regla": "Sigue el funding de 7 días, en Bitcoin, ×20",
+   "rasgo": "fund7",
+   "signo": 1,
+   "eleccion": "BTC",
+   "L": 20,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 23.1,
+    "quiebra_pct": 33.4,
+    "nada_pct": 43.5,
+    "media_por_apuesta_pct": -8.23,
+    "t": -2.01
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 9.7,
+    "quiebra_pct": 29.1,
+    "nada_pct": 61.1,
+    "media_por_apuesta_pct": -16.89,
+    "t": -3.94
+   }
+  },
+  {
+   "regla": "Sigue el funding de 7 días, en Bitcoin, ×40",
+   "rasgo": "fund7",
+   "signo": 1,
+   "eleccion": "BTC",
+   "L": 40,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 30.7,
+    "quiebra_pct": 61.4,
+    "nada_pct": 7.9,
+    "media_por_apuesta_pct": -29.13,
+    "t": -6.93
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 23.9,
+    "quiebra_pct": 62.4,
+    "nada_pct": 13.7,
+    "media_por_apuesta_pct": -34.96,
+    "t": -7.06
+   }
+  },
+  {
+   "regla": "Sigue el funding de 7 días, en Ethereum, ×10",
+   "rasgo": "fund7",
+   "signo": 1,
+   "eleccion": "ETH",
+   "L": 10,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 9.5,
+    "quiebra_pct": 14.6,
+    "nada_pct": 75.9,
+    "media_por_apuesta_pct": -2.11,
+    "t": -0.45
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 6.0,
+    "quiebra_pct": 12.2,
+    "nada_pct": 81.8,
+    "media_por_apuesta_pct": -6.32,
+    "t": -1.31
+   }
+  },
+  {
+   "regla": "Sigue el funding de 7 días, en Ethereum, ×20",
+   "rasgo": "fund7",
+   "signo": 1,
+   "eleccion": "ETH",
+   "L": 20,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 27.2,
+    "quiebra_pct": 39.6,
+    "nada_pct": 33.2,
+    "media_por_apuesta_pct": -10.11,
+    "t": -3.01
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 24.1,
+    "quiebra_pct": 40.8,
+    "nada_pct": 35.2,
+    "media_por_apuesta_pct": -14.34,
+    "t": -2.84
+   }
+  },
+  {
+   "regla": "Sigue el funding de 7 días, en Ethereum, ×40",
+   "rasgo": "fund7",
+   "signo": 1,
+   "eleccion": "ETH",
+   "L": 40,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 33.7,
+    "quiebra_pct": 61.2,
+    "nada_pct": 5.2,
+    "media_por_apuesta_pct": -26.91,
+    "t": -6.31
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 32.4,
+    "quiebra_pct": 63.7,
+    "nada_pct": 3.8,
+    "media_por_apuesta_pct": -30.54,
+    "t": -5.73
+   }
+  },
+  {
+   "regla": "Sigue el funding de 7 días, en la moneda más extrema, ×10",
+   "rasgo": "fund7",
+   "signo": 1,
+   "eleccion": "extrema",
+   "L": 10,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 19.5,
+    "quiebra_pct": 23.9,
+    "nada_pct": 56.6,
+    "media_por_apuesta_pct": -2.84,
+    "t": 0.29
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 20.8,
+    "quiebra_pct": 21.5,
+    "nada_pct": 57.7,
+    "media_por_apuesta_pct": 2.63,
+    "t": -0.07
+   }
+  },
+  {
+   "regla": "Sigue el funding de 7 días, en la moneda más extrema, ×20",
+   "rasgo": "fund7",
+   "signo": 1,
+   "eleccion": "extrema",
+   "L": 20,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 34.2,
+    "quiebra_pct": 46.3,
+    "nada_pct": 19.5,
+    "media_por_apuesta_pct": -10.05,
+    "t": -2.5
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 36.8,
+    "quiebra_pct": 45.4,
+    "nada_pct": 17.8,
+    "media_por_apuesta_pct": -6.19,
+    "t": -1.13
+   }
+  },
+  {
+   "regla": "Sigue el funding de 7 días, en la moneda más extrema, ×40",
+   "rasgo": "fund7",
+   "signo": 1,
+   "eleccion": "extrema",
+   "L": 40,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 34.5,
+    "quiebra_pct": 62.6,
+    "nada_pct": 2.9,
+    "media_por_apuesta_pct": -27.24,
+    "t": -6.29
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 36.7,
+    "quiebra_pct": 62.4,
+    "nada_pct": 1.0,
+    "media_por_apuesta_pct": -25.6,
+    "t": -3.23
+   }
+  },
+  {
+   "regla": "Va contra el funding de 7 días, en Bitcoin, ×10",
+   "rasgo": "fund7",
+   "signo": -1,
+   "eleccion": "BTC",
+   "L": 10,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 6.4,
+    "quiebra_pct": 9.0,
+    "nada_pct": 84.6,
+    "media_por_apuesta_pct": -2.9,
+    "t": -1.28
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 3.4,
+    "quiebra_pct": 2.1,
+    "nada_pct": 94.5,
+    "media_por_apuesta_pct": 2.41,
+    "t": 0.84
+   }
+  },
+  {
+   "regla": "Va contra el funding de 7 días, en Bitcoin, ×20",
+   "rasgo": "fund7",
+   "signo": -1,
+   "eleccion": "BTC",
+   "L": 20,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 21.2,
+    "quiebra_pct": 33.9,
+    "nada_pct": 44.9,
+    "media_por_apuesta_pct": -9.51,
+    "t": -2.69
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 16.7,
+    "quiebra_pct": 21.3,
+    "nada_pct": 62.0,
+    "media_por_apuesta_pct": -0.54,
+    "t": -0.27
+   }
+  },
+  {
+   "regla": "Va contra el funding de 7 días, en Bitcoin, ×40",
+   "rasgo": "fund7",
+   "signo": -1,
+   "eleccion": "BTC",
+   "L": 40,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 29.1,
+    "quiebra_pct": 62.3,
+    "nada_pct": 8.5,
+    "media_por_apuesta_pct": -31.51,
+    "t": -7.52
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 34.7,
+    "quiebra_pct": 55.0,
+    "nada_pct": 10.3,
+    "media_por_apuesta_pct": -18.24,
+    "t": -3.49
+   }
+  },
+  {
+   "regla": "Va contra el funding de 7 días, en Ethereum, ×10",
+   "rasgo": "fund7",
+   "signo": -1,
+   "eleccion": "ETH",
+   "L": 10,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 10.9,
+    "quiebra_pct": 13.9,
+    "nada_pct": 75.2,
+    "media_por_apuesta_pct": -3.25,
+    "t": -1.22
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 9.2,
+    "quiebra_pct": 9.8,
+    "nada_pct": 81.0,
+    "media_por_apuesta_pct": 1.79,
+    "t": 0.09
+   }
+  },
+  {
+   "regla": "Va contra el funding de 7 días, en Ethereum, ×20",
+   "rasgo": "fund7",
+   "signo": -1,
+   "eleccion": "ETH",
+   "L": 20,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 26.4,
+    "quiebra_pct": 41.2,
+    "nada_pct": 32.4,
+    "media_por_apuesta_pct": -12.06,
+    "t": -2.72
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 27.6,
+    "quiebra_pct": 37.3,
+    "nada_pct": 35.0,
+    "media_por_apuesta_pct": -6.35,
+    "t": -0.92
+   }
+  },
+  {
+   "regla": "Va contra el funding de 7 días, en Ethereum, ×40",
+   "rasgo": "fund7",
+   "signo": -1,
+   "eleccion": "ETH",
+   "L": 40,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 32.2,
+    "quiebra_pct": 63.0,
+    "nada_pct": 4.7,
+    "media_por_apuesta_pct": -29.82,
+    "t": -6.89
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 33.9,
+    "quiebra_pct": 63.1,
+    "nada_pct": 3.0,
+    "media_por_apuesta_pct": -28.45,
+    "t": -4.83
+   }
+  },
+  {
+   "regla": "Va contra el funding de 7 días, en la moneda más extrema, ×10",
+   "rasgo": "fund7",
+   "signo": -1,
+   "eleccion": "extrema",
+   "L": 10,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 19.3,
+    "quiebra_pct": 23.8,
+    "nada_pct": 56.9,
+    "media_por_apuesta_pct": -4.24,
+    "t": -1.96
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 17.4,
+    "quiebra_pct": 26.3,
+    "nada_pct": 56.4,
+    "media_por_apuesta_pct": -10.54,
+    "t": -1.98
+   }
+  },
+  {
+   "regla": "Va contra el funding de 7 días, en la moneda más extrema, ×20",
+   "rasgo": "fund7",
+   "signo": -1,
+   "eleccion": "extrema",
+   "L": 20,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 31.8,
+    "quiebra_pct": 48.2,
+    "nada_pct": 20.0,
+    "media_por_apuesta_pct": -14.9,
+    "t": -2.64
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 29.8,
+    "quiebra_pct": 53.8,
+    "nada_pct": 16.4,
+    "media_por_apuesta_pct": -22.95,
+    "t": -4.24
+   }
+  },
+  {
+   "regla": "Va contra el funding de 7 días, en la moneda más extrema, ×40",
+   "rasgo": "fund7",
+   "signo": -1,
+   "eleccion": "extrema",
+   "L": 40,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 32.7,
+    "quiebra_pct": 65.3,
+    "nada_pct": 2.0,
+    "media_por_apuesta_pct": -32.37,
+    "t": -8.07
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 30.2,
+    "quiebra_pct": 68.9,
+    "nada_pct": 0.8,
+    "media_por_apuesta_pct": -38.36,
+    "t": -6.39
+   }
+  },
+  {
+   "regla": "Siempre compra en Bitcoin, ×10",
+   "rasgo": "siempre",
+   "signo": 1,
+   "eleccion": "BTC",
+   "L": 10,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 6.9,
+    "quiebra_pct": 8.0,
+    "nada_pct": 85.1,
+    "media_por_apuesta_pct": -0.2,
+    "t": -0.31
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 1.2,
+    "quiebra_pct": 4.9,
+    "nada_pct": 93.8,
+    "media_por_apuesta_pct": -3.91,
+    "t": -1.12
+   }
+  },
+  {
+   "regla": "Siempre compra en Bitcoin, ×20",
+   "rasgo": "siempre",
+   "signo": 1,
+   "eleccion": "BTC",
+   "L": 20,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 23.3,
+    "quiebra_pct": 32.9,
+    "nada_pct": 43.8,
+    "media_por_apuesta_pct": -7.97,
+    "t": -2.23
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 10.7,
+    "quiebra_pct": 26.1,
+    "nada_pct": 63.2,
+    "media_por_apuesta_pct": -11.88,
+    "t": -2.74
+   }
+  },
+  {
+   "regla": "Siempre compra en Bitcoin, ×40",
+   "rasgo": "siempre",
+   "signo": 1,
+   "eleccion": "BTC",
+   "L": 40,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 30.5,
+    "quiebra_pct": 62.0,
+    "nada_pct": 7.5,
+    "media_por_apuesta_pct": -30.1,
+    "t": -6.83
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 26.8,
+    "quiebra_pct": 59.1,
+    "nada_pct": 14.1,
+    "media_por_apuesta_pct": -28.69,
+    "t": -6.02
+   }
+  },
+  {
+   "regla": "Siempre compra en Ethereum, ×10",
+   "rasgo": "siempre",
+   "signo": 1,
+   "eleccion": "ETH",
+   "L": 10,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 9.8,
+    "quiebra_pct": 13.9,
+    "nada_pct": 76.3,
+    "media_por_apuesta_pct": -0.63,
+    "t": -0.49
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 6.4,
+    "quiebra_pct": 11.8,
+    "nada_pct": 81.8,
+    "media_por_apuesta_pct": -4.85,
+    "t": -0.8
+   }
+  },
+  {
+   "regla": "Siempre compra en Ethereum, ×20",
+   "rasgo": "siempre",
+   "signo": 1,
+   "eleccion": "ETH",
+   "L": 20,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 28.1,
+    "quiebra_pct": 38.9,
+    "nada_pct": 33.0,
+    "media_por_apuesta_pct": -8.78,
+    "t": -2.81
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 24.9,
+    "quiebra_pct": 39.7,
+    "nada_pct": 35.4,
+    "media_por_apuesta_pct": -12.19,
+    "t": -2.13
+   }
+  },
+  {
+   "regla": "Siempre compra en Ethereum, ×40",
+   "rasgo": "siempre",
+   "signo": 1,
+   "eleccion": "ETH",
+   "L": 40,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 33.7,
+    "quiebra_pct": 61.4,
+    "nada_pct": 5.0,
+    "media_por_apuesta_pct": -27.17,
+    "t": -6.25
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 33.4,
+    "quiebra_pct": 62.5,
+    "nada_pct": 4.1,
+    "media_por_apuesta_pct": -28.25,
+    "t": -5.26
+   }
+  },
+  {
+   "regla": "Siempre vende en Bitcoin, ×10",
+   "rasgo": "siempre",
+   "signo": -1,
+   "eleccion": "BTC",
+   "L": 10,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 6.0,
+    "quiebra_pct": 9.6,
+    "nada_pct": 84.4,
+    "media_por_apuesta_pct": -3.68,
+    "t": -1.36
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 3.3,
+    "quiebra_pct": 2.3,
+    "nada_pct": 94.4,
+    "media_por_apuesta_pct": 0.35,
+    "t": -0.08
+   }
+  },
+  {
+   "regla": "Siempre vende en Bitcoin, ×20",
+   "rasgo": "siempre",
+   "signo": -1,
+   "eleccion": "BTC",
+   "L": 20,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 21.0,
+    "quiebra_pct": 34.4,
+    "nada_pct": 44.7,
+    "media_por_apuesta_pct": -9.76,
+    "t": -2.47
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 15.7,
+    "quiebra_pct": 24.4,
+    "nada_pct": 59.9,
+    "media_por_apuesta_pct": -5.55,
+    "t": -1.45
+   }
+  },
+  {
+   "regla": "Siempre vende en Bitcoin, ×40",
+   "rasgo": "siempre",
+   "signo": -1,
+   "eleccion": "BTC",
+   "L": 40,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 29.4,
+    "quiebra_pct": 61.7,
+    "nada_pct": 8.9,
+    "media_por_apuesta_pct": -30.55,
+    "t": -7.63
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 31.9,
+    "quiebra_pct": 58.3,
+    "nada_pct": 9.8,
+    "media_por_apuesta_pct": -24.51,
+    "t": -4.39
+   }
+  },
+  {
+   "regla": "Siempre vende en Ethereum, ×10",
+   "rasgo": "siempre",
+   "signo": -1,
+   "eleccion": "ETH",
+   "L": 10,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 10.7,
+    "quiebra_pct": 14.6,
+    "nada_pct": 74.7,
+    "media_por_apuesta_pct": -4.73,
+    "t": -1.18
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 8.8,
+    "quiebra_pct": 10.3,
+    "nada_pct": 81.0,
+    "media_por_apuesta_pct": 0.32,
+    "t": -0.4
+   }
+  },
+  {
+   "regla": "Siempre vende en Ethereum, ×20",
+   "rasgo": "siempre",
+   "signo": -1,
+   "eleccion": "ETH",
+   "L": 20,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 25.6,
+    "quiebra_pct": 41.9,
+    "nada_pct": 32.5,
+    "media_por_apuesta_pct": -13.4,
+    "t": -2.92
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 26.8,
+    "quiebra_pct": 38.4,
+    "nada_pct": 34.7,
+    "media_por_apuesta_pct": -8.5,
+    "t": -1.62
+   }
+  },
+  {
+   "regla": "Siempre vende en Ethereum, ×40",
+   "rasgo": "siempre",
+   "signo": -1,
+   "eleccion": "ETH",
+   "L": 40,
+   "eleccion_2021_2024": {
+    "apuestas": 1393,
+    "independientes": 465,
+    "dobla_pct": 32.2,
+    "quiebra_pct": 62.8,
+    "nada_pct": 5.0,
+    "media_por_apuesta_pct": -29.55,
+    "t": -6.96
+   },
+   "examen_2_anos": {
+    "apuestas": 731,
+    "independientes": 244,
+    "dobla_pct": 33.0,
+    "quiebra_pct": 64.3,
+    "nada_pct": 2.7,
+    "media_por_apuesta_pct": -30.74,
+    "t": -5.28
+   }
+  }
+ ]
+}

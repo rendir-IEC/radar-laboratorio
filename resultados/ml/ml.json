@@ -1,5 +1,5 @@
 {
- "generado": "2026-11-28T13:14:56Z",
+ "generado": "2026-11-28T17:32:33Z",
  "coste_por_giro_pct": 0.07,
  "resultados": [
   {
@@ -7,146 +7,146 @@
    "monedas": 20,
    "indicadores": 101,
    "dias_fuera_de_muestra": 1367,
-   "ic_medio": 0.054,
-   "t_ic": 7.03,
+   "ic_medio": 0.0538,
+   "t_ic": 7.01,
    "ic_positivo_pct": 57.6,
-   "ic_un_dia_tarde": 0.049,
-   "t_ic_un_dia_tarde": 6.42,
+   "ic_un_dia_tarde": 0.0492,
+   "t_ic_un_dia_tarde": 6.46,
    "monedas_por_dia": 18.6,
    "carteras": {
     "largo_corto_k3": {
      "dias": 1367,
-     "rent_anual_pct": -42.038,
-     "vol_anual_pct": 33.567,
-     "sharpe_anual": -1.454,
-     "caida_max_pct": 88.772,
-     "dias_positivos_pct": 50.439,
-     "semanas_positivas_pct": 47.959,
+     "rent_anual_pct": -42.134,
+     "vol_anual_pct": 33.554,
+     "sharpe_anual": -1.459,
+     "caida_max_pct": 88.779,
+     "dias_positivos_pct": 50.512,
+     "semanas_positivas_pct": 48.98,
      "dias_con_posicion_pct": 99.927,
-     "giro_diario": 1.073,
+     "giro_diario": 1.072,
      "por_ano_pct": {
       "2023": -18.7,
       "2024": -59.4,
       "2025": -27.6,
-      "2026": -45.7
+      "2026": -46.0
      },
-     "sharpe_sin_costes": -0.637
+     "sharpe_sin_costes": -0.643
     },
     "solo_compras_k3": {
      "dias": 1367,
-     "rent_anual_pct": -7.272,
-     "vol_anual_pct": 65.608,
-     "sharpe_anual": 0.213,
-     "caida_max_pct": 71.539,
-     "dias_positivos_pct": 50.073,
+     "rent_anual_pct": -6.453,
+     "vol_anual_pct": 65.571,
+     "sharpe_anual": 0.226,
+     "caida_max_pct": 70.759,
+     "dias_positivos_pct": 50.146,
      "semanas_positivas_pct": 53.571,
      "dias_con_posicion_pct": 99.927,
-     "giro_diario": 1.061,
+     "giro_diario": 1.059,
      "por_ano_pct": {
       "2023": 7.4,
       "2024": 55.6,
       "2025": -14.6,
-      "2026": -47.2
+      "2026": -45.4
      },
-     "sharpe_sin_costes": 0.627
+     "sharpe_sin_costes": 0.639
     },
     "largo_corto_k5": {
      "dias": 1367,
-     "rent_anual_pct": -33.565,
-     "vol_anual_pct": 24.15,
-     "sharpe_anual": -1.571,
+     "rent_anual_pct": -33.444,
+     "vol_anual_pct": 24.156,
+     "sharpe_anual": -1.563,
      "caida_max_pct": 80.04,
-     "dias_positivos_pct": 49.707,
+     "dias_positivos_pct": 49.634,
      "semanas_positivas_pct": 42.347,
      "dias_con_posicion_pct": 99.927,
-     "giro_diario": 0.88,
+     "giro_diario": 0.881,
      "por_ano_pct": {
       "2023": -16.8,
       "2024": -47.0,
       "2025": -25.0,
-      "2026": -34.5
+      "2026": -34.1
      },
-     "sharpe_sin_costes": -0.639
+     "sharpe_sin_costes": -0.631
     },
     "solo_compras_k5": {
      "dias": 1367,
-     "rent_anual_pct": -7.114,
-     "vol_anual_pct": 63.005,
-     "sharpe_anual": 0.199,
-     "caida_max_pct": 71.12,
+     "rent_anual_pct": -6.993,
+     "vol_anual_pct": 63.003,
+     "sharpe_anual": 0.201,
+     "caida_max_pct": 70.978,
      "dias_positivos_pct": 51.611,
      "semanas_positivas_pct": 54.082,
      "dias_con_posicion_pct": 99.927,
-     "giro_diario": 0.87,
+     "giro_diario": 0.871,
      "por_ano_pct": {
       "2023": 32.2,
       "2024": 50.5,
       "2025": -32.4,
-      "2026": -43.7
+      "2026": -43.4
      },
-     "sharpe_sin_costes": 0.552
+     "sharpe_sin_costes": 0.555
     },
     "lenta_largo_corto_k5": {
      "dias": 1367,
-     "rent_anual_pct": -21.437,
-     "vol_anual_pct": 23.259,
-     "sharpe_anual": -0.92,
+     "rent_anual_pct": -21.364,
+     "vol_anual_pct": 23.213,
+     "sharpe_anual": -0.918,
      "caida_max_pct": 62.015,
      "dias_positivos_pct": 53.075,
-     "semanas_positivas_pct": 46.429,
+     "semanas_positivas_pct": 45.918,
      "dias_con_posicion_pct": 99.927,
-     "giro_diario": 0.106,
+     "giro_diario": 0.107,
      "por_ano_pct": {
       "2023": -28.2,
       "2024": -14.5,
       "2025": 6.6,
-      "2026": -38.1
+      "2026": -37.9
      },
-     "sharpe_sin_costes": -0.803
+     "sharpe_sin_costes": -0.801
     },
     "lenta_solo_compras_k5": {
      "dias": 1367,
-     "rent_anual_pct": -0.027,
-     "vol_anual_pct": 60.66,
-     "sharpe_anual": 0.303,
-     "caida_max_pct": 67.183,
-     "dias_positivos_pct": 51.318,
-     "semanas_positivas_pct": 54.592,
+     "rent_anual_pct": 1.151,
+     "vol_anual_pct": 60.637,
+     "sharpe_anual": 0.323,
+     "caida_max_pct": 67.012,
+     "dias_positivos_pct": 51.464,
+     "semanas_positivas_pct": 55.102,
      "dias_con_posicion_pct": 99.927,
      "giro_diario": 0.101,
      "por_ano_pct": {
       "2023": 18.9,
       "2024": 119.9,
       "2025": -33.5,
-      "2026": -42.5
+      "2026": -40.0
      },
-     "sharpe_sin_costes": 0.346
+     "sharpe_sin_costes": 0.365
     },
     "lenta_largo_corto_k5_un_dia_tarde": {
      "dias": 1367,
-     "rent_anual_pct": -22.0,
-     "vol_anual_pct": 23.143,
-     "sharpe_anual": -0.957,
+     "rent_anual_pct": -21.539,
+     "vol_anual_pct": 23.116,
+     "sharpe_anual": -0.933,
      "caida_max_pct": 64.539,
-     "dias_positivos_pct": 52.161,
+     "dias_positivos_pct": 52.381,
      "semanas_positivas_pct": 48.718,
      "dias_con_posicion_pct": 99.854,
-     "giro_diario": 0.106,
+     "giro_diario": 0.107,
      "por_ano_pct": {
       "2023": -29.9,
       "2024": -16.8,
       "2025": 5.0,
-      "2026": -35.6
+      "2026": -34.2
      },
-     "sharpe_sin_costes": -0.839
+     "sharpe_sin_costes": -0.815
     },
     "lenta_solo_compras_k5_un_dia_tarde": {
      "dias": 1367,
-     "rent_anual_pct": 2.074,
-     "vol_anual_pct": 60.666,
-     "sharpe_anual": 0.338,
+     "rent_anual_pct": 3.204,
+     "vol_anual_pct": 60.616,
+     "sharpe_anual": 0.356,
      "caida_max_pct": 70.009,
-     "dias_positivos_pct": 51.502,
+     "dias_positivos_pct": 51.648,
      "semanas_positivas_pct": 54.359,
      "dias_con_posicion_pct": 99.854,
      "giro_diario": 0.101,
@@ -154,9 +154,9 @@
       "2023": 23.5,
       "2024": 143.7,
       "2025": -37.3,
-      "2026": -42.8
+      "2026": -40.4
      },
-     "sharpe_sin_costes": 0.381
+     "sharpe_sin_costes": 0.399
     }
    },
    "referencia_todas_a_partes_iguales": {
@@ -170,177 +170,177 @@
     "dias_con_posicion_pct": 99.927
    },
    "desde": "2023-03-02",
-   "segundos": 58.8
+   "segundos": 58.5
   },
   {
    "universo": "amplio",
    "monedas": 60,
    "indicadores": 101,
    "dias_fuera_de_muestra": 1367,
-   "ic_medio": 0.0688,
-   "t_ic": 11.8,
-   "ic_positivo_pct": 61.6,
-   "ic_un_dia_tarde": 0.0499,
-   "t_ic_un_dia_tarde": 8.51,
-   "monedas_por_dia": 42.9,
+   "ic_medio": 0.0713,
+   "t_ic": 11.82,
+   "ic_positivo_pct": 62.4,
+   "ic_un_dia_tarde": 0.05,
+   "t_ic_un_dia_tarde": 8.2,
+   "monedas_por_dia": 43.6,
    "carteras": {
     "largo_corto_k3": {
      "dias": 1367,
-     "rent_anual_pct": 2.786,
-     "vol_anual_pct": 41.288,
-     "sharpe_anual": 0.276,
-     "caida_max_pct": 49.49,
-     "dias_positivos_pct": 52.562,
+     "rent_anual_pct": -7.404,
+     "vol_anual_pct": 42.276,
+     "sharpe_anual": 0.032,
+     "caida_max_pct": 51.286,
+     "dias_positivos_pct": 51.611,
      "semanas_positivas_pct": 51.02,
      "dias_con_posicion_pct": 99.927,
-     "giro_diario": 1.215,
+     "giro_diario": 1.224,
      "por_ano_pct": {
-      "2023": -16.2,
-      "2024": -11.5,
-      "2025": 40.2,
-      "2026": 6.6
-     },
-     "sharpe_sin_costes": 1.027
-    },
-    "solo_compras_k3": {
-     "dias": 1367,
-     "rent_anual_pct": 49.447,
-     "vol_anual_pct": 66.159,
-     "sharpe_anual": 0.934,
-     "caida_max_pct": 46.068,
-     "dias_positivos_pct": 52.196,
-     "semanas_positivas_pct": 60.204,
-     "dias_con_posicion_pct": 99.927,
-     "giro_diario": 1.196,
-     "por_ano_pct": {
-      "2023": 11.4,
-      "2024": 121.4,
-      "2025": 65.2,
-      "2026": 10.5
-     },
-     "sharpe_sin_costes": 1.396
-    },
-    "largo_corto_k5": {
-     "dias": 1367,
-     "rent_anual_pct": 2.803,
-     "vol_anual_pct": 30.633,
-     "sharpe_anual": 0.244,
-     "caida_max_pct": 39.071,
-     "dias_positivos_pct": 51.83,
-     "semanas_positivas_pct": 55.612,
-     "dias_con_posicion_pct": 99.927,
-     "giro_diario": 1.101,
-     "por_ano_pct": {
-      "2023": -16.1,
-      "2024": -7.3,
-      "2025": 49.1,
-      "2026": -4.4
-     },
-     "sharpe_sin_costes": 1.162
-    },
-    "solo_compras_k5": {
-     "dias": 1367,
-     "rent_anual_pct": 30.401,
-     "vol_anual_pct": 62.881,
-     "sharpe_anual": 0.735,
-     "caida_max_pct": 44.122,
-     "dias_positivos_pct": 51.611,
-     "semanas_positivas_pct": 60.204,
-     "dias_con_posicion_pct": 99.927,
-     "giro_diario": 1.084,
-     "por_ano_pct": {
-      "2023": 16.7,
-      "2024": 117.9,
-      "2025": 10.1,
-      "2026": -3.5
-     },
-     "sharpe_sin_costes": 1.175
-    },
-    "lenta_largo_corto_k5": {
-     "dias": 1367,
-     "rent_anual_pct": 3.655,
-     "vol_anual_pct": 31.185,
-     "sharpe_anual": 0.272,
-     "caida_max_pct": 35.735,
-     "dias_positivos_pct": 52.489,
-     "semanas_positivas_pct": 55.102,
-     "dias_con_posicion_pct": 99.927,
-     "giro_diario": 0.411,
-     "por_ano_pct": {
-      "2023": -17.6,
-      "2024": 29.6,
-      "2025": 8.0,
-      "2026": -0.9
-     },
-     "sharpe_sin_costes": 0.609
-    },
-    "lenta_solo_compras_k5": {
-     "dias": 1367,
-     "rent_anual_pct": 20.346,
-     "vol_anual_pct": 62.521,
-     "sharpe_anual": 0.606,
-     "caida_max_pct": 47.96,
-     "dias_positivos_pct": 52.782,
-     "semanas_positivas_pct": 57.143,
-     "dias_con_posicion_pct": 99.927,
-     "giro_diario": 0.404,
-     "por_ano_pct": {
-      "2023": 37.6,
-      "2024": 131.4,
-      "2025": -16.4,
-      "2026": -24.8
+      "2023": -19.4,
+      "2024": -20.2,
+      "2025": 34.6,
+      "2026": -13.4
      },
      "sharpe_sin_costes": 0.772
     },
+    "solo_compras_k3": {
+     "dias": 1367,
+     "rent_anual_pct": 22.65,
+     "vol_anual_pct": 64.091,
+     "sharpe_anual": 0.637,
+     "caida_max_pct": 48.755,
+     "dias_positivos_pct": 51.83,
+     "semanas_positivas_pct": 57.143,
+     "dias_con_posicion_pct": 99.927,
+     "giro_diario": 1.191,
+     "por_ano_pct": {
+      "2023": -6.5,
+      "2024": 143.2,
+      "2025": 21.0,
+      "2026": -21.9
+     },
+     "sharpe_sin_costes": 1.112
+    },
+    "largo_corto_k5": {
+     "dias": 1367,
+     "rent_anual_pct": -3.666,
+     "vol_anual_pct": 31.765,
+     "sharpe_anual": 0.042,
+     "caida_max_pct": 45.096,
+     "dias_positivos_pct": 52.855,
+     "semanas_positivas_pct": 53.571,
+     "dias_con_posicion_pct": 99.927,
+     "giro_diario": 1.079,
+     "por_ano_pct": {
+      "2023": -9.0,
+      "2024": -10.1,
+      "2025": 13.1,
+      "2026": -5.9
+     },
+     "sharpe_sin_costes": 0.91
+    },
+    "solo_compras_k5": {
+     "dias": 1367,
+     "rent_anual_pct": 26.096,
+     "vol_anual_pct": 61.372,
+     "sharpe_anual": 0.684,
+     "caida_max_pct": 50.105,
+     "dias_positivos_pct": 51.83,
+     "semanas_positivas_pct": 57.653,
+     "dias_con_posicion_pct": 99.927,
+     "giro_diario": 1.04,
+     "por_ano_pct": {
+      "2023": 29.2,
+      "2024": 155.4,
+      "2025": -20.6,
+      "2026": -9.0
+     },
+     "sharpe_sin_costes": 1.117
+    },
+    "lenta_largo_corto_k5": {
+     "dias": 1367,
+     "rent_anual_pct": -2.628,
+     "vol_anual_pct": 31.286,
+     "sharpe_anual": 0.072,
+     "caida_max_pct": 41.392,
+     "dias_positivos_pct": 53.88,
+     "semanas_positivas_pct": 56.122,
+     "dias_con_posicion_pct": 99.927,
+     "giro_diario": 0.414,
+     "por_ano_pct": {
+      "2023": -1.1,
+      "2024": -2.3,
+      "2025": 4.4,
+      "2026": -10.3
+     },
+     "sharpe_sin_costes": 0.411
+    },
+    "lenta_solo_compras_k5": {
+     "dias": 1367,
+     "rent_anual_pct": 16.179,
+     "vol_anual_pct": 58.671,
+     "sharpe_anual": 0.549,
+     "caida_max_pct": 54.644,
+     "dias_positivos_pct": 52.489,
+     "semanas_positivas_pct": 57.653,
+     "dias_con_posicion_pct": 99.927,
+     "giro_diario": 0.402,
+     "por_ano_pct": {
+      "2023": 34.5,
+      "2024": 108.4,
+      "2025": -20.5,
+      "2026": -21.3
+     },
+     "sharpe_sin_costes": 0.724
+    },
     "lenta_largo_corto_k5_un_dia_tarde": {
      "dias": 1367,
-     "rent_anual_pct": -21.372,
-     "vol_anual_pct": 29.957,
-     "sharpe_anual": -0.652,
-     "caida_max_pct": 61.422,
-     "dias_positivos_pct": 50.696,
-     "semanas_positivas_pct": 49.231,
+     "rent_anual_pct": -26.101,
+     "vol_anual_pct": 30.724,
+     "sharpe_anual": -0.829,
+     "caida_max_pct": 70.317,
+     "dias_positivos_pct": 51.282,
+     "semanas_positivas_pct": 48.205,
      "dias_con_posicion_pct": 99.854,
-     "giro_diario": 0.411,
+     "giro_diario": 0.414,
      "por_ano_pct": {
-      "2023": -20.6,
-      "2024": -2.6,
-      "2025": -31.2,
-      "2026": -23.5
+      "2023": -27.9,
+      "2024": -33.5,
+      "2025": -20.2,
+      "2026": -15.8
      },
-     "sharpe_sin_costes": -0.301
+     "sharpe_sin_costes": -0.485
     },
     "lenta_solo_compras_k5_un_dia_tarde": {
      "dias": 1367,
-     "rent_anual_pct": -8.418,
-     "vol_anual_pct": 62.053,
-     "sharpe_anual": 0.168,
-     "caida_max_pct": 74.855,
-     "dias_positivos_pct": 50.769,
-     "semanas_positivas_pct": 50.769,
+     "rent_anual_pct": -10.604,
+     "vol_anual_pct": 58.442,
+     "sharpe_anual": 0.1,
+     "caida_max_pct": 67.893,
+     "dias_positivos_pct": 52.015,
+     "semanas_positivas_pct": 50.256,
      "dias_con_posicion_pct": 99.854,
-     "giro_diario": 0.404,
+     "giro_diario": 0.402,
      "por_ano_pct": {
-      "2023": 31.6,
-      "2024": 79.0,
-      "2025": -32.4,
-      "2026": -54.8
+      "2023": 37.3,
+      "2024": 13.6,
+      "2025": -29.8,
+      "2026": -40.0
      },
-     "sharpe_sin_costes": 0.334
+     "sharpe_sin_costes": 0.276
     }
    },
    "referencia_todas_a_partes_iguales": {
     "dias": 1367,
-    "rent_anual_pct": -1.904,
-    "vol_anual_pct": 69.303,
-    "sharpe_anual": 0.321,
-    "caida_max_pct": 74.189,
-    "dias_positivos_pct": 51.903,
-    "semanas_positivas_pct": 54.082,
+    "rent_anual_pct": -0.629,
+    "vol_anual_pct": 69.65,
+    "sharpe_anual": 0.341,
+    "caida_max_pct": 74.552,
+    "dias_positivos_pct": 52.123,
+    "semanas_positivas_pct": 53.571,
     "dias_con_posicion_pct": 99.927
    },
    "desde": "2023-03-02",
-   "segundos": 101.0
+   "segundos": 101.3
   }
  ]
 }
