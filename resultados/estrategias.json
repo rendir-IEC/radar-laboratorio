@@ -1,5 +1,5 @@
 {
- "generado": "2026-11-28T10:30:46Z",
+ "generado": "2026-11-28T11:00:21Z",
  "version": 1,
  "aviso": "Investigación en papel. Resultados pasados, con costes estimados; no garantizan nada en el futuro.",
  "periodo": {
@@ -34,8 +34,8 @@
    "WLFI": "binance + funding binance + hyperliquid (10 h) + funding hyperliquid",
    "VVV": "binance + funding binance + hyperliquid (10 h) + funding hyperliquid",
    "LIT": "binance + funding binance + hyperliquid (10 h) + funding hyperliquid",
-   "PUMP": "binance + funding binance + hyperliquid (10 h) + funding hyperliquid",
    "TRUMP": "binance + funding binance + hyperliquid (10 h) + funding hyperliquid",
+   "PUMP": "binance + funding binance + hyperliquid (10 h) + funding hyperliquid",
    "BLUR": "binance + funding binance + hyperliquid (10 h) + funding hyperliquid",
    "ZRO": "binance + funding binance + hyperliquid (10 h) + funding hyperliquid",
    "PONS": "binance + funding binance + hyperliquid (10 h) + funding hyperliquid",
@@ -45,44 +45,44 @@
    "TAO": "binance + funding binance + hyperliquid (10 h) + funding hyperliquid",
    "LTC": "binance + funding binance + hyperliquid (10 h) + funding hyperliquid",
    "CRV": "binance + funding binance + hyperliquid (10 h) + funding hyperliquid",
-   "XPL": "binance + funding binance + hyperliquid (10 h) + funding hyperliquid",
    "INIT": "binance + funding binance + hyperliquid (10 h) + funding hyperliquid",
    "SKY": "binance + funding binance + hyperliquid (10 h) + funding hyperliquid",
    "AERO": "binance + funding binance + hyperliquid (10 h) + funding hyperliquid",
    "INJ": "binance + funding binance + hyperliquid (10 h) + funding hyperliquid",
    "TRX": "binance + funding binance + hyperliquid (10 h) + funding hyperliquid",
+   "XPL": "binance + funding binance + hyperliquid (10 h) + funding hyperliquid",
    "JUP": "binance + funding binance + hyperliquid (10 h) + funding hyperliquid",
    "ONDO": "binance + funding binance + hyperliquid (10 h) + funding hyperliquid",
    "PAXG": "binance + funding binance + hyperliquid (10 h) + funding hyperliquid",
    "ETHFI": "binance + funding binance + hyperliquid (10 h) + funding hyperliquid",
-   "CASHCAT": "hyperliquid (3366 h) + funding hyperliquid",
    "RENDER": "binance + funding binance + hyperliquid (10 h) + funding hyperliquid",
-   "DOT": "binance + funding binance + hyperliquid (10 h) + funding hyperliquid",
+   "CASHCAT": "hyperliquid (3366 h) + funding hyperliquid",
    "MELANIA": "binance + funding binance + hyperliquid (10 h) + funding hyperliquid",
-   "GRAM": "binance + funding binance + hyperliquid (10 h) + funding hyperliquid",
+   "DOT": "binance + funding binance + hyperliquid (10 h) + funding hyperliquid",
    "LDO": "binance + funding binance + hyperliquid (10 h) + funding hyperliquid",
+   "GRAM": "binance + funding binance + hyperliquid (10 h) + funding hyperliquid",
    "BIGTIME": "binance + funding binance + hyperliquid (10 h) + funding hyperliquid",
    "CHIP": "binance + funding binance + hyperliquid (10 h) + funding hyperliquid",
    "STRK": "binance + funding binance + hyperliquid (10 h) + funding hyperliquid",
    "HBAR": "binance + funding binance + hyperliquid (10 h) + funding hyperliquid",
-   "TIA": "binance + funding binance + hyperliquid (10 h) + funding hyperliquid",
    "ASTER": "binance + funding binance + hyperliquid (10 h) + funding hyperliquid",
    "XTEN": "hyperliquid (772 h) + funding hyperliquid",
    "BCH": "binance + funding binance + hyperliquid (10 h) + funding hyperliquid",
    "SEI": "binance + funding binance + hyperliquid (10 h) + funding hyperliquid",
-   "ICP": "binance + funding binance + hyperliquid (10 h) + funding hyperliquid"
+   "ICP": "binance + funding binance + hyperliquid (10 h) + funding hyperliquid",
+   "APT": "binance + funding binance + hyperliquid (10 h) + funding hyperliquid"
   },
   "registro": {
-   "binance_estado_prueba": 200,
+   "binance_estado_prueba": 404,
    "binance_descargas": {
-    "200": 348,
-    "404": 115
+    "404": 7,
+    "200": 3
    },
    "binance_mensual_pendiente": [
-    "CASHCAT funding_2026-10",
     "CASHCAT klines_2026-10",
-    "XTEN funding_2026-10",
-    "XTEN klines_2026-10"
+    "CASHCAT funding_2026-10",
+    "XTEN klines_2026-10",
+    "XTEN funding_2026-10"
    ]
   }
  },
@@ -173,7 +173,7 @@
    "sharpe_primera_mitad": 0.535,
    "sharpe_segunda_mitad": 2.122,
    "sharpe_ultimo_ano": 2.092,
-   "sharpe_universo_amplio": -0.378,
+   "sharpe_universo_amplio": -0.389,
    "giro_anual": 8.2,
    "exposicion_media": 0.053
   },
@@ -201,7 +201,7 @@
    "sharpe_primera_mitad": 1.697,
    "sharpe_segunda_mitad": 1.003,
    "sharpe_ultimo_ano": 0.72,
-   "sharpe_universo_amplio": 1.118,
+   "sharpe_universo_amplio": 1.123,
    "giro_anual": 5.6,
    "exposicion_media": 0.03
   },
@@ -228,7 +228,7 @@
    "sharpe_primera_mitad": 1.308,
    "sharpe_segunda_mitad": 1.242,
    "sharpe_ultimo_ano": 0.813,
-   "sharpe_universo_amplio": 1.213,
+   "sharpe_universo_amplio": 1.219,
    "giro_anual": 63.0,
    "exposicion_media": 0.32
   },
@@ -283,7 +283,7 @@
    "sharpe_primera_mitad": 1.477,
    "sharpe_segunda_mitad": 0.789,
    "sharpe_ultimo_ano": 0.292,
-   "sharpe_universo_amplio": 0.989,
+   "sharpe_universo_amplio": 0.983,
    "giro_anual": 7.5,
    "exposicion_media": 0.051
   },
@@ -310,7 +310,7 @@
    "sharpe_primera_mitad": 1.255,
    "sharpe_segunda_mitad": 0.965,
    "sharpe_ultimo_ano": 0.719,
-   "sharpe_universo_amplio": 0.949,
+   "sharpe_universo_amplio": 0.945,
    "giro_anual": 18.4,
    "exposicion_media": 0.172
   },
@@ -337,7 +337,7 @@
    "sharpe_primera_mitad": 1.229,
    "sharpe_segunda_mitad": 0.963,
    "sharpe_ultimo_ano": 0.396,
-   "sharpe_universo_amplio": 1.077,
+   "sharpe_universo_amplio": 1.043,
    "giro_anual": 38.9,
    "exposicion_media": 0.32
   },
@@ -364,7 +364,7 @@
    "sharpe_primera_mitad": 1.315,
    "sharpe_segunda_mitad": 0.854,
    "sharpe_ultimo_ano": 0.644,
-   "sharpe_universo_amplio": 0.962,
+   "sharpe_universo_amplio": 0.965,
    "giro_anual": 99.6,
    "exposicion_media": 0.617
   },
@@ -392,7 +392,7 @@
    "sharpe_primera_mitad": 0.279,
    "sharpe_segunda_mitad": 1.766,
    "sharpe_ultimo_ano": 1.331,
-   "sharpe_universo_amplio": 0.093,
+   "sharpe_universo_amplio": 0.088,
    "giro_anual": 19.4,
    "exposicion_media": 0.235
   },
@@ -419,7 +419,7 @@
    "sharpe_primera_mitad": 1.175,
    "sharpe_segunda_mitad": 0.941,
    "sharpe_ultimo_ano": 0.667,
-   "sharpe_universo_amplio": 0.933,
+   "sharpe_universo_amplio": 0.937,
    "giro_anual": 48.1,
    "exposicion_media": 0.176
   },
@@ -445,7 +445,7 @@
    "sharpe_primera_mitad": 1.46,
    "sharpe_segunda_mitad": 0.57,
    "sharpe_ultimo_ano": 1.749,
-   "sharpe_universo_amplio": 1.063,
+   "sharpe_universo_amplio": 1.033,
    "giro_anual": 29.5,
    "exposicion_media": 0.296
   },
@@ -473,7 +473,7 @@
    "sharpe_primera_mitad": 0.95,
    "sharpe_segunda_mitad": 1.132,
    "sharpe_ultimo_ano": 0.509,
-   "sharpe_universo_amplio": 0.841,
+   "sharpe_universo_amplio": 0.84,
    "giro_anual": 13.5,
    "exposicion_media": 0.047
   }

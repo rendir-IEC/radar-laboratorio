@@ -1,5 +1,5 @@
 {
- "generado": "2026-11-28T10:30:47Z",
+ "generado": "2026-11-28T11:00:23Z",
  "monedas": {
   "BTC": {
    "desde": "2021-01-01",
@@ -254,17 +254,6 @@
    "funding_anual_medio_pct": 12.51,
    "fuente": "binance + funding binance + hyperliquid (10 h) + funding hyperliquid"
   },
-  "PUMP": {
-   "desde": "2025-04-12",
-   "hasta": "2026-11-28 10:00",
-   "horas": 14269,
-   "huecos_internos": 7,
-   "max_mov_horario_pct": 32.13,
-   "max_mov_hora": "2025-04-23 05:00",
-   "vol_anual_pct": 148.1,
-   "funding_anual_medio_pct": 9.23,
-   "fuente": "binance + funding binance + hyperliquid (10 h) + funding hyperliquid"
-  },
   "TRUMP": {
    "desde": "2025-01-18",
    "hasta": "2026-11-28 10:00",
@@ -274,6 +263,17 @@
    "max_mov_hora": "2025-01-19 22:00",
    "vol_anual_pct": 124.7,
    "funding_anual_medio_pct": -14.83,
+   "fuente": "binance + funding binance + hyperliquid (10 h) + funding hyperliquid"
+  },
+  "PUMP": {
+   "desde": "2025-04-12",
+   "hasta": "2026-11-28 10:00",
+   "horas": 14269,
+   "huecos_internos": 7,
+   "max_mov_horario_pct": 32.13,
+   "max_mov_hora": "2025-04-23 05:00",
+   "vol_anual_pct": 148.1,
+   "funding_anual_medio_pct": 9.23,
    "fuente": "binance + funding binance + hyperliquid (10 h) + funding hyperliquid"
   },
   "BLUR": {
@@ -375,17 +375,6 @@
    "funding_anual_medio_pct": 6.2,
    "fuente": "binance + funding binance + hyperliquid (10 h) + funding hyperliquid"
   },
-  "XPL": {
-   "desde": "2025-08-22",
-   "hasta": "2026-11-28 10:00",
-   "horas": 11113,
-   "huecos_internos": 0,
-   "max_mov_horario_pct": 26.89,
-   "max_mov_hora": "2026-04-02 22:00",
-   "vol_anual_pct": 152.4,
-   "funding_anual_medio_pct": 7.41,
-   "fuente": "binance + funding binance + hyperliquid (10 h) + funding hyperliquid"
-  },
   "INIT": {
    "desde": "2025-04-16",
    "hasta": "2026-11-28 10:00",
@@ -441,6 +430,17 @@
    "funding_anual_medio_pct": 0.33,
    "fuente": "binance + funding binance + hyperliquid (10 h) + funding hyperliquid"
   },
+  "XPL": {
+   "desde": "2025-08-22",
+   "hasta": "2026-11-28 10:00",
+   "horas": 11113,
+   "huecos_internos": 0,
+   "max_mov_horario_pct": 26.89,
+   "max_mov_hora": "2026-04-02 22:00",
+   "vol_anual_pct": 152.4,
+   "funding_anual_medio_pct": 7.41,
+   "fuente": "binance + funding binance + hyperliquid (10 h) + funding hyperliquid"
+  },
   "JUP": {
    "desde": "2024-01-31",
    "hasta": "2026-11-28 10:00",
@@ -485,6 +485,17 @@
    "funding_anual_medio_pct": 2.15,
    "fuente": "binance + funding binance + hyperliquid (10 h) + funding hyperliquid"
   },
+  "RENDER": {
+   "desde": "2024-07-26",
+   "hasta": "2026-11-28 10:00",
+   "horas": 20520,
+   "huecos_internos": 0,
+   "max_mov_horario_pct": 34.7,
+   "max_mov_hora": "2025-10-10 22:00",
+   "vol_anual_pct": 110.1,
+   "funding_anual_medio_pct": 4.52,
+   "fuente": "binance + funding binance + hyperliquid (10 h) + funding hyperliquid"
+  },
   "CASHCAT": {
    "desde": "2026-07-11",
    "hasta": "2026-11-28 10:00",
@@ -496,15 +507,15 @@
    "funding_anual_medio_pct": 57.75,
    "fuente": "hyperliquid (3366 h) + funding hyperliquid"
   },
-  "RENDER": {
-   "desde": "2024-07-26",
+  "MELANIA": {
+   "desde": "2025-01-20",
    "hasta": "2026-11-28 10:00",
-   "horas": 20520,
+   "horas": 16249,
    "huecos_internos": 0,
-   "max_mov_horario_pct": 34.7,
-   "max_mov_hora": "2025-10-10 22:00",
-   "vol_anual_pct": 110.1,
-   "funding_anual_medio_pct": 4.52,
+   "max_mov_horario_pct": 38.07,
+   "max_mov_hora": "2025-01-20 18:00",
+   "vol_anual_pct": 129.9,
+   "funding_anual_medio_pct": -14.83,
    "fuente": "binance + funding binance + hyperliquid (10 h) + funding hyperliquid"
   },
   "DOT": {
@@ -518,15 +529,15 @@
    "funding_anual_medio_pct": 6.55,
    "fuente": "binance + funding binance + hyperliquid (10 h) + funding hyperliquid"
   },
-  "MELANIA": {
-   "desde": "2025-01-20",
+  "LDO": {
+   "desde": "2022-09-22",
    "hasta": "2026-11-28 10:00",
-   "horas": 16249,
+   "horas": 36670,
    "huecos_internos": 0,
-   "max_mov_horario_pct": 38.07,
-   "max_mov_hora": "2025-01-20 18:00",
-   "vol_anual_pct": 129.9,
-   "funding_anual_medio_pct": -14.83,
+   "max_mov_horario_pct": 25.01,
+   "max_mov_hora": "2025-10-10 22:00",
+   "vol_anual_pct": 111.6,
+   "funding_anual_medio_pct": 8.37,
    "fuente": "binance + funding binance + hyperliquid (10 h) + funding hyperliquid"
   },
   "GRAM": {
@@ -538,17 +549,6 @@
    "max_mov_hora": "2026-08-04 01:00",
    "vol_anual_pct": 69.3,
    "funding_anual_medio_pct": -0.53,
-   "fuente": "binance + funding binance + hyperliquid (10 h) + funding hyperliquid"
-  },
-  "LDO": {
-   "desde": "2022-09-22",
-   "hasta": "2026-11-28 10:00",
-   "horas": 36670,
-   "huecos_internos": 0,
-   "max_mov_horario_pct": 25.01,
-   "max_mov_hora": "2025-10-10 22:00",
-   "vol_anual_pct": 111.6,
-   "funding_anual_medio_pct": 8.37,
    "fuente": "binance + funding binance + hyperliquid (10 h) + funding hyperliquid"
   },
   "BIGTIME": {
@@ -593,17 +593,6 @@
    "max_mov_hora": "2021-05-19 13:00",
    "vol_anual_pct": 106.6,
    "funding_anual_medio_pct": 7.73,
-   "fuente": "binance + funding binance + hyperliquid (10 h) + funding hyperliquid"
-  },
-  "TIA": {
-   "desde": "2023-10-31",
-   "hasta": "2026-11-28 10:00",
-   "horas": 26968,
-   "huecos_internos": 0,
-   "max_mov_horario_pct": 33.73,
-   "max_mov_hora": "2025-10-10 22:00",
-   "vol_anual_pct": 122.3,
-   "funding_anual_medio_pct": -1.86,
    "fuente": "binance + funding binance + hyperliquid (10 h) + funding hyperliquid"
   },
   "ASTER": {
@@ -659,6 +648,17 @@
    "max_mov_hora": "2021-05-19 13:00",
    "vol_anual_pct": 114.7,
    "funding_anual_medio_pct": 3.92,
+   "fuente": "binance + funding binance + hyperliquid (10 h) + funding hyperliquid"
+  },
+  "APT": {
+   "desde": "2022-10-19",
+   "hasta": "2026-11-28 10:00",
+   "horas": 36032,
+   "huecos_internos": 0,
+   "max_mov_horario_pct": 18.15,
+   "max_mov_hora": "2025-10-10 22:00",
+   "vol_anual_pct": 102.2,
+   "funding_anual_medio_pct": -1.14,
    "fuente": "binance + funding binance + hyperliquid (10 h) + funding hyperliquid"
   }
  },
